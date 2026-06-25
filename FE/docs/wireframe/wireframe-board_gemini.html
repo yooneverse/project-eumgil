@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>부산이음길 - 와이어프레임 보드</title>
+<style>
+  :root {
+    --border-color: #333;
+    --bg-color: #f9f9f9;
+    --element-bg: #e0e0e0;
+    --text-color: #111;
+    --wireframe-width: 320px;
+    --wireframe-height: 640px;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #eee;
+    color: var(--text-color);
+    margin: 0;
+    padding: 40px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  p.desc {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #666;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 40px;
+    justify-items: center;
+  }
+  .frame {
+    width: var(--wireframe-width);
+    height: var(--wireframe-height);
+    background-color: #fff;
+    border: 3px solid var(--border-color);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  .scr-label {
+    background-color: var(--border-color);
+    color: #fff;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+  }
+  .content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+  .footer-memo {
+    background-color: #fffbe6;
+    border-top: 2px dashed #aaa;
+    padding: 10px;
+    font-size: 12px;
+    color: #444;
+  }
+  
+  /* Wireframe Elements */
+  .box {
+    border: 2px solid var(--border-color);
+    padding: 12px;
+    text-align: center;
+    background-color: var(--element-bg);
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .box.dashed { border-style: dashed; background-color: transparent; }
+  .box.map { flex: 1; min-height: 150px; background-color: #ebebeb; position: relative; }
+  .box.logo { height: 80px; border-radius: 50%; width: 80px; margin: 0 auto; }
+  
+  .text-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+  .text-large { font-size: 22px; font-weight: bold; text-align: center; line-height: 1.4; margin: 10px 0;}
+  .text-small { font-size: 12px; color: #555; }
+  
+  .btn {
+    border: 2px solid var(--border-color);
+    background-color: #fff;
+    padding: 12px;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn.primary { background-color: var(--border-color); color: #fff; }
+  .btn.huge {
+    padding: 30px 10px;
+    font-size: 20px;
+    border-width: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .input {
+    border: 2px solid var(--border-color);
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #888;
+  }
+  
+  .progress { height: 8px; background: #ddd; border-radius: 4px; display: flex; overflow: hidden; margin-bottom: 10px;}
+  .progress-bar { width: 50%; background: var(--border-color); }
+  
+  .fab {
+    position: absolute;
+    width: 48px; height: 48px;
+    border: 2px solid var(--border-color);
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: bold; text-align: center;
+  }
+  
+  .tab-bar {
+    display: flex;
+    border-top: 2px solid var(--border-color);
+    background-color: #fff;
+  }
+  .tab-item {
+    flex: 1; padding: 12px 0; text-align: center; font-size: 12px; border-right: 2px solid var(--border-color);
+  }
+  .tab-item:last-child { border-right: none; }
+  
+  .annotation {
+    font-size: 11px;
+    color: #d84315;
+    background-color: #fbe9e7;
+    padding: 4px;
+    border: 1px solid #d84315;
+    margin-top: 4px;
+    display: inline-block;
+  }
+  
+  .row { display: flex; gap: 8px; align-items: center; }
+  .row .btn { flex: 1; }
+  
+  .bottom-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 3px solid var(--border-color);
+    padding: 16px; border-radius: 16px 16px 0 0;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  
+  .spacer { flex: 1; }
+</style>
+</head>
+<body>
+
+<h1>부산이음길 앱 와이어프레임 보드</h1>
+<p class="desc">접근성 중심 (흑백/회색조, 큰 텍스트, 직관적 UI 구조)</p>
+
+<div class="board">
+
+  <div class="frame">
+    <div class="scr-label">SCR-001 온보딩 장애유형 선택</div>
+    <div class="content">
+      <div class="progress"><div class="progress-bar" style="width:50%"></div></div>
+      <div class="text-large">장애 유형을<br>선택해주세요</div>
+      <div class="box dashed" style="padding: 30px;">시각장애</div>
+      <div class="box dashed" style="padding: 30px;">보행약자</div>
+      <div class="spacer"></div>
+      <div class="row">
+        <div class="btn">건너뛰기</div>
+        <div class="btn primary">다음</div>
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 장애 유형 선택<br>
+      <strong>이동:</strong> SCR-002 온보딩 등급선택
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-002 온보딩 장애등급 선택</div>
+    <div class="content">
+      <div class="row">
+        <div class="progress" style="flex:1;"><div class="progress-bar" style="width:100%"></div></div>
+        <div class="btn" style="padding: 4px 8px; font-size:12px;">음성안내 🔊</div>
+      </div>
+      <div class="text-large">장애 등급을<br>선택해주세요</div>
+      <div class="box">중증 장애</div>
+      <div class="box">경증 장애</div>
+      <div class="box">해당 없음</div>
+      <div class="spacer"></div>
+      <div class="row">
+        <div class="btn">건너뛰기</div>
+        <div class="btn primary">다음</div>
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 등급 선택 및 완료<br>
+      <strong>이동:</strong> SCR-003 약관동의
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-003 위치정보 이용약관 동의</div>
+    <div class="content">
+      <div class="box logo">APP<br>로고</div>
+      <div class="text-title" style="text-align:center; margin-top:20px;">위치정보 이용약관</div>
+      <div class="text-small" style="text-align:center;">서비스 이용을 위해 위치정보가 필요합니다.</div>
+      <div class="box dashed" style="height: 100px; overflow:hidden; font-size:11px; text-align:left;">제1조 (목적) 본 약관은...<br>제2조 (이용) 서비스는...</div>
+      <div class="box" style="text-align:left;">☑ 전체 동의</div>
+      <div class="text-small" style="padding-left:10px;">☑ [필수] 위치정보 수집 동의</div>
+      <div class="text-small" style="padding-left:10px;">☐ [선택] 마케팅 정보 수신 동의</div>
+      <div class="spacer"></div>
+      <div class="btn primary">동의하고 시작</div>
+      <div class="btn" style="border:none;">나중에 하기</div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 필수 약관 동의<br>
+      <strong>이동:</strong> SCR-004 로그인
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-004 로그인</div>
+    <div class="content" style="justify-content: center; text-align: center;">
+      <div class="box logo">APP<br>로고</div>
+      <div class="text-large" style="margin-bottom: 40px;">부산이음길</div>
+      <div class="btn">카카오 로그인</div>
+      <div class="btn">네이버 로그인</div>
+      <div class="btn">구글 로그인</div>
+      <div class="btn">지문인식 (생체) 로그인</div>
+      <div class="spacer"></div>
+      <div class="row" style="justify-content: center; font-size: 13px; font-weight:bold;">
+        <span>비로그인으로 계속</span> | <span>회원가입</span>
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 소셜/생체 로그인<br>
+      <strong>이동:</strong> SCR-006 지도 메인
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-005 회원가입</div>
+    <div class="content">
+      <div class="text-title">← 회원가입</div>
+      <hr style="width:100%; border:1px solid #ddd; margin-bottom:10px;">
+      
+      <div class="text-small">닉네임</div>
+      <div class="row">
+        <div class="input" style="flex:1;">닉네임 입력</div>
+        <div class="btn">중복확인</div>
+      </div>
+      
+      <div class="text-small">장애유형</div>
+      <div class="input">선택 ▼</div>
+      
+      <div class="text-small">장애등급</div>
+      <div class="input">선택 ▼</div>
+      
+      <div class="text-small">전화번호</div>
+      <div class="input">010-0000-0000</div>
+      
+      <div class="spacer"></div>
+      <div class="btn primary">가입 완료</div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 정보 입력 후 가입<br>
+      <strong>이동:</strong> SCR-004 로그인 화면
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-006 지도 메인</div>
+    <div class="content" style="padding:0; background:#ebebeb;">
+      <div style="padding:16px; background:#fff;">
+        <div class="input">🔍 장소, 주소, 버스 검색</div>
+        <div class="row" style="margin-top:10px; overflow-x:hidden;">
+          <div class="box" style="padding:6px; border-radius:16px; font-size:11px;">#저상버스</div>
+          <div class="box" style="padding:6px; border-radius:16px; font-size:11px;">#엘리베이터</div>
+          <div class="box" style="padding:6px; border-radius:16px; font-size:11px;">#음성유도기</div>
+        </div>
+      </div>
+      
+      <div class="box map" style="border:none;">
+        [지도 영역]
+        <div style="position:absolute; top:40%; left:50%; font-size:24px;">📍</div>
+        <div style="position:absolute; top:20%; left:30%; font-size:20px;">🏢</div>
+        <div style="position:absolute; top:60%; left:70%; font-size:20px;">🚏</div>
+        
+        <div class="fab" style="bottom: 80px; right: 16px;">내위치</div>
+        <div class="fab" style="bottom: 140px; right: 16px;">길안내</div>
+        <div class="fab" style="bottom: 200px; right: 16px;">제보</div>
+      </div>
+      
+      <div style="padding:12px; background:#fff;">
+        <div class="btn primary">🚍 주변 저상버스/두리발 정보 보기</div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item" style="font-weight:bold;">지도</div>
+        <div class="tab-item">검색</div>
+        <div class="tab-item">저장</div>
+        <div class="tab-item">MY</div>
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 지도 탐색, 필터, 내비 진입<br>
+      <strong>이동:</strong> SCR-007 상세 / SCR-009 내비
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-007 시설 상세 팝업</div>
+    <div class="content" style="padding:0; background:#ebebeb; position:relative;">
+      <div class="box map" style="border:none;">[지도 백그라운드 (Dim처리)]</div>
+      
+      <div class="bottom-sheet">
+        <div style="width:40px; height:4px; background:#ccc; margin:0 auto; border-radius:2px;"></div>
+        <div class="row">
+          <div class="text-title">부산시청</div>
+          <div class="box" style="padding:2px 6px; font-size:10px;">공공기관</div>
+        </div>
+        <div class="text-small">부산 연제구 중앙대로 1001</div>
+        <div class="row">
+          <div class="box dashed" style="padding:4px; font-size:11px;">휠체어 접근가능</div>
+          <div class="box dashed" style="padding:4px; font-size:11px;">장애인 화장실</div>
+        </div>
+        <div class="text-small">운영시간: 09:00 ~ 18:00</div>
+        <div class="row" style="margin-top:10px;">
+          <div class="btn">⭐ 북마크</div>
+          <div class="btn primary">안내 시작</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 시설 정보 확인, 길안내<br>
+      <strong>이동:</strong> SCR-009 내비 경로설정
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-008 검색</div>
+    <div class="content">
+      <div class="row">
+        <div class="text-title">←</div>
+        <div class="input" style="flex:1;">검색어 입력</div>
+        <div class="btn" style="padding:10px;">🎙️</div>
+      </div>
+      
+      <div class="row" style="margin-top:20px; justify-content:space-between;">
+        <div class="text-title" style="font-size:14px;">최근 검색 기록</div>
+        <div class="text-small">전체 삭제</div>
+      </div>
+      <div class="box" style="justify-content:space-between; text-align:left;">부산역 <span class="text-small">✕</span></div>
+      <div class="box" style="justify-content:space-between; text-align:left;">서면역 <span class="text-small">✕</span></div>
+      
+      <div class="text-title" style="font-size:14px; margin-top:20px;">자주 가는 길</div>
+      <div class="box dashed" style="text-align:left;">🏠 집으로 안내</div>
+      <div class="box dashed" style="text-align:left;">🏢 회사/학교로 안내</div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 장소 검색, 음성 입력<br>
+      <strong>이동:</strong> SCR-006 지도 또는 SCR-009
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-009 내비게이션 경로 설정</div>
+    <div class="content">
+      <div class="text-title">← 경로 탐색</div>
+      <div class="box" style="background:#fff;">
+        <div class="input" style="margin-bottom:8px;">출발: 내 위치</div>
+        <div class="input">도착: 부산역</div>
+      </div>
+      
+      <div class="row">
+        <div class="btn primary" style="flex:1; font-size:12px;">휠체어 최적</div>
+        <div class="btn" style="flex:1; font-size:12px;">큰 길 위주</div>
+        <div class="btn" style="flex:1; font-size:12px;">대중교통</div>
+      </div>
+      
+      <div class="btn primary">경로 탐색</div>
+      
+      <hr style="width:100%; border:1px solid #ddd;">
+      
+      <div class="box text-left" style="align-items:flex-start; flex-direction:column;">
+        <div class="text-title">약 45분 소요</div>
+        <div class="text-small">도보 15분 + 저상버스 30분</div>
+      </div>
+      <div class="box map" style="min-height:100px;">[미리보기 지도]</div>
+      <div class="btn primary" style="font-size:18px;">안내 시작</div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 경로 옵션 선택 및 탐색<br>
+      <strong>이동:</strong> SCR-010 내비 진행
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-010 내비게이션 진행</div>
+    <div class="content" style="padding:0; background:#ebebeb;">
+      <div style="background:#fff; padding:16px; border-bottom:3px solid var(--border-color);">
+        <div class="row" style="justify-content:space-between;">
+          <div class="text-large" style="margin:0;">50m 앞 우회전</div>
+          <div class="btn" style="padding:8px;">TTS 🔊</div>
+        </div>
+        <div class="text-small" style="margin-top:8px;">주의: 20m 앞 시각장애인용 점자블록 파손 구간</div>
+      </div>
+      
+      <div class="box map" style="border:none;">
+        [내비게이션 진행 지도]
+        <svg style="position:absolute; top:20%; left:20%; width:60%; height:60%;" viewBox="0 0 100 100">
+          <polyline points="10,90 50,50 90,10" fill="none" stroke="#333" stroke-width="4" stroke-dasharray="5,5"/>
+        </svg>
+        <div style="position:absolute; top:45%; left:45%; font-size:24px;">📍</div>
+        <div class="box" style="position:absolute; top:10px; left:50%; transform:translateX(-50%); font-size:11px; background:#fff; padding:4px;">경로 이탈 시 재탐색 배너</div>
+        <div class="fab" style="bottom: 16px; right: 16px;">전체<br>경로</div>
+      </div>
+      
+      <div style="padding:16px; background:#fff; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div class="text-title" style="margin:0;">남은 시간: 15분</div>
+          <div class="text-small">잔여 거리: 1.2km</div>
+        </div>
+        <div class="btn" style="border-width:3px; border-color:#d32f2f; color:#d32f2f;">안내 종료</div>
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 턴바이턴 길안내 및 음성<br>
+      <strong>이동:</strong> 도착 후 종료 시 SCR-006 복귀
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-011 도로 상태 제보</div>
+    <div class="content">
+      <div class="text-title">✕ 도로 상태 제보</div>
+      <hr style="width:100%; border:1px solid #ddd;">
+      
+      <div class="text-small">제보 유형</div>
+      <div class="input">점자블록 파손 ▼</div>
+      
+      <div class="text-small">위치 (현재 위치 기반)</div>
+      <div class="box map" style="min-height:80px; flex:none;">[미니 지도]</div>
+      <div class="text-small">부산 연제구 중앙대로 1000 주변</div>
+      
+      <div class="text-small">사진 첨부</div>
+      <div class="box dashed" style="height:60px;">📷 탭하여 사진 촬영/선택</div>
+      
+      <div class="text-small">상세 설명</div>
+      <div class="input" style="height:60px;">설명을 입력해주세요.</div>
+      
+      <div class="spacer"></div>
+      <div class="btn primary">제보 제출</div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 파손/장애물 신고 접수<br>
+      <strong>이동:</strong> 제출 완료 후 SCR-012 이동
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-012 제보 내역 확인</div>
+    <div class="content">
+      <div class="text-title">← 나의 제보 내역</div>
+      
+      <div class="box" style="flex-direction:column; align-items:flex-start; text-align:left;">
+        <div class="row" style="width:100%; justify-content:space-between;">
+          <span style="font-weight:bold;">점자블록 파손</span>
+          <span class="box" style="padding:2px 6px; font-size:10px; background:#4caf50; color:#fff;">처리완료</span>
+        </div>
+        <div class="text-small" style="margin-top:8px;">2026.04.01 | 연제구 중앙대로 1000</div>
+      </div>
+      
+      <div class="box" style="flex-direction:column; align-items:flex-start; text-align:left;">
+        <div class="row" style="width:100%; justify-content:space-between;">
+          <span style="font-weight:bold;">불법 주정차 (경사로)</span>
+          <span class="box" style="padding:2px 6px; font-size:10px; background:#ff9800; color:#fff;">접수됨</span>
+        </div>
+        <div class="text-small" style="margin-top:8px;">2026.04.10 | 서면역 2번 출구 앞</div>
+      </div>
+
+      <div class="spacer"></div>
+      </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 제보 상태 조회<br>
+      <strong>이동:</strong> -
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-013 마이페이지</div>
+    <div class="content">
+      <div class="box" style="padding:20px; flex-direction:column; background:#fff;">
+        <div class="box logo" style="height:60px; width:60px;">프사</div>
+        <div class="text-title" style="margin-top:10px;">김부산 님</div>
+        <div class="text-small">시각장애 / 경증</div>
+        <div class="btn" style="margin-top:10px; font-size:12px; padding:6px 12px;">로그아웃</div>
+      </div>
+      
+      <div class="box text-left" style="justify-content:flex-start; margin-top:10px;">⭐ 저장한 장소 관리</div>
+      <div class="box text-left" style="justify-content:flex-start;">📣 나의 제보 내역</div>
+      <div class="box text-left" style="justify-content:flex-start;">✏️ 내 정보 수정</div>
+      <div class="box text-left" style="justify-content:flex-start;">⚙️ 앱 설정</div>
+      
+      <div class="spacer"></div>
+      <div class="text-small" style="text-align:center;">앱 버전 1.0.0 (최신)</div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 개인화 메뉴 탐색<br>
+      <strong>이동:</strong> 설정, 제보내역 등 연결
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-014 저장한 장소 관리</div>
+    <div class="content">
+      <div class="text-title">← 저장한 장소</div>
+      
+      <div class="box" style="flex-direction:column; align-items:flex-start; background:#fff;">
+        <div class="row" style="width:100%; justify-content:space-between;">
+          <div class="text-title" style="font-size:16px;">부산장애인종합복지관</div>
+          <div class="text-small" style="cursor:pointer;">삭제 ✕</div>
+        </div>
+        <div class="text-small">연제구 연제로 24</div>
+        <div class="btn primary" style="width:100%; margin-top:10px; box-sizing:border-box;">이곳으로 길안내</div>
+      </div>
+
+      <div class="box" style="flex-direction:column; align-items:flex-start; background:#fff;">
+        <div class="row" style="width:100%; justify-content:space-between;">
+          <div class="text-title" style="font-size:16px;">센텀시티역</div>
+          <div class="text-small" style="cursor:pointer;">삭제 ✕</div>
+        </div>
+        <div class="text-small">해운대구 센텀남대로 지하 76</div>
+        <div class="btn primary" style="width:100%; margin-top:10px; box-sizing:border-box;">이곳으로 길안내</div>
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 북마크 확인, 바로 내비 시작<br>
+      <strong>이동:</strong> SCR-009 길안내
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-015 설정</div>
+    <div class="content">
+      <div class="text-title">← 앱 설정</div>
+      
+      <div class="box" style="justify-content:space-between; background:#fff;">
+        <span style="font-weight:bold;">시각장애인 특화 모드</span>
+        <div style="width:40px; height:20px; background:var(--border-color); border-radius:10px; position:relative;">
+          <div style="width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; right:2px; top:2px;"></div>
+        </div>
+      </div>
+      
+      <div class="box" style="justify-content:space-between; background:#fff;">
+        <span style="font-weight:bold;">상시 음성 안내</span>
+        <div style="width:40px; height:20px; background:var(--border-color); border-radius:10px; position:relative;">
+          <div style="width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; right:2px; top:2px;"></div>
+        </div>
+      </div>
+
+      <div class="box" style="justify-content:space-between; background:#fff;">
+        <span>푸시 알림 수신</span>
+        <div style="width:40px; height:20px; background:#ccc; border-radius:10px; position:relative;">
+          <div style="width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; left:2px; top:2px;"></div>
+        </div>
+      </div>
+      
+      <div class="box" style="justify-content:space-between; background:#fff;">
+        <span>데이터 수집 동의</span>
+        <span>동의함 &gt;</span>
+      </div>
+
+      <div class="spacer"></div>
+      <div class="text-small" style="text-align:center;">개인정보처리방침</div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 전맹 모드/음성 설정<br>
+      <strong>이동:</strong> 토글 시 UI 전체 변경 (SCR-016)
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-016 시각장애인 모드 메인</div>
+    <div class="content" style="gap:16px; justify-content:center;">
+      <div class="text-large" style="text-align:left;">현재 위치:<br>부산시청 앞</div>
+      
+      <div class="btn huge primary" style="flex:1.5;">
+        🎙️ 음성으로 길찾기 (대화형 AI)
+        <span class="annotation">[주석: 시각장애인 전용 - 노란색 계열 강조 영역]</span>
+      </div>
+      
+      <div class="btn huge" style="flex:1;">
+        주변 장소 목록 듣기
+      </div>
+      
+      <div class="row" style="height:80px;">
+        <div class="btn" style="flex:1; height:100%; display:flex; align-items:center; justify-content:center; font-size:18px;">마이페이지</div>
+        <div class="btn" style="flex:1; height:100%; display:flex; align-items:center; justify-content:center; font-size:18px; border-color:#d32f2f;">긴급 호출</div>
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> 리스트/음성 중심 탐색<br>
+      <strong>이동:</strong> SCR-017 LLM 음성대화
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="scr-label">SCR-017 시각장애인 모드 LLM 대화 UI</div>
+    <div class="content">
+      <div class="text-title" style="font-size:24px;">← 이전</div>
+      
+      <div class="spacer"></div>
+      
+      <div class="box dashed" style="height:100px; display:flex; align-items:center; font-size:30px;">
+        ılıılıllılıılı
+      </div>
+      
+      <div class="text-large" style="background:#fff; padding:16px; border:3px solid var(--border-color); border-radius:12px;">
+        "부산역으로 가는<br>가장 안전한 길을<br>안내할까요?"
+      </div>
+      
+      <div class="spacer"></div>
+      
+      <div class="btn huge primary" style="padding: 40px 10px;">
+        🎙️ 네, 안내 시작 (말하기)
+        <span class="annotation">[주석: 시각장애인 전용 - 노란색 계열 강조 영역]</span>
+      </div>
+      
+      <div class="btn" style="font-size:20px; padding:20px;">
+        아니오 (취소)
+      </div>
+    </div>
+    <div class="footer-memo">
+      <strong>주요 액션:</strong> LLM 기반 음성 안내 인터랙션<br>
+      <strong>이동:</strong> SCR-010 길안내 진행
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

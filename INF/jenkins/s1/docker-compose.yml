@@ -1,0 +1,64 @@
+name: e102-jenkins
+
+services:
+  jenkins:
+    build:
+      context: ..
+      dockerfile: s1/Dockerfile
+      args:
+        DOCKER_GID: ${DOCKER_GID:-999}
+    image: e102-jenkins:lts-jdk21-docker
+    container_name: e102-jenkins
+    restart: unless-stopped
+    env_file:
+      - path: ./.env.jenkins
+        required: false
+    environment:
+      TZ: Asia/Seoul
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false -Duser.timezone=Asia/Seoul
+      JENKINS_OPTS: --httpPort=8080
+      JENKINS_FORCE_LOCAL_ADMIN: ${JENKINS_FORCE_LOCAL_ADMIN:-false}
+    ports:
+      - "127.0.0.1:${JENKINS_HTTP_PORT:-8081}:8080"
+      - "127.0.0.1:${JENKINS_AGENT_PORT:-50000}:50000"
+    volumes:
+      - jenkins-home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ubuntu/e102/prod-secrets:/var/jenkins_home/prod-secrets:ro
+      - /home/ubuntu/e102/docker-compose.s1.override.yml:/opt/e102-server/docker-compose.s1.override.yml:ro
+      - /home/ubuntu/e102/.jenkins-webhook-secret:/opt/e102-server/jenkins-webhook-secret:ro
+      - /home/ubuntu/e102/runtime-state:/opt/e102-server/runtime-state
+    networks:
+      - jenkins
+      - ops-stack
+
+  jenkins-proxy:
+    image: nginx:1.27-alpine
+    container_name: e102-jenkins-proxy
+    restart: unless-stopped
+    depends_on:
+      - jenkins
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
+      - /opt/httpd/cert/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - jenkins
+      - dev-stack
+      - ops-stack
+
+volumes:
+  jenkins-home:
+
+networks:
+  jenkins:
+  dev-stack:
+    external: true
+    name: s14p31e102-dev_default
+  ops-stack:
+    external: true
+    name: e102-ops

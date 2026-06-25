@@ -1,0 +1,57 @@
+{
+  "sprint_name": "template-adoption",
+  "updated_at": "2026-04-26",
+  "summary": {
+    "planned": 6,
+    "completed": 1,
+    "in_progress": 0,
+    "blocked": 0,
+    "progress_percentage": 16.7,
+    "quality_adjusted_progress": 15.9,
+    "confidence_score": 0.95
+  },
+  "items": [
+    {
+      "id": "HARNESS-1",
+      "title": "Customize project identity",
+      "status": "pending",
+      "stage": "Think",
+      "verification": "Update .ai/PROJECT.md and rerun verify"
+    },
+    {
+      "id": "HARNESS-2",
+      "title": "Customize smoke, release, and rollback commands",
+      "status": "pending",
+      "stage": "Plan",
+      "verification": "Replace TODO(project) command slots"
+    },
+    {
+      "id": "HARNESS-3",
+      "title": "Enable guard hooks if the host runtime needs them",
+      "status": "pending",
+      "stage": "Build",
+      "verification": "Wire selected guard scripts into host-specific hooks"
+    },
+    {
+      "id": "HARNESS-4",
+      "title": "Record real metrics after initial project use",
+      "status": "pending",
+      "stage": "Test",
+      "verification": "Update .ai/EVALS/metrics.json"
+    },
+    {
+      "id": "HARNESS-5",
+      "title": "Capture first durable learnings from live usage",
+      "status": "pending",
+      "stage": "Reflect",
+      "verification": "Promote at least one real pattern into MEMORY, EVAL, SKILL, or ADR"
+    },
+    {
+      "id": "HARNESS-6",
+      "title": "Harden verification gates and local-only file policy",
+      "status": "completed",
+      "stage": "Test",
+      "verification": "Run .ai/scripts/check-code-validation.sh and .ai/scripts/verify.sh"
+    }
+  ]
+}

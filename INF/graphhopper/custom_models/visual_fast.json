@@ -1,0 +1,71 @@
+{
+  "priority": [
+    {
+      "if": "walk_access == NO",
+      "multiply_by": "0"
+    },
+    {
+      "if": "walk_access == UNKNOWN",
+      "multiply_by": "0.90"
+    },
+    {
+      "if": "stairs_state == YES",
+      "multiply_by": "0.75"
+    },
+    {
+      "if": "stairs_state == UNKNOWN",
+      "multiply_by": "0.90"
+    },
+    {
+      "if": "avg_slope_percent >= 3.0 && avg_slope_percent < 5.56",
+      "multiply_by": "0.90"
+    },
+    {
+      "if": "avg_slope_percent >= 5.56 && avg_slope_percent < 8.33",
+      "multiply_by": "0.75"
+    },
+    {
+      "if": "avg_slope_percent >= 8.33",
+      "multiply_by": "0.60"
+    },
+    {
+      "if": "width_state == NARROW",
+      "multiply_by": "0.90"
+    },
+    {
+      "if": "surface_state == UNPAVED",
+      "multiply_by": "0.85"
+    },
+    {
+      "if": "surface_state == UNKNOWN",
+      "multiply_by": "0.95"
+    },
+    {
+      "if": "segment_type == CROSS_WALK && signal_state == NO",
+      "multiply_by": "0.90"
+    },
+    {
+      "if": "segment_type == CROSS_WALK && signal_state == UNKNOWN",
+      "multiply_by": "0.95"
+    },
+    {
+      "if": "braille_block_state == YES",
+      "multiply_by": "1.05"
+    },
+    {
+      "if": "braille_block_state == NO",
+      "multiply_by": "0.95"
+    },
+    {
+      "if": "braille_block_state == UNKNOWN",
+      "multiply_by": "0.98"
+    }
+  ],
+  "speed": [
+    {
+      "if": "true",
+      "limit_to": "2.88"
+    }
+  ],
+  "distance_influence": 90
+}

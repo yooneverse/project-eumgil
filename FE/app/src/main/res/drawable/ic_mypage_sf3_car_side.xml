@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MyPage SF Symbols 3 concept: car.side. Custom Android vector, not copied from SF Symbols. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M3.5,14.5V12.8C3.5,11.75 4.25,10.9 5.25,10.7L6.35,7.75C6.7,6.7 7.6,6 8.7,6H15.3C16.4,6 17.3,6.7 17.65,7.75L18.75,10.7C19.75,10.9 20.5,11.75 20.5,12.8V14.5C20.5,15.35 19.85,16 19,16H5C4.15,16 3.5,15.35 3.5,14.5Z"
+        android:strokeColor="#000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1.5" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M6.1,10.8H17.9"
+        android:strokeColor="#000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1.5" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M7.5,18C8.33,18 9,17.33 9,16.5C9,15.67 8.33,15 7.5,15C6.67,15 6,15.67 6,16.5C6,17.33 6.67,18 7.5,18Z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M16.5,18C17.33,18 18,17.33 18,16.5C18,15.67 17.33,15 16.5,15C15.67,15 15,15.67 15,16.5C15,17.33 15.67,18 16.5,18Z" />
+</vector>

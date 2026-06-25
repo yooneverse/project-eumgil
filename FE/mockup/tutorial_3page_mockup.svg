@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1320" viewBox="0 0 1920 1320">
+  <defs>
+    <style>
+      .font { font-family: Pretendard, "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+      .title { font-size: 54px; font-weight: 900; fill: #081946; letter-spacing: 0; }
+      .subtitle { font-size: 24px; font-weight: 700; fill: #526075; }
+      .stepCircle { fill: #1463f3; }
+      .stepNum { font-size: 24px; font-weight: 900; fill: #fff; }
+      .stepTitle { font-size: 25px; font-weight: 900; fill: #1463f3; }
+      .stepDesc { font-size: 15px; font-weight: 700; fill: #667085; }
+      .phoneOuter { fill: #111318; filter: drop-shadow(0 24px 32px rgba(8, 25, 70, 0.22)); }
+      .screen { fill: #fff; }
+      .barText { font-size: 14px; font-weight: 800; fill: #101828; }
+      .appTitle { font-size: 20px; font-weight: 900; fill: #101828; }
+      .copyTitle { font-size: 26px; font-weight: 900; fill: #081946; }
+      .copyBody { font-size: 16px; font-weight: 700; fill: #526075; }
+      .small { font-size: 13px; font-weight: 800; fill: #344054; }
+      .muted { fill: #667085; }
+      .blue { fill: #1463f3; }
+      .navy { fill: #081946; }
+      .chipText { font-size: 12px; font-weight: 900; fill: #1463f3; }
+      .buttonText { font-size: 20px; font-weight: 900; fill: #fff; }
+    </style>
+    <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0V34" fill="none" stroke="#cfe0f8" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="screenBg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f8fbff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1320" fill="#f7f9fc"/>
+  <text x="960" y="70" text-anchor="middle" class="font title">3페이지 사용법 튜토리얼 목업</text>
+  <text x="960" y="112" text-anchor="middle" class="font subtitle">앱 소개보다 실제 사용 흐름에 집중해 목적지 검색부터 안내와 다시보기까지 짧게 안내합니다.</text>
+
+  <!-- Step captions -->
+  <g transform="translate(120 145)">
+    <circle cx="28" cy="28" r="28" class="stepCircle"/>
+    <text x="28" y="37" text-anchor="middle" class="font stepNum">01</text>
+    <text x="82" y="25" class="font stepTitle">목적지 찾기</text>
+    <text x="82" y="52" class="font stepDesc">검색창과 접근성 필터로 가고 싶은 장소를 찾습니다.</text>
+  </g>
+  <g transform="translate(744 145)">
+    <circle cx="28" cy="28" r="28" class="stepCircle"/>
+    <text x="28" y="37" text-anchor="middle" class="font stepNum">02</text>
+    <text x="82" y="25" class="font stepTitle">경로 비교하기</text>
+    <text x="82" y="52" class="font stepDesc">안전한 길과 최단거리의 시간, 거리, 위험도를 비교합니다.</text>
+  </g>
+  <g transform="translate(1368 145)">
+    <circle cx="28" cy="28" r="28" class="stepCircle"/>
+    <text x="28" y="37" text-anchor="middle" class="font stepNum">03</text>
+    <text x="82" y="25" class="font stepTitle">안내·저장·제보</text>
+    <text x="82" y="52" class="font stepDesc">길안내를 시작하고, 장소와 불편한 구간을 관리합니다.</text>
+  </g>
+
+  <!-- Phone 1 -->
+  <g transform="translate(90 220)">
+    <rect width="430" height="930" rx="48" class="phoneOuter"/>
+    <rect x="14" y="14" width="402" height="902" rx="38" class="screen"/>
+    <circle cx="215" cy="29" r="7" fill="#101828"/>
+    <text x="42" y="56" class="font barText">12:30</text>
+    <text x="335" y="56" class="font barText">▾ 100%</text>
+    <line x1="14" y1="78" x2="416" y2="78" stroke="#edf2f7"/>
+    <text x="42" y="116" font-size="32" fill="#101828" class="font">‹</text>
+    <text x="215" y="112" text-anchor="middle" class="font appTitle">목적지 찾기</text>
+    <rect x="34" y="140" width="362" height="332" rx="24" fill="url(#grid)" stroke="#d7e5ff"/>
+    <path d="M310 118 C370 220 285 310 370 455" fill="none" stroke="#d4ecff" stroke-width="46" opacity="0.9"/>
+    <rect x="54" y="162" width="322" height="72" rx="18" fill="#fff" stroke="#dce6f5"/>
+    <circle cx="78" cy="188" r="10" fill="none" stroke="#1463f3" stroke-width="4"/>
+    <text x="98" y="194" class="font" font-size="16" font-weight="900" fill="#0f172a">어디로 이동할까요?</text>
+    <text x="78" y="217" class="font" font-size="12" font-weight="700" fill="#667085">장소명 또는 주소로 검색</text>
+    <rect x="54" y="252" width="88" height="34" rx="12" fill="#fff" stroke="#dce6f5"/>
+    <text x="98" y="274" text-anchor="middle" class="font chipText">엘리베이터</text>
+    <rect x="150" y="252" width="76" height="34" rx="12" fill="#fff" stroke="#dce6f5"/>
+    <text x="188" y="274" text-anchor="middle" class="font chipText">화장실</text>
+    <rect x="234" y="252" width="78" height="34" rx="12" fill="#fff" stroke="#dce6f5"/>
+    <text x="273" y="274" text-anchor="middle" class="font chipText">점자블록</text>
+    <g transform="translate(86 342)">
+      <path d="M0 -20 A22 22 0 1 1 -1 -20 L0 16 Z" fill="#1463f3" transform="rotate(-45)"/>
+      <text x="0" y="5" text-anchor="middle" class="font" font-size="13" font-weight="900" fill="#fff">현</text>
+    </g>
+    <g transform="translate(324 318)">
+      <path d="M0 -20 A22 22 0 1 1 -1 -20 L0 16 Z" fill="#18a058" transform="rotate(-45)"/>
+      <text x="0" y="5" text-anchor="middle" class="font" font-size="13" font-weight="900" fill="#fff">편</text>
+    </g>
+    <g transform="translate(206 418)">
+      <path d="M0 -20 A22 22 0 1 1 -1 -20 L0 16 Z" fill="#e51b2b" transform="rotate(-45)"/>
+      <text x="0" y="5" text-anchor="middle" class="font" font-size="13" font-weight="900" fill="#fff">목</text>
+    </g>
+    <text x="38" y="524" class="font copyTitle">가고 싶은 장소를 검색해요</text>
+    <text x="38" y="558" class="font copyBody">지도 상단 검색창에서 목적지를 찾고,</text>
+    <text x="38" y="584" class="font copyBody">주변 접근성 정보를 함께 확인합니다.</text>
+    <circle cx="46" cy="626" r="4" fill="#1463f3"/>
+    <text x="62" y="631" class="font small">현재 위치 기준으로 주변 시설을 확인</text>
+    <circle cx="46" cy="660" r="4" fill="#1463f3"/>
+    <text x="62" y="665" class="font small">접근성 필터로 필요한 정보만 보기</text>
+    <rect x="190" y="790" width="22" height="8" rx="4" fill="#1463f3"/>
+    <circle cx="224" cy="794" r="4" fill="#c9d6ea"/>
+    <circle cx="242" cy="794" r="4" fill="#c9d6ea"/>
+    <rect x="34" y="816" width="362" height="58" rx="15" fill="#1463f3"/>
+    <text x="215" y="852" text-anchor="middle" class="font buttonText">다음</text>
+    <line x1="14" y1="890" x2="416" y2="890" stroke="#eef2f7"/>
+    <text x="110" y="911" class="font" font-size="19" fill="#8b95a5">|||</text>
+    <text x="213" y="911" class="font" font-size="19" fill="#8b95a5">□</text>
+    <text x="318" y="911" class="font" font-size="23" fill="#8b95a5">‹</text>
+  </g>
+
+  <!-- Phone 2 -->
+  <g transform="translate(745 220)">
+    <rect width="430" height="930" rx="48" class="phoneOuter"/>
+    <rect x="14" y="14" width="402" height="902" rx="38" class="screen"/>
+    <circle cx="215" cy="29" r="7" fill="#101828"/>
+    <text x="42" y="56" class="font barText">12:30</text>
+    <text x="335" y="56" class="font barText">▾ 100%</text>
+    <line x1="14" y1="78" x2="416" y2="78" stroke="#edf2f7"/>
+    <text x="42" y="116" font-size="32" fill="#101828" class="font">‹</text>
+    <text x="215" y="112" text-anchor="middle" class="font appTitle">경로 비교하기</text>
+    <rect x="34" y="140" width="362" height="332" rx="24" fill="#fff" stroke="#d7e5ff"/>
+    <rect x="52" y="158" width="326" height="68" rx="18" fill="#fff" stroke="#dce6f5"/>
+    <line x1="160" y1="168" x2="160" y2="216" stroke="#e7edf6"/>
+    <line x1="270" y1="168" x2="270" y2="216" stroke="#e7edf6"/>
+    <text x="106" y="188" text-anchor="middle" class="font" font-size="24" font-weight="900" fill="#081946">24분</text>
+    <text x="106" y="209" text-anchor="middle" class="font" font-size="11" font-weight="800" fill="#667085">예상 시간</text>
+    <text x="215" y="188" text-anchor="middle" class="font" font-size="24" font-weight="900" fill="#081946">1.8km</text>
+    <text x="215" y="209" text-anchor="middle" class="font" font-size="11" font-weight="800" fill="#667085">이동 거리</text>
+    <text x="324" y="188" text-anchor="middle" class="font" font-size="24" font-weight="900" fill="#081946">낮음</text>
+    <text x="324" y="209" text-anchor="middle" class="font" font-size="11" font-weight="800" fill="#667085">위험도</text>
+    <rect x="52" y="244" width="326" height="126" rx="18" fill="#f8fbff" stroke="#1463f3" stroke-width="2"/>
+    <text x="72" y="274" class="font" font-size="17" font-weight="900" fill="#081946">안전한 길</text>
+    <rect x="292" y="254" width="62" height="28" rx="14" fill="#e8f1ff"/>
+    <text x="323" y="273" text-anchor="middle" class="font chipText">추천</text>
+    <rect x="72" y="294" width="70" height="28" rx="10" fill="#fff" stroke="#dce6f5"/>
+    <text x="107" y="313" text-anchor="middle" class="font chipText">경사 낮음</text>
+    <rect x="150" y="294" width="70" height="28" rx="10" fill="#fff" stroke="#dce6f5"/>
+    <text x="185" y="313" text-anchor="middle" class="font chipText">신호 횡단</text>
+    <rect x="228" y="294" width="70" height="28" rx="10" fill="#fff" stroke="#dce6f5"/>
+    <text x="263" y="313" text-anchor="middle" class="font chipText">점자블록</text>
+    <line x1="88" y1="338" x2="88" y2="358" stroke="#1463f3" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="88" cy="332" r="13" fill="#18a058"/>
+    <circle cx="88" cy="364" r="13" fill="#1463f3"/>
+    <text x="114" y="337" class="font small">부산시청 출발</text>
+    <text x="114" y="369" class="font small">목적지까지 안내</text>
+    <rect x="52" y="384" width="326" height="66" rx="18" fill="#fff" stroke="#dce6f5"/>
+    <text x="72" y="415" class="font" font-size="17" font-weight="900" fill="#081946">최단거리</text>
+    <rect x="292" y="397" width="62" height="28" rx="14" fill="#e8f1ff"/>
+    <text x="323" y="416" text-anchor="middle" class="font chipText">빠름</text>
+    <text x="38" y="524" class="font copyTitle">거리만 보지 않고 비교해요</text>
+    <text x="38" y="558" class="font copyBody">목적지를 선택하면 안전한 길과</text>
+    <text x="38" y="584" class="font copyBody">최단거리 경로를 비교합니다.</text>
+    <circle cx="46" cy="626" r="4" fill="#1463f3"/>
+    <text x="62" y="631" class="font small">예상 시간, 거리, 위험도 확인</text>
+    <circle cx="46" cy="660" r="4" fill="#1463f3"/>
+    <text x="62" y="665" class="font small">경사, 단차, 횡단보도 등 주의 정보 확인</text>
+    <circle cx="188" cy="794" r="4" fill="#c9d6ea"/>
+    <rect x="204" y="790" width="22" height="8" rx="4" fill="#1463f3"/>
+    <circle cx="238" cy="794" r="4" fill="#c9d6ea"/>
+    <rect x="34" y="816" width="362" height="58" rx="15" fill="#1463f3"/>
+    <text x="215" y="852" text-anchor="middle" class="font buttonText">다음</text>
+    <line x1="14" y1="890" x2="416" y2="890" stroke="#eef2f7"/>
+    <text x="110" y="911" class="font" font-size="19" fill="#8b95a5">|||</text>
+    <text x="213" y="911" class="font" font-size="19" fill="#8b95a5">□</text>
+    <text x="318" y="911" class="font" font-size="23" fill="#8b95a5">‹</text>
+  </g>
+
+  <!-- Phone 3 -->
+  <g transform="translate(1400 220)">
+    <rect width="430" height="930" rx="48" class="phoneOuter"/>
+    <rect x="14" y="14" width="402" height="902" rx="38" class="screen"/>
+    <circle cx="215" cy="29" r="7" fill="#101828"/>
+    <text x="42" y="56" class="font barText">12:30</text>
+    <text x="335" y="56" class="font barText">▾ 100%</text>
+    <line x1="14" y1="78" x2="416" y2="78" stroke="#edf2f7"/>
+    <text x="42" y="116" font-size="32" fill="#101828" class="font">‹</text>
+    <text x="215" y="112" text-anchor="middle" class="font appTitle">안내받기</text>
+    <rect x="34" y="140" width="362" height="332" rx="24" fill="url(#grid)" stroke="#d7e5ff"/>
+    <rect x="54" y="160" width="322" height="126" rx="18" fill="#1463f3"/>
+    <text x="78" y="202" class="font" font-size="23" font-weight="900" fill="#fff">120m 앞 횡단보도를</text>
+    <text x="78" y="235" class="font" font-size="23" font-weight="900" fill="#fff">건너세요</text>
+    <text x="78" y="262" class="font" font-size="12" font-weight="800" fill="#dce9ff">안내 중에도 상세 정보를 확인할 수 있어요.</text>
+    <rect x="296" y="186" width="58" height="70" rx="14" fill="#fff"/>
+    <text x="325" y="231" text-anchor="middle" class="font" font-size="30" font-weight="900" fill="#1463f3">♪</text>
+    <path d="M104 350 C150 300 210 360 248 308 S324 310 340 260" fill="none" stroke="#1463f3" stroke-width="8" stroke-dasharray="10 10" stroke-linecap="round"/>
+    <circle cx="218" cy="348" r="31" fill="#1463f3" stroke="#fff" stroke-width="7"/>
+    <text x="218" y="358" text-anchor="middle" class="font" font-size="25" font-weight="900" fill="#fff">↱</text>
+    <circle cx="94" cy="388" r="21" fill="#18a058"/>
+    <text x="94" y="395" text-anchor="middle" class="font" font-size="13" font-weight="900" fill="#fff">출</text>
+    <circle cx="338" cy="232" r="21" fill="#e51b2b"/>
+    <text x="338" y="239" text-anchor="middle" class="font" font-size="13" font-weight="900" fill="#fff">도</text>
+    <rect x="38" y="492" width="108" height="74" rx="18" fill="#fff" stroke="#dce6f5"/>
+    <text x="92" y="523" text-anchor="middle" class="font" font-size="25" font-weight="900" fill="#1463f3">★</text>
+    <text x="92" y="548" text-anchor="middle" class="font small">저장</text>
+    <rect x="160" y="492" width="108" height="74" rx="18" fill="#fff" stroke="#dce6f5"/>
+    <text x="214" y="523" text-anchor="middle" class="font" font-size="25" font-weight="900" fill="#1463f3">!</text>
+    <text x="214" y="548" text-anchor="middle" class="font small">제보</text>
+    <rect x="282" y="492" width="108" height="74" rx="18" fill="#fff" stroke="#dce6f5"/>
+    <text x="336" y="523" text-anchor="middle" class="font" font-size="25" font-weight="900" fill="#1463f3">?</text>
+    <text x="336" y="548" text-anchor="middle" class="font small">도움말</text>
+    <text x="38" y="616" class="font copyTitle">필요한 기능을 다시 찾기 쉽게</text>
+    <text x="38" y="650" class="font copyBody">길안내를 받고, 자주 가는 장소는 저장하고,</text>
+    <text x="38" y="676" class="font copyBody">불편한 구간은 제보합니다.</text>
+    <circle cx="46" cy="718" r="4" fill="#1463f3"/>
+    <text x="62" y="723" class="font small">사용법은 MY &gt; 도움말에서 다시보기</text>
+    <circle cx="188" cy="794" r="4" fill="#c9d6ea"/>
+    <circle cx="206" cy="794" r="4" fill="#c9d6ea"/>
+    <rect x="222" y="790" width="22" height="8" rx="4" fill="#1463f3"/>
+    <rect x="34" y="816" width="362" height="58" rx="15" fill="#1463f3"/>
+    <text x="215" y="852" text-anchor="middle" class="font buttonText">시작하기</text>
+    <line x1="14" y1="890" x2="416" y2="890" stroke="#eef2f7"/>
+    <text x="110" y="911" class="font" font-size="19" fill="#8b95a5">|||</text>
+    <text x="213" y="911" class="font" font-size="19" fill="#8b95a5">□</text>
+    <text x="318" y="911" class="font" font-size="23" fill="#8b95a5">‹</text>
+  </g>
+</svg>

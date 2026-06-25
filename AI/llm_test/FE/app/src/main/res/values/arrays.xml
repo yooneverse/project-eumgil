@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="model_names">
+        <item>Gemini 2.5 Flash</item>
+        <item>Claude Haiku 4.5</item>
+        <item>GPT-5 mini</item>
+    </string-array>
+</resources>

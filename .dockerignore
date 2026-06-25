@@ -1,0 +1,11 @@
+# 루트 build context는 GraphHopper 이미지 빌드에서만 사용한다.
+# 로컬 데이터, env 파일, 관계없는 소스 트리가 build context에 들어가지 않게 제한한다.
+*
+!INF/
+!INF/graphhopper/
+!INF/graphhopper/Dockerfile
+!INF/graphhopper/config-local.yml
+!scripts/
+!scripts/docker/
+!scripts/docker/entrypoints/
+!scripts/docker/entrypoints/graphhopper.sh

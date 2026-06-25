@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="140" viewBox="0 0 120 140">
+  <title>도착지 저장 카드 아이콘 — 북마크 + 위치 핀</title>
+  <path d="M20 8h80a8 8 0 0 1 8 8v116l-48-32-48 32V16a8 8 0 0 1 8-8Z" fill="#000000"/>
+  <path d="M60 36c-12 0-22 10-22 22 0 16 22 36 22 36s22-20 22-36c0-12-10-22-22-22Z"
+        fill="none" stroke="#FFCC00" stroke-width="6"/>
+  <circle cx="60" cy="58" r="14" fill="#FFCC00"/>
+</svg>

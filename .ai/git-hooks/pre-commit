@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+export LEFTHOOK_CONFIG="${LEFTHOOK_CONFIG:-.ai/lefthook.yml}"
+exec lefthook run pre-commit "$@"

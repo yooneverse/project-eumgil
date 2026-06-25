@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산이음길 온보딩 전체 목업</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f5f5f7;
+            padding: 40px;
+            color: #333;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            color: #0b1e42;
+            margin-bottom: 8px;
+        }
+
+        .header-title p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .mockup-container {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            justify-content: flex-start;
+        }
+
+        /* 각 단계별 래퍼 */
+        .step-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 280px;
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: 16px;
+            height: 60px;
+        }
+
+        .step-badge {
+            display: inline-block;
+            background-color: #0047FF;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0047FF;
+        }
+
+        .step-desc {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* 모바일 프레임 */
+        .mobile-frame {
+            width: 280px;
+            height: 580px;
+            background-color: white;
+            border-radius: 32px;
+            border: 8px solid #333;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .status-bar {
+            height: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* 공통 UI 요소 */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            margin-bottom: 24px;
+        }
+        
+        .progress-active {
+            height: 100%;
+            background-color: #0047FF;
+            border-radius: 2px;
+        }
+
+        .title-text {
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .sub-text {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .btn-bottom {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .btn-primary {
+            background-color: #0047FF;
+            color: white;
+        }
+
+        /* Screen 1: Splash */
+        .splash-logo {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .splash-logo img { width: 80px; margin-bottom: 16px; }
+        .splash-title { font-size: 24px; font-weight: bold; color: #0047FF; margin-bottom: 8px; }
+        .splash-desc { font-size: 12px; color: #666; text-align: center; }
+        
+        .login-btns { margin-top: auto; padding-bottom: 10px; }
+        .btn-login {
+            width: 100%; padding: 12px; border-radius: 8px; margin-bottom: 8px;
+            font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center;
+            border: 1px solid #ddd; cursor: pointer; gap: 8px;
+        }
+        .btn-google { background-color: white; color: #333; }
+        .btn-naver { background-color: #03C75A; color: white; border: none; }
+        .btn-kakao { background-color: #FEE500; color: #333; border: none; }
+
+        /* Screen 2 & 3: Cards & Lists */
+        .type-card {
+            border: 1px solid #ddd; border-radius: 12px; padding: 20px;
+            margin-bottom: 12px; display: flex; align-items: center; cursor: pointer;
+        }
+        .type-card.active { background-color: #0b1e42; color: white; border: none; }
+        .type-icon { font-size: 32px; margin-right: 16px; width: 40px; text-align: center; }
+        .type-card.active .type-icon { color: #FEE500; }
+        .type-card:not(.active) .type-icon { color: #0047FF; }
+        .type-info h3 { font-size: 16px; margin-bottom: 4px; }
+        .type-info p { font-size: 11px; opacity: 0.8; }
+
+        .top-nav { display: flex; align-items: center; margin-bottom: 24px; gap: 12px; }
+        .list-item {
+            display: flex; align-items: center; padding: 16px;
+            border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px;
+        }
+        .list-icon { color: #0047FF; font-size: 20px; margin-right: 12px; width: 24px; text-align: center; }
+        .list-text { flex: 1; }
+        .list-text h4 { font-size: 14px; margin-bottom: 2px; }
+        .list-text p { font-size: 11px; color: #888; }
+        .list-arrow { color: #ccc; }
+
+        /* Screen 4: Terms */
+        .terms-box { border: 1px solid #eee; border-radius: 8px; padding: 16px; margin-bottom: 20px; background: #fafafa; }
+        .term-row { display: flex; align-items: center; margin-bottom: 14px; font-size: 12px; gap: 8px;}
+        .term-row:last-child { margin-bottom: 0; }
+        .term-row input { accent-color: #0047FF; width: 16px; height: 16px; }
+        .term-row .essential { color: #0047FF; font-weight: bold; }
+        .term-row .optional { color: #888; }
+        .term-row i { margin-left: auto; color: #ccc; }
+
+        /* Screen 5: Features */
+        .feature-item { display: flex; align-items: flex-start; margin-bottom: 20px; }
+        .feature-icon {
+            width: 40px; height: 40px; background: #eef2ff; color: #0047FF;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 18px; margin-right: 12px; flex-shrink: 0;
+        }
+        .feature-text h4 { font-size: 14px; margin-bottom: 4px; }
+        .feature-text p { font-size: 11px; color: #666; line-height: 1.4; }
+        
+        .dots { display: flex; justify-content: center; gap: 6px; margin: auto 0 16px 0; }
+        .dot { width: 6px; height: 6px; background: #ddd; border-radius: 50%; }
+        .dot.active { background: #0047FF; }
+    </style>
+</head>
+<body>
+
+    <div class="header-title">
+        <h1>부산이음길 온보딩 / 사용자 유형 선택</h1>
+        <p>Busan EumGil | 부산 지역 이동약자를 위한 맞춤형 길찾기 서비스</p>
+    </div>
+
+    <div class="mockup-container">
+        
+        <div class="step-wrapper">
+            <div class="step-header">
+                <span class="step-badge">01 스플래시 / 서비스 소개</span>
+                <p class="step-desc">부산이음길의 가치와<br>서비스 목적 및 기대를 소개합니다.</p>
+            </div>
+            <div class="mobile-frame">
+                <div class="status-bar"><span>12:33</span><span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> 80%</span></div>
+                <div class="content">
+                    <div class="splash-logo">
+                        <i class="fa-solid fa-map-location-dot" style="font-size: 48px; color:#0047FF; margin-bottom:12px;"></i>
+                        <div class="splash-title">부산이음길</div>
+                        <div class="splash-desc">부산 이동약자를 위한<br>맞춤형 길찾기 서비스</div>
+                        <img src="https://via.placeholder.com/200x100/ffffff/e0e0e0?text=Bridge+Illustration" style="width: 100%; margin-top: 40px; opacity: 0.5; border: none;" alt="배경일러스트">
+                    </div>
+                    <div class="login-btns">
+                        <button class="btn-login btn-google"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="14"> 구글로 로그인</button>
+                        <button class="btn-login btn-naver"><strong>N</strong> 네이버로 로그인</button>
+                        <button class="btn-login btn-kakao"><i class="fa-solid fa-comment"></i> 카카오로 로그인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-wrapper">
+            <div class="step-header">
+                <span class="step-badge">02 사용자 유형 선택</span>
+                <p class="step-desc">본인에게 해당하는 사용자 유형을<br>선택해주세요.</p>
+            </div>
+            <div class="mobile-frame">
+                <div class="status-bar"><span>12:33</span><span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> 80%</span></div>
+                <div class="content">
+                    <div class="progress-bar"><div class="progress-active" style="width: 33%;"></div></div>
+                    <div class="title-text">본인에게 해당하는<br>사용자 유형을 선택해주세요.</div>
+                    <div class="sub-text">이 선택은 다양한 콘텐츠에 반영돼요.</div>
+                    
+                    <div class="type-card active">
+                        <div class="type-icon"><i class="fa-solid fa-eye-slash"></i></div>
+                        <div class="type-info">
+                            <h3>저시력자</h3>
+                            <p>시각적 정보 확인이<br>어려운 분(시각장애 등)</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left:auto;"></i>
+                    </div>
+                    <div class="type-card">
+                        <div class="type-icon"><i class="fa-solid fa-wheelchair"></i></div>
+                        <div class="type-info">
+                            <h3>보행약자</h3>
+                            <p>임산부, 보행보조기구 등<br>보행에 도움이 필요한 분</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="margin-left:auto; color:#ccc;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-wrapper">
+            <div class="step-header">
+                <span class="step-badge">03 사용자 상태 설문</span>
+                <p class="step-desc">사용자 상태 특성에 필요한 서비스를<br>제공하기 위해 질문합니다.</p>
+            </div>
+            <div class="mobile-frame">
+                <div class="status-bar"><span>12:33</span><span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> 80%</span></div>
+                <div class="content">
+                    <div class="progress-bar"><div class="progress-active" style="width: 66%;"></div></div>
+                    <div class="top-nav">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span style="font-weight: bold; flex:1; text-align:center; margin-right:20px;">사용자 상태 설문</span>
+                    </div>
+                    <div class="title-text" style="text-align: center; font-size:16px;">본인에게 해당하는<br>사용자 상태를 선택해주세요.</div>
+                    <br>
+                    <div class="list-item">
+                        <div class="list-icon"><i class="fa-solid fa-wheelchair"></i></div>
+                        <div class="list-text">
+                            <h4 style="color: #0047FF;">휠체어 사용자 (전동)</h4>
+                            <p>전동 휠체어를 이용해요.</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right list-arrow"></i>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon"><i class="fa-solid fa-wheelchair"></i></div>
+                        <div class="list-text">
+                            <h4>휠체어 사용자 (수동)</h4>
+                            <p>수동 휠체어를 이용해요.</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right list-arrow"></i>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon"><i class="fa-solid fa-person-walking-with-cane"></i></div>
+                        <div class="list-text">
+                            <h4>기타 보행약자</h4>
+                            <p>지팡이, 보행보조기구 사용자나<br>임산부, 노인 등</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right list-arrow"></i>
+                    </div>
+                    <div style="text-align:center; font-size:10px; color:#999; margin-top:20px;">※ 선택은 언제든 변경할 수 있어요.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-wrapper">
+            <div class="step-header">
+                <span class="step-badge">04 약관 동의</span>
+                <p class="step-desc">서비스 이용을 위한 전적인<br>동의해주세요.</p>
+            </div>
+            <div class="mobile-frame">
+                <div class="status-bar"><span>12:33</span><span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> 80%</span></div>
+                <div class="content">
+                    <div class="progress-bar"><div class="progress-active" style="width: 80%;"></div></div>
+                    <div class="title-text">서비스 이용을 위한<br>약관에 동의해주세요.</div>
+                    
+                    <div class="terms-box" style="margin-top:20px;">
+                        <div class="term-row" style="font-weight:bold; font-size:14px;">
+                            <input type="checkbox"> 전체 동의
+                        </div>
+                    </div>
+                    
+                    <div class="terms-box" style="background: white; border: none; padding: 0;">
+                        <div class="term-row"><input type="checkbox"> <span><span class="essential">[필수]</span> 서비스 이용약관 및<br>개인정보처리방침(필수) 동의</span> <i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="term-row"><input type="checkbox"> <span><span class="essential">[필수]</span> 위치정보 수집·이용 동의</span> <i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="term-row"><input type="checkbox"> <span><span class="essential">[필수]</span> 민감정보 수집·이용 동의</span> <i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="term-row"><input type="checkbox"> <span><span class="optional">[선택]</span> 마케팅 정보 수신</span> <i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="term-row"><input type="checkbox"> <span><span class="optional">[선택]</span> 개인정보 국외이전 동의</span> <i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                    <button class="btn-bottom btn-primary">다음</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-wrapper">
+            <div class="step-header">
+                <span class="step-badge">05 서비스 소개</span>
+                <p class="step-desc">이동약자에 특화 맞춤 길찾기로<br>주요 기능을 안내합니다.</p>
+            </div>
+            <div class="mobile-frame">
+                <div class="status-bar"><span>12:33</span><span><i class="fa-solid fa-signal"></i> <i class="fa-solid fa-wifi"></i> 80%</span></div>
+                <div class="content">
+                    <div class="progress-bar"><div class="progress-active" style="width: 100%;"></div></div>
+                    <div class="title-text" style="font-size:16px;">부산이음길은<br>이동약자 맞춤형으로<br>특화된 길찾기를 지원합니다.</div>
+                    <br>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fa-solid fa-wheelchair"></i></div>
+                        <div class="feature-text">
+                            <h4>무장애 경로 안내</h4>
+                            <p>계단, 경사로, 엘리베이터<br>등을 고려한 경로를 제공.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fa-solid fa-volume-high"></i></div>
+                        <div class="feature-text">
+                            <h4>음성 안내 (TTS)</h4>
+                            <p>이동 중 불편함이 없도록<br>음성 안내를 지원해요.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fa-solid fa-map-pin"></i></div>
+                        <div class="feature-text">
+                            <h4>시설 검색과 정보 확인</h4>
+                            <p>주변 편의시설 및 접근성<br>정보를 확인하세요.</p>
+                        </div>
+                    </div>
+
+                    <div class="dots">
+                        <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+                    </div>
+                    <button class="btn-bottom btn-primary">다음</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

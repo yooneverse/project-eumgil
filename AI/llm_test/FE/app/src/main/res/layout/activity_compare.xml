@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@android:color/background_light">
+
+    <!-- 타이틀 -->
+    <TextView
+        android:id="@+id/tvCompareTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="LLM 비교 분석"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:gravity="center"/>
+
+    <!-- 인식된 텍스트 -->
+    <TextView
+        android:id="@+id/tvRecognizedText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="마이크 버튼을 눌러 음성 입력을 시작하세요"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:padding="12dp"
+        android:background="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/tvCompareTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"/>
+
+    <!-- 상태 텍스트 -->
+    <TextView
+        android:id="@+id/tvCompareStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="12sp"
+        android:textColor="#FF5722"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/tvRecognizedText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"/>
+
+    <!-- 결과 카드 스크롤 영역 -->
+    <ScrollView
+        android:id="@+id/scrollCompareResults"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tvCompareStatus"
+        app:layout_constraintBottom_toTopOf="@id/btnStartCompare"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp">
+
+        <LinearLayout
+            android:id="@+id/layoutResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+    </ScrollView>
+
+    <!-- STT + 비교 시작 버튼 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartCompare"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:text="🎙️  음성 입력 후 4개 LLM 비교 시작"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

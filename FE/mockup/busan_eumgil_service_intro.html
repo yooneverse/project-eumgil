@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>부산 이음길 서비스 소개</title>
+    <style>
+      :root {
+        --bg: #f4efe6;
+        --paper: rgba(255, 250, 242, 0.78);
+        --paper-strong: rgba(255, 248, 239, 0.94);
+        --ink: #18242f;
+        --muted: #52606f;
+        --line: rgba(24, 36, 47, 0.12);
+        --sea: #0f766e;
+        --sea-soft: #89d2c9;
+        --sand: #d97706;
+        --sand-soft: #f6d6a3;
+        --sky: #b6d8f7;
+        --shadow: 0 20px 50px rgba(24, 36, 47, 0.12);
+        --radius-xl: 28px;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --max: 1120px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(182, 216, 247, 0.9), transparent 28%),
+          radial-gradient(circle at 90% 18%, rgba(137, 210, 201, 0.7), transparent 20%),
+          linear-gradient(180deg, #fbf7f0 0%, #f4efe6 56%, #efe7da 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(24, 36, 47, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(24, 36, 47, 0.025) 1px, transparent 1px);
+        background-size: 28px 28px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.65), transparent 90%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        overflow: clip;
+      }
+
+      .section {
+        width: min(calc(100% - 40px), var(--max));
+        margin: 0 auto;
+      }
+
+      .hero {
+        min-height: 100vh;
+        display: grid;
+        align-items: center;
+        padding: 48px 0 72px;
+      }
+
+      .hero__shell {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 28px;
+        align-items: stretch;
+      }
+
+      .hero__copy,
+      .hero__visual,
+      .panel {
+        border: 1px solid var(--line);
+        background: var(--paper);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
+      }
+
+      .hero__copy {
+        border-radius: 36px;
+        padding: 40px;
+        position: relative;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(15, 118, 110, 0.09);
+        color: var(--sea);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 22px 0 18px;
+        font-size: clamp(42px, 7vw, 84px);
+        line-height: 0.96;
+        letter-spacing: -0.04em;
+      }
+
+      .hero__lede {
+        margin: 0;
+        max-width: 560px;
+        font-size: clamp(17px, 2vw, 22px);
+        line-height: 1.7;
+        color: var(--muted);
+      }
+
+      .hero__metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 30px;
+      }
+
+      .metric {
+        padding: 18px 18px 16px;
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.56);
+        border: 1px solid rgba(24, 36, 47, 0.08);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 28px;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .hero__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        padding: 0 22px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-weight: 700;
+        transition:
+          transform 180ms ease,
+          background-color 180ms ease,
+          border-color 180ms ease,
+          color 180ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button--primary {
+        background: var(--ink);
+        color: #fff;
+      }
+
+      .button--secondary {
+        border-color: rgba(24, 36, 47, 0.12);
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .hero__visual {
+        border-radius: 34px;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero__visual::before,
+      .hero__visual::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(6px);
+      }
+
+      .hero__visual::before {
+        width: 180px;
+        height: 180px;
+        top: -36px;
+        right: -36px;
+        background: rgba(182, 216, 247, 0.8);
+      }
+
+      .hero__visual::after {
+        width: 160px;
+        height: 160px;
+        bottom: -48px;
+        left: -32px;
+        background: rgba(246, 214, 163, 0.9);
+      }
+
+      .map-card {
+        height: 100%;
+        min-height: 540px;
+        border-radius: 28px;
+        background:
+          linear-gradient(140deg, rgba(255, 255, 255, 0.78), rgba(255, 249, 241, 0.68)),
+          linear-gradient(180deg, rgba(182, 216, 247, 0.36), rgba(137, 210, 201, 0.12));
+        border: 1px solid rgba(24, 36, 47, 0.08);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .map-card__grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(24, 36, 47, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(24, 36, 47, 0.04) 1px, transparent 1px);
+        background-size: 54px 54px;
+      }
+
+      .route-line {
+        position: absolute;
+        inset: 14% 10% 14% 12%;
+      }
+
+      .route-line svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      .route-line path {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .route-line .route-line__base {
+        stroke: rgba(24, 36, 47, 0.08);
+        stroke-width: 18;
+      }
+
+      .route-line .route-line__flow {
+        stroke: url(#routeGradient);
+        stroke-width: 12;
+        stroke-dasharray: 24 16;
+        animation: route-flow 18s linear infinite;
+      }
+
+      .route-stop {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--paper-strong);
+        border: 4px solid var(--sea);
+        box-shadow: 0 0 0 8px rgba(15, 118, 110, 0.08);
+      }
+
+      .route-stop--one {
+        top: 17%;
+        left: 18%;
+      }
+
+      .route-stop--two {
+        top: 46%;
+        left: 56%;
+      }
+
+      .route-stop--three {
+        bottom: 18%;
+        right: 20%;
+        border-color: var(--sand);
+        box-shadow: 0 0 0 8px rgba(217, 119, 6, 0.08);
+      }
+
+      .floating-note {
+        position: absolute;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 252, 247, 0.9);
+        border: 1px solid rgba(24, 36, 47, 0.08);
+        box-shadow: 0 18px 34px rgba(24, 36, 47, 0.1);
+        max-width: 210px;
+      }
+
+      .floating-note strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 14px;
+      }
+
+      .floating-note span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .floating-note--tts {
+        top: 20px;
+        left: 20px;
+      }
+
+      .floating-note--info {
+        top: 160px;
+        right: 16px;
+      }
+
+      .floating-note--report {
+        bottom: 26px;
+        left: 22px;
+      }
+
+      .section-block {
+        padding: 24px 0 96px;
+      }
+
+      .section-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: end;
+        margin-bottom: 28px;
+      }
+
+      .section-heading h2 {
+        margin: 0;
+        font-size: clamp(30px, 4vw, 52px);
+        line-height: 1.04;
+        letter-spacing: -0.03em;
+      }
+
+      .section-heading p {
+        margin: 0;
+        max-width: 520px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .panel {
+        border-radius: 24px;
+        padding: 26px;
+        transition:
+          transform 220ms ease,
+          border-color 220ms ease,
+          background-color 220ms ease;
+      }
+
+      .panel:hover {
+        transform: translateY(-6px);
+        border-color: rgba(15, 118, 110, 0.22);
+        background: rgba(255, 251, 245, 0.95);
+      }
+
+      .panel__badge {
+        display: inline-flex;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: rgba(24, 36, 47, 0.06);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .panel h3 {
+        margin: 18px 0 12px;
+        font-size: 22px;
+      }
+
+      .panel p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .timeline {
+        display: grid;
+        grid-template-columns: 0.82fr 1.18fr;
+        gap: 22px;
+        align-items: stretch;
+      }
+
+      .timeline__rail {
+        display: grid;
+        gap: 12px;
+      }
+
+      .timeline-step {
+        width: 100%;
+        text-align: left;
+        padding: 18px 20px;
+        border-radius: 22px;
+        border: 1px solid var(--line);
+        background: rgba(255, 250, 242, 0.72);
+        color: var(--ink);
+      }
+
+      .timeline-step strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 18px;
+      }
+
+      .timeline-step span {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .timeline-step.is-active {
+        background: rgba(24, 36, 47, 0.94);
+        color: #fff;
+      }
+
+      .timeline-step.is-active span {
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      .timeline__detail {
+        min-height: 100%;
+        display: grid;
+        align-content: center;
+        gap: 20px;
+      }
+
+      .timeline__detail h3 {
+        margin: 0;
+        font-size: clamp(28px, 3vw, 40px);
+        line-height: 1.08;
+      }
+
+      .timeline__detail p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.8;
+        font-size: 17px;
+      }
+
+      .timeline__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .timeline__chips span {
+        display: inline-flex;
+        padding: 9px 12px;
+        border-radius: 999px;
+        background: rgba(15, 118, 110, 0.08);
+        color: var(--sea);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .closing {
+        padding-bottom: 110px;
+      }
+
+      .closing__card {
+        border-radius: 36px;
+        padding: 36px;
+        background:
+          linear-gradient(135deg, rgba(255, 249, 241, 0.95), rgba(244, 239, 230, 0.84)),
+          linear-gradient(130deg, rgba(15, 118, 110, 0.08), transparent 42%);
+      }
+
+      .closing__card p {
+        margin: 0 0 18px;
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.8;
+      }
+
+      .closing__card strong {
+        display: block;
+        font-size: clamp(30px, 4vw, 52px);
+        line-height: 1.08;
+        margin-bottom: 14px;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(32px);
+        transition:
+          opacity 700ms ease,
+          transform 700ms ease;
+      }
+
+      .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @keyframes route-flow {
+        to {
+          stroke-dashoffset: -800;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .hero__shell,
+        .cards,
+        .timeline,
+        .section-heading {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          min-height: auto;
+          padding-top: 28px;
+        }
+
+        .map-card {
+          min-height: 480px;
+        }
+
+        .hero__copy,
+        .hero__visual,
+        .closing__card {
+          padding: 24px;
+          border-radius: 24px;
+        }
+
+        .hero__metrics {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .section {
+          width: min(calc(100% - 24px), var(--max));
+        }
+
+        h1 {
+          line-height: 1;
+        }
+
+        .map-card {
+          min-height: 420px;
+        }
+
+        .floating-note {
+          max-width: 170px;
+          padding: 12px 14px;
+        }
+
+        .section-block {
+          padding-bottom: 72px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <section class="hero">
+        <div class="section hero__shell">
+          <div class="hero__copy reveal">
+            <span class="eyebrow">Busan Eumgil Service Intro</span>
+            <h1>부산의 길을<br />조금 더 안심하고<br />이어주는 방법</h1>
+            <p class="hero__lede">
+              부산 이음길은 시각장애인과 보행약자가 낯선 길에서도 더 안전하게 이동할 수
+              있도록, 경로 정보와 보행 환경 정보를 함께 전하는 길안내 서비스입니다.
+            </p>
+            <div class="hero__metrics">
+              <div class="metric">
+                <strong>안전 우선</strong>
+                <span>최단 거리보다 실제 이동의 부담을 낮추는 경로 경험을 지향합니다.</span>
+              </div>
+              <div class="metric">
+                <strong>정보 보강</strong>
+                <span>계단, 경사, 점자블록, 엘리베이터 같은 맥락 정보를 함께 보여줍니다.</span>
+              </div>
+              <div class="metric">
+                <strong>함께 갱신</strong>
+                <span>현장 제보를 바탕으로 더 현실적인 보행 정보를 축적해 나갑니다.</span>
+              </div>
+            </div>
+            <div class="hero__actions">
+              <a class="button button--primary" href="#value">핵심 가치 보기</a>
+              <a class="button button--secondary" href="#flow">서비스 흐름 보기</a>
+            </div>
+          </div>
+          <div class="hero__visual reveal">
+            <div class="map-card">
+              <div class="map-card__grid"></div>
+              <div class="route-line" aria-hidden="true">
+                <svg viewBox="0 0 600 520" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0f766e"></stop>
+                      <stop offset="55%" stop-color="#2f9fb3"></stop>
+                      <stop offset="100%" stop-color="#d97706"></stop>
+                    </linearGradient>
+                  </defs>
+                  <path
+                    class="route-line__base"
+                    d="M84 84 C130 96, 168 140, 204 172 S286 230, 338 256 S444 316, 506 430"
+                  ></path>
+                  <path
+                    class="route-line__flow"
+                    d="M84 84 C130 96, 168 140, 204 172 S286 230, 338 256 S444 316, 506 430"
+                  ></path>
+                </svg>
+              </div>
+              <span class="route-stop route-stop--one"></span>
+              <span class="route-stop route-stop--two"></span>
+              <span class="route-stop route-stop--three"></span>
+              <div class="floating-note floating-note--tts">
+                <strong>음성 안내</strong>
+                <span>지금 40m 앞, 횡단보도 진입 전 점자블록을 따라 이동하세요.</span>
+              </div>
+              <div class="floating-note floating-note--info">
+                <strong>보행 정보</strong>
+                <span>급경사 구간 회피, 엘리베이터 우선, 보도 폭이 넓은 동선을 함께 고려합니다.</span>
+              </div>
+              <div class="floating-note floating-note--report">
+                <strong>현장 제보 반영</strong>
+                <span>이용자가 남긴 위험 요소 제보가 다음 안내 품질을 더 현실적으로 만듭니다.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-block" id="value">
+        <div class="section-heading reveal">
+          <h2>이음길이 전하고 싶은 건<br />단순한 길찾기보다 이동의 안심감입니다.</h2>
+          <p>
+            목적지까지 빨리 가는 것만으로는 충분하지 않을 때가 있습니다. 이 서비스는 실제
+            보행자의 조건과 도시의 지형을 함께 고려하는 안내를 목표로 합니다.
+          </p>
+        </div>
+        <div class="cards">
+          <article class="panel reveal">
+            <span class="panel__badge">01</span>
+            <h3>안전 경로 중심 안내</h3>
+            <p>
+              계단과 경사, 보도 상태 같은 이동 부담 요소를 고려해 경로를 설명합니다. 눈앞의
+              한 블록이 아니라 끝까지 이어지는 이동 경험을 더 중요하게 봅니다.
+            </p>
+          </article>
+          <article class="panel reveal">
+            <span class="panel__badge">02</span>
+            <h3>보행약자 관점의 정보</h3>
+            <p>
+              엘리베이터, 점자블록, 접근 가능한 편의시설처럼 실제로 필요한 정보를 먼저
+              보여줍니다. 길 위의 작은 차이가 이동 난도를 크게 바꾼다는 전제에서 출발합니다.
+            </p>
+          </article>
+          <article class="panel reveal">
+            <span class="panel__badge">03</span>
+            <h3>제보를 통해 더 현실적으로</h3>
+            <p>
+              현장에서 발견한 위험 요소를 남길 수 있고, 이 기록은 서비스가 도시의 현재 상태를
+              더 잘 반영하도록 돕습니다. 혼자 쓰는 도구가 아니라 함께 다듬는 길안내입니다.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-block" id="flow">
+        <div class="section-heading reveal">
+          <h2>처음 쓰는 사람도<br />복잡하지 않게 따라갈 수 있도록</h2>
+          <p>
+            소개형 페이지이지만 서비스가 어떤 흐름으로 사용되는지 직관적으로 느낄 수 있도록
+            단계를 나누었습니다. 왼쪽 단계를 누르면 설명이 바뀝니다.
+          </p>
+        </div>
+        <div class="timeline">
+          <div class="timeline__rail reveal">
+            <button class="timeline-step is-active" data-step="0" type="button">
+              <strong>1. 목적지 탐색</strong>
+              <span>현재 위치를 기준으로 가고 싶은 장소를 찾습니다.</span>
+            </button>
+            <button class="timeline-step" data-step="1" type="button">
+              <strong>2. 경로 비교</strong>
+              <span>이동 시간뿐 아니라 보행 환경 정보까지 함께 확인합니다.</span>
+            </button>
+            <button class="timeline-step" data-step="2" type="button">
+              <strong>3. 안내 시작</strong>
+              <span>음성 또는 시각 중심 인터페이스로 길안내를 이어갑니다.</span>
+            </button>
+            <button class="timeline-step" data-step="3" type="button">
+              <strong>4. 도착 후 기록</strong>
+              <span>이동 중 만난 위험 요소를 남겨 다음 안내 품질을 높입니다.</span>
+            </button>
+          </div>
+          <article class="panel timeline__detail reveal" id="timeline-detail">
+            <span class="panel__badge" id="timeline-badge">STEP 1</span>
+            <h3 id="timeline-title">가고 싶은 장소를 빠르게 정하고 출발합니다.</h3>
+            <p id="timeline-copy">
+              검색은 출발의 진입 장벽을 낮추는 첫 단계입니다. 이음길은 목적지를 찾는 순간부터
+              이후 안내에 필요한 이동 맥락이 자연스럽게 이어지도록 설계됩니다.
+            </p>
+            <div class="timeline__chips" id="timeline-chips">
+              <span>현재 위치 기준</span>
+              <span>목적지 탐색</span>
+              <span>쉬운 시작</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section closing">
+        <div class="panel closing__card reveal">
+          <strong>부산 이음길은 도시를 더 잘 읽는 안내를 만들고 싶습니다.</strong>
+          <p>
+            이 페이지는 서비스의 톤과 방향을 소개하기 위한 분리형 시안입니다. 기존 앱이나
+            관리자 화면에는 영향을 주지 않고, 독립적인 HTML 파일로 바로 열어볼 수 있도록
+            구성했습니다.
+          </p>
+          <p>
+            앞으로 실제 배포형 페이지로 발전시킬 때는 앱 화면 캡처, 팀 정보, 다운로드 동선,
+            실제 데이터 기반 예시를 추가해 조금 더 완성도 높은 소개 사이트로 확장할 수 있습니다.
+          </p>
+          <a class="button button--primary" href="#top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">맨 위로 보기</a>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const revealTargets = document.querySelectorAll(".reveal");
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+            }
+          });
+        },
+        { threshold: 0.18 }
+      );
+
+      revealTargets.forEach((target) => revealObserver.observe(target));
+
+      const timelineSteps = [
+        {
+          badge: "STEP 1",
+          title: "가고 싶은 장소를 빠르게 정하고 출발합니다.",
+          copy:
+            "검색은 출발의 진입 장벽을 낮추는 첫 단계입니다. 이음길은 목적지를 찾는 순간부터 이후 안내에 필요한 이동 맥락이 자연스럽게 이어지도록 설계됩니다.",
+          chips: ["현재 위치 기준", "목적지 탐색", "쉬운 시작"],
+        },
+        {
+          badge: "STEP 2",
+          title: "경로를 고를 때 이동 부담을 함께 읽어냅니다.",
+          copy:
+            "어떤 길이 더 짧은지만이 아니라, 계단이나 경사, 접근 가능한 시설 정보처럼 실제 이동 편의에 영향을 주는 조건을 함께 전달하는 흐름을 상상합니다.",
+          chips: ["보행 환경 정보", "경로 비교", "안전 우선"],
+        },
+        {
+          badge: "STEP 3",
+          title: "사용자에게 맞는 방식으로 안내를 이어갑니다.",
+          copy:
+            "시각 중심 화면과 음성 중심 안내는 같은 목적을 향하지만 경험 방식은 다를 수 있습니다. 이음길은 각 사용자의 조건에 맞는 이해 가능한 인터페이스를 지향합니다.",
+          chips: ["음성 안내", "시각 중심 UI", "상황별 전달"],
+        },
+        {
+          badge: "STEP 4",
+          title: "이동 경험은 기록을 통해 다음 사람에게 이어집니다.",
+          copy:
+            "도착으로 끝나는 것이 아니라, 현장의 위험 요소를 제보해 다음 이동의 품질을 높일 수 있습니다. 서비스는 쓰일수록 도시의 현재 상태에 더 가까워집니다.",
+          chips: ["위험 요소 제보", "현장 반영", "지속적 개선"],
+        },
+      ];
+
+      const detailBadge = document.getElementById("timeline-badge");
+      const detailTitle = document.getElementById("timeline-title");
+      const detailCopy = document.getElementById("timeline-copy");
+      const detailChips = document.getElementById("timeline-chips");
+      const stepButtons = document.querySelectorAll(".timeline-step");
+
+      function renderStep(index) {
+        const selected = timelineSteps[index];
+        detailBadge.textContent = selected.badge;
+        detailTitle.textContent = selected.title;
+        detailCopy.textContent = selected.copy;
+        detailChips.innerHTML = selected.chips.map((chip) => `<span>${chip}</span>`).join("");
+
+        stepButtons.forEach((button, buttonIndex) => {
+          button.classList.toggle("is-active", buttonIndex === index);
+        });
+      }
+
+      stepButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          renderStep(Number(button.dataset.step));
+        });
+      });
+    </script>
+  </body>
+</html>

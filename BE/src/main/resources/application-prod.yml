@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    hibernate:
+      # 현재 운영 환경도 bootstrap/증분 스키마 반영을 위해 update를 사용한다.
+      # 추후 명시적 migration 체계가 자리잡으면 validate 또는 none으로 전환한다.
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    open-in-view: false
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      ssl:
+        enabled: ${REDIS_SSL:false}
+  sql:
+    init:
+      mode: always
+
+auth:
+  test:
+    enabled: ${AUTH_TEST_ENABLED:false}
+  refresh-cookie:
+    secure: ${AUTH_REFRESH_COOKIE_SECURE:true}
+    same-site: ${AUTH_REFRESH_COOKIE_SAME_SITE:Lax}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://admin.busaneumgil.com}
+
+openapi:
+  server-url: ${OPENAPI_SERVER_URL:https://api.busaneumgil.com}
+
+jwt:
+  secret: ${JWT_SECRET}
+  issuer: ${JWT_ISSUER:e102}
+  access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:15m}
+  refresh-token-ttl: ${JWT_REFRESH_TOKEN_TTL:14d}
+  signup-token-ttl: ${JWT_SIGNUP_TOKEN_TTL:10m}
+
+management:
+  metrics:
+    tags:
+      deployment_env: prod
+      runtime_stack: s2-prod

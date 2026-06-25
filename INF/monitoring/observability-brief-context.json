@@ -1,0 +1,32 @@
+{
+  "services": {
+    "backend": "Spring Boot API 서버. /health, /health/db, /health/redis를 제공하며 DB/Redis 의존성 상태를 대표한다.",
+    "ai": "음성/의도 분석 API 서버.",
+    "admin": "운영/관리자용 웹 애플리케이션.",
+    "graphhopper": "경로 추천 엔진. route 계산 불가(no-route)와 엔진 다운은 구분해서 봐야 한다.",
+    "minio": "dev 전용 오브젝트 스토리지."
+  },
+  "health_meaning": {
+    "db": "RDS 자체 상태가 아니라 backend가 보는 DB dependency health다.",
+    "redis": "ElastiCache 자체 상태가 아니라 backend가 보는 Redis dependency health다.",
+    "graphhopper": "GraphHopper runtime healthcheck 결과다."
+  },
+  "known_benign_patterns": [
+    {
+      "service": "backend",
+      "match": "Connection between locations not found",
+      "meaning": "GraphHopper가 두 좌표 간 경로를 찾지 못한 도메인성/데이터성 실패다. 반복 횟수는 참고하되 운영 장애로 바로 간주하지 않는다."
+    },
+    {
+      "service": "backend",
+      "match": "ConnectionNotFoundException",
+      "meaning": "GraphHopper no-route의 내부 예외명이다. 운영 인프라 장애보다 route domain issue에 가깝다."
+    }
+  ],
+  "analysis_rules": [
+    "warning/error 급증과 health DOWN이 함께 있으면 운영 이슈 가능성을 높게 본다.",
+    "배포 직후 증가했고 최근 변경이 관련 서비스 경로에 집중되면 배포 영향 가능성을 언급한다.",
+    "known benign pattern만 반복되고 health가 모두 UP이면 도메인성 경고로 분류하고 긴급도를 낮춘다.",
+    "dev 이슈는 prod 영향과 분리해서 설명한다."
+  ]
+}

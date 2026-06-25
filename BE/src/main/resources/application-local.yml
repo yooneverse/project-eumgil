@@ -1,0 +1,46 @@
+spring:
+  config:
+    import: optional:file:../.env.test[.properties]
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/e102}
+    username: ${DB_USERNAME:e102}
+    password: ${DB_PASSWORD:e102}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:none}
+    open-in-view: false
+    properties:
+      hibernate:
+        boot:
+          allow_jdbc_metadata_access: false
+        format_sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      ssl:
+        enabled: ${REDIS_SSL:false}
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+
+auth:
+  test:
+    enabled: ${AUTH_TEST_ENABLED:true}
+  refresh-cookie:
+    secure: ${AUTH_REFRESH_COOKIE_SECURE:false}
+    same-site: ${AUTH_REFRESH_COOKIE_SAME_SITE:Lax}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3001}
+
+jwt:
+  secret: ${JWT_SECRET:bG9jYWwtand0LXNlY3JldC1mb3ItZTEwMi0zMmJ5dGVzISE=}
+  issuer: ${JWT_ISSUER:e102-local}
+  access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:15m}
+  refresh-token-ttl: ${JWT_REFRESH_TOKEN_TTL:14d}
+  signup-token-ttl: ${JWT_SIGNUP_TOKEN_TTL:10m}

@@ -1,0 +1,2692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이음길 — 시각장애인용 지도 앱 인터랙티브 목업</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+
+  <!-- SVG 스프라이트 -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="i-mic" viewBox="0 0 24 24" fill="currentColor">
+      <rect x="9" y="2" width="6" height="12" rx="3"/>
+      <path d="M5 11a7 7 0 0 0 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="8" y1="22" x2="16" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
+      <polyline points="9 21 9 12 15 12 15 21"/>
+    </symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17 3H7a2 2 0 0 0-2 2v16l7-4.5L19 21V5a2 2 0 0 0-2-2z"/>
+    </symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="currentColor">
+      <rect x="3" y="3" width="8" height="8" rx="1.5"/>
+      <rect x="13" y="3" width="8" height="8" rx="1.5"/>
+      <rect x="3" y="13" width="8" height="8" rx="1.5"/>
+      <rect x="13" y="13" width="8" height="8" rx="1.5"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24" fill="currentColor">
+      <polygon points="12,2 22,18 2,18"/>
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v10M12 15l5-5M12 15l-5-5M17 15h2a2 2 0 0 0 0-4h-2"/>
+    </symbol>
+    <symbol id="i-arrow-right-simple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M12 5l7 7-7 7"/>
+    </symbol>
+    <symbol id="i-turn-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 18V8a4 4 0 0 1 4-4h2"/>
+      <path d="M17 8l-4-4 4-4"/>
+    </symbol>
+    <symbol id="i-wheelchair" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="4" r="2"/>
+      <path d="M10 7h4l1 5h3v2h-4l-1-5h-2v5a4 4 0 1 1-4-4V7z"/>
+    </symbol>
+    <symbol id="i-stairs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 18h4v-4h4v-4h4V6h4"/>
+    </symbol>
+    <symbol id="i-elevator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2"/>
+      <line x1="10" y1="2" x2="10" y2="22"/>
+      <polyline points="7 8 10 5 13 8"/>
+      <polyline points="7 14 10 17 13 14"/>
+    </symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+    </symbol>
+    <symbol id="i-toilet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="8" cy="4.5" r="1.8"/>
+      <circle cx="16" cy="4.5" r="1.8"/>
+      <path d="M6 7.5a2 2 0 0 0-2 2v3h2v5h4v-5h2v-3a2 2 0 0 0-2-2z"/>
+      <path d="M14.5 7.5h4l1 10h-2v-5h-2v5h-2z"/>
+    </symbol>
+    <symbol id="i-food" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="8" y1="2" x2="8" y2="9"/>
+      <line x1="5" y1="5.5" x2="11" y2="5.5"/>
+      <path d="M8 9a4 4 0 0 0 4 4"/>
+      <line x1="12" y1="13" x2="12" y2="22"/>
+      <line x1="17" y1="2" x2="17" y2="22"/>
+    </symbol>
+    <symbol id="i-bed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 4v16M2 12h20M22 12v8"/>
+      <rect x="6" y="8" width="6" height="4" rx="1"/>
+    </symbol>
+    <symbol id="i-hospital" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <line x1="12" y1="7" x2="12" y2="17"/>
+      <line x1="7" y1="12" x2="17" y2="12"/>
+    </symbol>
+    <symbol id="i-health" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 12h4l2-7 4 14 2-7h4"/>
+    </symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="currentColor">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </symbol>
+    <symbol id="i-nav" viewBox="0 0 24 24" fill="currentColor">
+      <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+    </symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 12l3 3 5-6"/>
+    </symbol>
+    <symbol id="i-close-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="10" fill="rgba(255,100,80,0.9)" stroke="none"/>
+      <path d="M15 9l-6 6M9 9l6 6" stroke="white" stroke-width="2.5"/>
+    </symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.06-.9a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </symbol>
+    <symbol id="i-desk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="8" r="3"/>
+      <path d="M6.75 22c0-3.45 2.35-6 5.25-6s5.25 2.55 5.25 6"/>
+      <path d="M20 13h-2"/>
+      <path d="M22 16h-2"/>
+    </symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor">
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24" fill="currentColor">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+    </symbol>
+    <symbol id="i-walk" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="13" cy="4" r="2"/>
+      <path d="M9.5 8.5l3.5 2 2-4m-5.5 2L8 17h2l1.5-4.5L14 15l1 5h2l-1.5-6.5-2-2.5"/>
+      <path d="M8 17l-2 5"/>
+    </symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="8" y1="13" x2="16" y2="13"/>
+      <line x1="8" y1="17" x2="16" y2="17"/>
+    </symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </symbol>
+    <symbol id="i-subway" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <rect x="4" y="2" width="16" height="16" rx="4"/>
+      <path d="M9 18l-2 4M15 18l2 4"/>
+      <circle cx="9" cy="10" r="2" fill="currentColor" stroke="none"/>
+      <circle cx="15" cy="10" r="2" fill="currentColor" stroke="none"/>
+      <line x1="4" y1="6" x2="20" y2="6"/>
+    </symbol>
+    <symbol id="i-signal" viewBox="0 0 24 24" fill="currentColor">
+      <rect x="2" y="16" width="3" height="5" rx="1"/>
+      <rect x="7" y="12" width="3" height="9" rx="1"/>
+      <rect x="12" y="8" width="3" height="13" rx="1"/>
+      <rect x="17" y="4" width="3" height="17" rx="1"/>
+    </symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+      <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+      <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+      <circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-battery" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <rect x="2" y="7" width="18" height="10" rx="2"/>
+      <path d="M20 11h2v2h-2"/>
+      <rect x="4" y="9" width="12" height="6" rx="1" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-user-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      <circle cx="20" cy="4" r="3" fill="#ffd60a" stroke="none"/>
+      <text x="18.3" y="6.8" font-size="4" fill="#000" font-weight="bold">!</text>
+    </symbol>
+  </svg>
+
+  <style>
+    :root {
+      --y: #ffd60a;
+      --y2: #ffea74;
+      --yd: #e6c200;
+      --bg: #0d0d0d;
+      --s1: #1a1a1a;
+      --s2: #222;
+      --s3: #2a2a2a;
+      --s4: #333;
+      --wh: #f0f0f0;
+      --mu: #aaa;
+      --so: #666;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Pretendard", -apple-system, sans-serif;
+      background: #080808;
+      color: var(--wh);
+      min-height: 100vh;
+      padding: 32px 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── 레이아웃 ─── */
+    .shell {
+      max-width: 1560px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── 사이드바 ─── */
+    .sidebar {
+      position: sticky;
+      top: 32px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 22px;
+      padding: 20px 16px;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-logo-mark {
+      width: 36px; height: 36px;
+      background: var(--y);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo-mark svg { width: 22px; height: 22px; color: #000; }
+
+    .sidebar h1 { font-size: 20px; font-weight: 900; color: var(--y); }
+
+    .sidebar > p {
+      font-size: 12px;
+      color: var(--so);
+      line-height: 1.6;
+      margin: 10px 0 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    .nav-section { margin-bottom: 16px; }
+
+    .nav-section h2 {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      color: var(--so);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .sl {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--mu);
+      padding: 9px 11px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      margin-bottom: 3px;
+      transition: all .14s;
+    }
+
+    .sl:hover, .sl.on {
+      background: rgba(255,214,10,.1);
+      border-color: rgba(255,214,10,.22);
+      color: var(--y);
+    }
+
+    /* ── 워크스페이스 ─── */
+    .workspace {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ── 폰 목업 ─── */
+    .phone-wrap { display: flex; justify-content: center; }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: linear-gradient(160deg, #2a2a2a, #111);
+      border-radius: 52px;
+      padding: 12px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.1),
+        0 0 0 8px #0a0a0a,
+        0 32px 80px rgba(0,0,0,.7),
+        inset 0 1px 0 rgba(255,255,255,.06);
+      position: sticky;
+      top: 32px;
+      flex-shrink: 0;
+    }
+
+    .phone::before, .phone::after {
+      content: "";
+      position: absolute;
+      right: -3px;
+      width: 4px;
+      background: #2a2a2a;
+      border-radius: 0 3px 3px 0;
+    }
+    .phone::before { top: 180px; height: 72px; }
+    .phone::after  { top: 310px; height: 108px; }
+
+    .phone-left {
+      position: absolute;
+      left: -3px;
+      top: 200px;
+      width: 4px;
+      height: 44px;
+      background: #2a2a2a;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .screen-wrap {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      border-radius: 41px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .camera {
+      position: absolute;
+      top: 14px; left: 50%;
+      transform: translateX(-50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #050505;
+      z-index: 30;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.1), 0 0 0 1px #111;
+    }
+
+    /* ── 상태바 ─── */
+    .statusbar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 48px;
+      padding: 13px 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 25;
+      pointer-events: none;
+    }
+
+    .sb-time { font-size: 14px; font-weight: 800; color: #fff; }
+
+    .sb-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #fff;
+    }
+
+    .sb-right svg { width: 15px; height: 15px; }
+    .sb-pct { font-size: 11px; font-weight: 700; }
+
+    /* ── 화면 공통 ─── */
+    .sc {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sc.on { display: flex; }
+
+    /* 스크롤 영역: tabnav가 absolute라 padding-bottom으로 공간 확보 */
+    .scroll {
+      padding: 52px 18px 100px;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+      scrollbar-width: none;
+    }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* ── 헤더 ─── */
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .btn-back {
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      border: none;
+      background: transparent;
+      color: var(--y);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-back svg { width: 22px; height: 22px; }
+
+    .hdr-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--y);
+      letter-spacing: -.04em;
+    }
+
+    /* ── 홈 화면 ─── */
+    .home-bg { background: var(--bg); }
+
+    .home-cards {
+      padding: 56px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .home-main-btn {
+      flex: 1;
+      min-height: 320px;
+      border-radius: 22px;
+      background: var(--y);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      font-family: inherit;
+      transition: transform .18s, box-shadow .18s;
+    }
+
+    .home-main-btn:hover {
+      transform: scale(1.01);
+      box-shadow: 0 16px 40px rgba(255,214,10,.3);
+    }
+
+    .home-main-btn .hb-icon { width: 80px; height: 80px; color: #000; }
+    .home-main-btn .hb-icon svg { width: 100%; height: 100%; }
+
+    .home-main-btn .hb-label {
+      font-size: 42px;
+      font-weight: 900;
+      color: #000;
+      letter-spacing: -.04em;
+    }
+
+    .home-sub-btn {
+      flex: 0 0 auto;
+      min-height: 120px;
+      border-radius: 22px;
+      background: var(--y);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      font-family: inherit;
+      transition: transform .18s;
+    }
+
+    .home-sub-btn:hover { transform: scale(1.01); }
+    .home-sub-btn .hb-icon { width: 44px; height: 44px; color: #000; }
+    .home-sub-btn .hb-icon svg { width: 100%; height: 100%; }
+    .home-sub-btn .hb-label { font-size: 34px; font-weight: 900; color: #000; letter-spacing: -.04em; }
+
+    .home-status {
+      flex-shrink: 0;
+      margin: 0 14px 100px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: var(--s2);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .home-status-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(255,214,10,.15);
+      border: 1.5px solid rgba(255,214,10,.4);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .home-status-icon svg { width: 16px; height: 16px; color: var(--y); }
+
+    .home-status-text strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--wh);
+      margin-bottom: 2px;
+    }
+
+    .home-status-text span {
+      font-size: 13px;
+      color: var(--mu);
+    }
+
+    /* ── 음성 입력 화면 ─── */
+    .listening-screen {
+      background: var(--bg);
+      position: relative;
+    }
+
+    .map-bg {
+      position: absolute;
+      inset: 0;
+      opacity: .13;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 38px, rgba(255,214,10,.3) 38px, rgba(255,214,10,.3) 39px),
+        repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(255,214,10,.3) 38px, rgba(255,214,10,.3) 39px);
+    }
+
+    .listen-center {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 48px 24px 100px;
+    }
+
+    .mic-aura {
+      position: relative;
+      width: 220px; height: 220px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .mic-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(255,214,10,.35);
+      animation: ring-pulse 2s ease-in-out infinite;
+    }
+
+    .mr1 { inset: 0; animation-delay: 0s; }
+    .mr2 { inset: 16px; animation-delay: .25s; }
+
+    @keyframes ring-pulse {
+      0%,100% { opacity: .8; transform: scale(1); }
+      50%      { opacity: .3; transform: scale(1.04); }
+    }
+
+    .mic-btn {
+      width: 150px; height: 150px;
+      border-radius: 50%;
+      background: transparent;
+      border: 3px solid var(--y);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--y);
+      position: relative;
+      z-index: 2;
+    }
+
+    .mic-btn svg { width: 72px; height: 72px; }
+
+    .listen-title {
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--y);
+      letter-spacing: -.04em;
+    }
+
+    .listen-sub {
+      font-size: 18px;
+      color: var(--mu);
+      font-weight: 500;
+    }
+
+    /* ── 목록 공통 ─── */
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--mu);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* ── 장소 카드 ─── */
+    .place-card {
+      border: 1.5px solid var(--y);
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 14px;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      grid-template-rows: auto auto auto;
+      gap: 8px;
+      background: var(--s1);
+      cursor: pointer;
+      transition: background .14s;
+    }
+
+    .place-card:hover { background: var(--s2); }
+
+    .pc-bm {
+      grid-row: 1/4;
+      grid-column: 1;
+      display: flex; align-items: stretch;
+    }
+
+    .pc-bm-btn {
+      width: 100%;
+      border-radius: 12px;
+      background: var(--y);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: inherit;
+    }
+
+    .pc-bm-btn svg { width: 24px; height: 24px; }
+
+    .pc-info { grid-column: 2; }
+
+    .pc-label {
+      font-size: 12px;
+      color: var(--y);
+      font-weight: 700;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pc-label svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    .pc-name {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      line-height: 1.15;
+      margin-bottom: 4px;
+    }
+
+    .pc-addr {
+      font-size: 12px;
+      color: var(--mu);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    .pc-addr svg { width: 12px; height: 12px; flex-shrink: 0; color: var(--mu); }
+
+    .pc-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--s3);
+      border: 1px solid rgba(255,214,10,.18);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--y2);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .badge svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+    .pc-dist {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--y);
+      letter-spacing: -.04em;
+      grid-column: 2;
+    }
+
+    .pc-actions {
+      grid-row: 1/4;
+      grid-column: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pc-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: transform .14s;
+    }
+
+    .pc-btn:hover { transform: scale(1.04); }
+    .pc-btn svg { width: 22px; height: 22px; }
+
+    .pc-btn.route {
+      background: var(--y);
+      color: #000;
+    }
+
+    .pc-btn.detail {
+      background: var(--s3);
+      border: 1.5px solid rgba(255,214,10,.3);
+      color: var(--y);
+    }
+
+    /* ── 칩 필터 ─── */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--s2);
+      border: 1.5px solid rgba(255,214,10,.25);
+      color: var(--mu);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chip svg { width: 14px; height: 14px; }
+
+    .chip.on {
+      background: var(--y);
+      color: #000;
+      border-color: var(--y);
+    }
+
+    /* ── 카테고리 그리드 ─── */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .cat-tile {
+      min-height: 148px;
+      border-radius: 18px;
+      border: 1.5px solid rgba(255,214,10,.3);
+      background: var(--s1);
+      cursor: pointer;
+      font-family: inherit;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: background .14s, border-color .14s;
+    }
+
+    .cat-tile:hover { background: var(--s2); border-color: var(--y); }
+
+    .cat-tile.active-cat {
+      background: var(--y);
+      border-color: var(--y);
+    }
+
+    .cat-tile.active-cat .ct-icon { color: #000; }
+    .cat-tile.active-cat .ct-label { color: #000; }
+
+    .ct-icon { color: var(--y); }
+    .ct-icon svg { width: 52px; height: 52px; }
+
+    .ct-label {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--wh);
+      letter-spacing: -.04em;
+    }
+
+    /* ── 상세정보 ─── */
+    .detail-hero {
+      border: 1.5px solid var(--y);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .dh-category {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--y);
+      margin-bottom: 6px;
+    }
+
+    .dh-category svg { width: 22px; height: 22px; }
+
+    .dh-name {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -.05em;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .dh-addr {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--mu);
+      margin-bottom: 10px;
+    }
+
+    .dh-addr svg { width: 14px; height: 14px; color: var(--y); flex-shrink: 0; }
+
+    .dh-dist {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--y);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dh-dist svg { width: 24px; height: 24px; }
+
+    .detail-section {
+      border: 1.5px solid var(--s3);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .ds-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--wh);
+      margin-bottom: 14px;
+    }
+
+    .ds-title svg { width: 18px; height: 18px; color: var(--y); }
+
+    .access-pills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .access-pill {
+      padding: 12px 10px;
+      border-radius: 12px;
+      background: var(--s2);
+      border: 1.5px solid rgba(255,214,10,.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--wh);
+    }
+
+    .access-pill svg { width: 18px; height: 18px; color: var(--y); flex-shrink: 0; }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 0;
+      border-top: 1px solid rgba(255,255,255,.06);
+      font-size: 14px;
+    }
+
+    .info-row:first-child { border-top: none; padding-top: 0; }
+    .info-row svg { width: 16px; height: 16px; color: var(--y); flex-shrink: 0; }
+    .info-row .ir-label { color: var(--mu); flex: 1; }
+    .info-row .ir-value { font-weight: 700; color: var(--wh); }
+
+    .detail-nav-section {
+      border: 1.5px solid var(--s3);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .big-btn {
+      width: 100%;
+      min-height: 62px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      transition: transform .14s, box-shadow .14s;
+    }
+
+    .big-btn:last-child { margin-bottom: 0; }
+    .big-btn:hover { transform: translateY(-1px); }
+    .big-btn svg { width: 22px; height: 22px; }
+
+    .big-btn.outline {
+      background: var(--s2);
+      border: 1.5px solid rgba(255,214,10,.35);
+      color: var(--y);
+    }
+
+    .big-btn.solid {
+      background: var(--y);
+      color: #000;
+    }
+
+    .big-btn.solid:hover { box-shadow: 0 8px 20px rgba(255,214,10,.3); }
+
+    /* ── 경로 브리핑 ─── */
+    .briefing-screen { background: var(--bg); }
+
+    .briefing-title {
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--wh);
+      letter-spacing: -.05em;
+      margin-bottom: 6px;
+      padding: 48px 18px 0;
+    }
+
+    .briefing-uline {
+      width: 60px;
+      height: 4px;
+      background: var(--y);
+      border-radius: 2px;
+      margin: 0 18px 20px;
+    }
+
+    .briefing-steps {
+      padding: 0 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .b-step {
+      background: var(--y);
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 70px;
+    }
+
+    .b-step-num {
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(0,0,0,.6);
+      flex-shrink: 0;
+      width: 26px;
+    }
+
+    .b-step-text {
+      flex: 1;
+      font-size: 24px;
+      font-weight: 900;
+      color: #000;
+      letter-spacing: -.04em;
+    }
+
+    .b-step-icon { color: #000; }
+    .b-step-icon svg { width: 28px; height: 28px; }
+
+    /* 지도 미니 */
+    .mini-map {
+      margin: 16px 18px;
+      border-radius: 16px;
+      overflow: hidden;
+      height: 160px;
+      background: #1a1a0d;
+      position: relative;
+    }
+
+    .mini-map-grid {
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(255,214,10,.12) 28px, rgba(255,214,10,.12) 29px),
+        repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(255,214,10,.12) 28px, rgba(255,214,10,.12) 29px);
+    }
+
+    .route-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .briefing-ctrl {
+      padding: 14px 18px 0;
+    }
+
+    .briefing-play-btn {
+      width: 100%;
+      min-height: 70px;
+      border-radius: 18px;
+      border: none;
+      background: var(--s2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: inherit;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--y);
+      transition: background .14s;
+    }
+
+    .briefing-play-btn:hover { background: var(--s3); }
+    .briefing-play-btn svg { width: 28px; height: 28px; }
+
+    .waveform {
+      margin: 14px 18px;
+      height: 32px;
+      background: var(--s2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 3px;
+      overflow: hidden;
+    }
+
+    .wave-bar {
+      width: 3px;
+      border-radius: 2px;
+      background: var(--y);
+      animation: wave-anim 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes wave-anim {
+      0%   { height: 4px; }
+      100% { height: 22px; }
+    }
+
+    .wave-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--y);
+      box-shadow: 0 0 0 3px rgba(255,214,10,.25);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+
+    /* ── 길 안내 화면 ─── */
+    .guidance-screen { background: var(--bg); }
+
+    .guidance-main {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px 0;
+      overflow-y: auto;
+    }
+
+    .g-arrow svg { width: 100px; height: 100px; }
+
+    .g-dist {
+      font-size: 72px;
+      font-weight: 900;
+      letter-spacing: -.06em;
+      color: var(--y);
+      line-height: 1;
+    }
+
+    .g-action {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      color: var(--y);
+      margin-bottom: 20px;
+    }
+
+    .g-next-card {
+      width: 100%;
+      background: var(--s1);
+      border-radius: 18px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    .g-next-label {
+      font-size: 13px;
+      color: var(--mu);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .g-next-value {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--y);
+      letter-spacing: -.04em;
+    }
+
+    .g-arrow {
+      color: var(--y);
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+
+    .g-ctrl {
+      width: 100%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 0 20px 100px;
+    }
+
+    .g-loc-btn {
+      min-height: 64px;
+      border-radius: 18px;
+      background: var(--y);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 24px;
+      font-weight: 900;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .g-loc-btn svg { width: 26px; height: 26px; }
+
+    .g-end-btn {
+      min-height: 58px;
+      border-radius: 18px;
+      background: var(--s2);
+      border: 1.5px solid rgba(255,255,255,.1);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--wh);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* ── 도착 화면 ─── */
+    .arrival-screen { background: var(--bg); }
+
+    .arrival-main {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .arrival-big-text {
+      font-size: 100px;
+      font-weight: 900;
+      color: var(--y);
+      letter-spacing: -.06em;
+      line-height: 1;
+    }
+
+    .arrival-sub-text {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--y);
+      letter-spacing: -.05em;
+      text-align: center;
+      line-height: 1.2;
+      margin-top: 4px;
+    }
+
+    .arrival-marker-anim {
+      position: relative;
+      width: 200px; height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .arrival-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,214,10,.3) 0%, transparent 65%);
+      animation: glow-pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .5; }
+    }
+
+    .arrival-ring1, .arrival-ring2 {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(255,214,10,.3);
+      animation: ring-expand 2s ease-out infinite;
+    }
+
+    .arrival-ring1 { inset: 10px; animation-delay: 0s; }
+    .arrival-ring2 { inset: -10px; animation-delay: .5s; }
+
+    @keyframes ring-expand {
+      0%   { transform: scale(1); opacity: .6; }
+      100% { transform: scale(1.15); opacity: 0; }
+    }
+
+    .arrival-pin-svg { width: 100px; height: 100px; color: var(--y); position: relative; z-index: 2; animation: pin-bounce 1s ease-in-out infinite alternate; }
+
+    @keyframes pin-bounce {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+
+    .arrival-bottom {
+      flex-shrink: 0;
+      padding: 0 18px 100px;
+    }
+
+    .arrival-handle {
+      width: 48px; height: 5px;
+      background: rgba(255,255,255,.2);
+      border-radius: 3px;
+      margin: 0 auto 16px;
+    }
+
+    /* ── 마이페이지 ─── */
+    .my-profile-card {
+      border: 1.5px solid var(--y);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .my-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--y);
+      display: flex; align-items: center; justify-content: center;
+      color: #000;
+      flex-shrink: 0;
+    }
+
+    .my-avatar svg { width: 36px; height: 36px; }
+
+    .my-profile-info { flex: 1; }
+    .my-name { font-size: 22px; font-weight: 900; margin-bottom: 2px; }
+    .my-mode { font-size: 13px; color: var(--mu); font-weight: 600; margin-bottom: 8px; }
+
+    .my-type-btn {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--s3);
+      border: 1px solid rgba(255,214,10,.3);
+      color: var(--y);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .my-type-btn svg { width: 14px; height: 14px; }
+
+    .my-section-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--so);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin: 0 0 8px;
+    }
+
+    .my-divider {
+      height: 1px;
+      background: rgba(255,255,255,.07);
+      margin: 14px 0;
+    }
+
+    .my-menu-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 14px;
+      background: var(--s1);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.06);
+      color: var(--wh);
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-bottom: 8px;
+      transition: background .14s;
+    }
+
+    .my-menu-item:hover { background: var(--s2); }
+    .my-menu-item .mi-icon { width: 24px; height: 24px; color: var(--y); flex-shrink: 0; }
+    .my-menu-item .mi-chev { margin-left: auto; color: var(--y); }
+    .my-menu-item .mi-chev svg { width: 16px; height: 16px; }
+
+    .my-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      background: var(--s1);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.06);
+      margin-bottom: 8px;
+    }
+
+    .my-toggle-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .my-toggle-label svg { width: 22px; height: 22px; color: var(--y); }
+
+    .toggle-switch {
+      width: 52px; height: 30px;
+      border-radius: 15px;
+      background: var(--y);
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .toggle-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px; right: 3px;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #000;
+    }
+
+    .my-logout-btn {
+      width: 100%;
+      min-height: 58px;
+      border-radius: 16px;
+      background: var(--s1);
+      border: 1px solid rgba(255,255,255,.06);
+      color: var(--y);
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .my-logout-btn svg { width: 20px; height: 20px; }
+
+    /* ── 앱 정보 화면 ─── */
+    .help-app-card {
+      border: 1.5px solid var(--y);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .help-app-icon {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      background: rgba(255,214,10,.12);
+      border: 1.5px solid rgba(255,214,10,.3);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--y);
+      flex-shrink: 0;
+    }
+
+    .help-app-icon svg { width: 36px; height: 36px; }
+    .help-app-name { font-size: 22px; font-weight: 900; margin-bottom: 2px; }
+    .help-app-version { font-size: 13px; color: var(--y); font-weight: 700; margin-bottom: 4px; }
+    .help-app-desc { font-size: 12px; color: var(--mu); line-height: 1.5; }
+
+    .help-menu {
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .help-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--s1);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--wh);
+      transition: background .14s;
+    }
+
+    .help-item:last-child { border-bottom: none; }
+    .help-item:hover { background: var(--s2); }
+    .help-item svg { width: 20px; height: 20px; color: var(--y); flex-shrink: 0; }
+    .help-item .hi-value { font-size: 13px; color: var(--y); margin-left: auto; margin-right: 4px; }
+    .help-item .hi-chev { color: var(--y); margin-left: auto; }
+    .help-item .hi-chev svg { width: 16px; height: 16px; }
+
+    .help-leave-btn {
+      width: 100%;
+      min-height: 58px;
+      border-radius: 16px;
+      background: var(--s1);
+      border: 1px solid rgba(255,255,255,.06);
+      color: var(--mu);
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .help-leave-btn svg { width: 20px; height: 20px; }
+
+    /* ── 하단 탭 ─── */
+    .tabnav {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 84px;
+      padding: 8px 8px 16px;
+      background: linear-gradient(180deg, rgba(14,14,14,.95), rgba(8,8,8,1));
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      z-index: 20;
+    }
+
+    .tab {
+      border: none;
+      background: transparent;
+      color: var(--so);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: inherit;
+      border-radius: 14px;
+      transition: all .14s;
+      padding: 0;
+    }
+
+    .tab:hover { color: var(--y); background: rgba(255,214,10,.06); }
+
+    .tab.on { color: var(--y); }
+
+    .tab svg { width: 22px; height: 22px; }
+
+    .tab-underline {
+      display: none;
+      width: 28px; height: 3px;
+      background: var(--y);
+      border-radius: 2px;
+      margin: 0 auto;
+      position: absolute;
+      bottom: 14px;
+    }
+
+    .tab.on .tab-underline { display: block; }
+
+    /* ── 인스펙터 패널 ─── */
+    .inspector {
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 22px;
+      padding: 24px;
+      min-height: 520px;
+      position: sticky;
+      top: 32px;
+    }
+
+    .ins-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(255,214,10,.1);
+      border: 1px solid rgba(255,214,10,.2);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--y);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .ins-title { font-size: 28px; font-weight: 900; color: var(--y); margin-bottom: 8px; letter-spacing: -.04em; }
+    .ins-desc { font-size: 14px; color: var(--mu); line-height: 1.7; margin-bottom: 18px; }
+
+    .ins-divider { height: 1px; background: rgba(255,255,255,.07); margin-bottom: 18px; }
+
+    .ins-section-title { font-size: 11px; font-weight: 800; color: var(--so); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+
+    .flow-item {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,214,10,.05);
+      border: 1px solid rgba(255,214,10,.1);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--wh);
+      margin-bottom: 8px;
+    }
+
+    .flow-item strong { color: var(--y); }
+
+    .ins-a11y {
+      margin-top: 18px;
+    }
+
+    .a11y-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 12px;
+      color: var(--mu);
+      margin: 0 5px 6px 0;
+    }
+
+    .a11y-chip svg { width: 12px; height: 12px; color: var(--y); }
+
+    @media (max-width: 1300px) {
+      .shell, .workspace { grid-template-columns: 1fr; }
+      .inspector, .sidebar { position: static; }
+      .phone-wrap { order: -1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══════════════════════════════════════
+       사이드바
+  ══════════════════════════════════════ -->
+  <aside class="sidebar" role="navigation" aria-label="화면 탐색">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor" stroke="none"/></svg>
+      </div>
+      <h1>이음길</h1>
+    </div>
+    <p>시각장애인을 위한 음성 기반 지도 앱 — 인터랙티브 목업 v4</p>
+
+    <div class="nav-section">
+      <h2>메인 흐름</h2>
+      <button class="sl on" data-t="home">홈</button>
+      <button class="sl" data-t="listening">음성 입력 중</button>
+      <button class="sl" data-t="search">검색 결과</button>
+      <button class="sl" data-t="bookmarks">북마크</button>
+      <button class="sl" data-t="cat-grid">카테고리</button>
+      <button class="sl" data-t="cat-results">카테고리 결과</button>
+      <button class="sl" data-t="detail">상세정보</button>
+    </div>
+
+    <div class="nav-section">
+      <h2>경로 안내</h2>
+      <button class="sl" data-t="briefing">경로 브리핑</button>
+      <button class="sl" data-t="guidance">길 안내</button>
+      <button class="sl" data-t="arrival">도착</button>
+    </div>
+
+    <div class="nav-section">
+      <h2>마이페이지</h2>
+      <button class="sl" data-t="mypage">마이페이지</button>
+      <button class="sl" data-t="help">앱 정보 및 도움말</button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════
+       워크스페이스
+  ══════════════════════════════════════ -->
+  <div class="workspace">
+
+    <!-- 폰 -->
+    <div class="phone-wrap">
+      <div class="phone" role="presentation">
+        <div class="phone-left"></div>
+        <div class="screen-wrap">
+          <div class="camera" aria-hidden="true"></div>
+
+          <!-- 상태바 -->
+          <div class="statusbar" aria-hidden="true">
+            <span class="sb-time">9:41</span>
+            <div class="sb-right">
+              <svg aria-hidden="true"><use href="#i-wifi"/></svg>
+              <svg aria-hidden="true"><use href="#i-signal"/></svg>
+              <svg aria-hidden="true"><use href="#i-signal"/></svg>
+              <svg aria-hidden="true"><use href="#i-battery"/></svg>
+              <span class="sb-pct">85%</span>
+            </div>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               01 홈
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc on home-bg" id="sc-home" role="main" aria-label="홈 화면">
+            <div class="home-cards">
+              <button class="home-main-btn" data-g="listening" aria-label="음성으로 목적지 입력">
+                <div class="hb-icon"><svg aria-hidden="true"><use href="#i-mic"/></svg></div>
+                <div class="hb-label">음성 입력</div>
+              </button>
+              <button class="home-sub-btn" data-g="guidance" aria-label="현재 위치 기반 안내">
+                <div class="hb-icon"><svg aria-hidden="true"><use href="#i-pin"/></svg></div>
+                <div class="hb-label">현재 위치</div>
+              </button>
+            </div>
+            <div class="home-status" role="status" aria-live="polite">
+              <div class="home-status-icon" aria-hidden="true">
+                <svg><use href="#i-info"/></svg>
+              </div>
+              <div class="home-status-text">
+                <strong>음성 입력 대기 중</strong>
+                <span>마이크를 누르고 말씀해 주세요</span>
+              </div>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab on" data-g="home" aria-label="홈">
+                <svg aria-hidden="true"><use href="#i-home"/></svg>홈
+              </button>
+              <button class="tab" data-g="bookmarks" aria-label="북마크">
+                <svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크
+              </button>
+              <button class="tab" data-g="cat-grid" aria-label="카테고리">
+                <svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리
+              </button>
+              <button class="tab" data-g="mypage" aria-label="마이페이지">
+                <svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지
+              </button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               02 음성 입력
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc listening-screen" id="sc-listening" role="main" aria-label="음성 입력 중">
+            <div class="map-bg" aria-hidden="true"></div>
+            <div class="listen-center">
+              <div class="mic-aura" aria-hidden="true">
+                <div class="mic-ring mr1"></div>
+                <div class="mic-ring mr2"></div>
+                <div class="mic-btn">
+                  <svg aria-hidden="true"><use href="#i-mic"/></svg>
+                </div>
+              </div>
+              <p class="listen-title" aria-live="assertive">음성 입력 중...</p>
+              <p class="listen-sub">말씀해주세요</p>
+              <button class="big-btn outline" style="width:240px;min-height:54px;font-size:18px;" data-g="home" aria-label="음성 입력 취소">취소</button>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab on" data-g="home" aria-label="홈"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks" aria-label="북마크"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab" data-g="cat-grid" aria-label="카테고리"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage" aria-label="마이페이지"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               03 검색 결과
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc" id="sc-search" role="main" aria-label="검색 결과">
+            <div class="scroll">
+              <div class="hdr">
+                <button class="btn-back" data-g="home" aria-label="홈으로">
+                  <svg aria-hidden="true"><use href="#i-back"/></svg>
+                </button>
+                <span class="hdr-title">검색 결과</span>
+              </div>
+
+              <!-- 장소 카드 1 -->
+              <div class="place-card" role="article" aria-label="카페 온도, 420미터">
+                <div class="pc-bm">
+                  <button class="pc-bm-btn" aria-label="카페 온도 북마크">
+                    <svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bookmark"/></svg>북마크
+                  </button>
+                </div>
+                <div class="pc-info">
+                  <div class="pc-label">
+                    <svg aria-hidden="true"><use href="#i-star"/></svg> 추천 장소
+                  </div>
+                  <div class="pc-name">카페 온도</div>
+                  <div class="pc-addr">
+                    <svg aria-hidden="true"><use href="#i-pin"/></svg> 해운대구 해운대로 123
+                  </div>
+                  <div class="pc-badges">
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</span>
+                  </div>
+                </div>
+                <div class="pc-dist" aria-label="420미터">420m</div>
+                <div class="pc-actions">
+                  <button class="pc-btn route" data-g="briefing" aria-label="카페 온도 길찾기">
+                    <svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기
+                  </button>
+                  <button class="pc-btn detail" data-g="detail" aria-label="카페 온도 상세정보">
+                    <svg aria-hidden="true"><use href="#i-info"/></svg>상세정보
+                  </button>
+                </div>
+              </div>
+
+              <!-- 장소 카드 2 -->
+              <div class="place-card" role="article" aria-label="해운대 해수욕장, 850미터">
+                <div class="pc-bm">
+                  <button class="pc-bm-btn" aria-label="해운대 해수욕장 북마크">
+                    <svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bookmark"/></svg>북마크
+                  </button>
+                </div>
+                <div class="pc-info">
+                  <div class="pc-label"><svg aria-hidden="true"><use href="#i-star"/></svg> 추천 장소</div>
+                  <div class="pc-name">해운대 해수욕장</div>
+                  <div class="pc-addr"><svg aria-hidden="true"><use href="#i-pin"/></svg> 해운대구 해운대해변로 264</div>
+                  <div class="pc-badges">
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</span>
+                  </div>
+                </div>
+                <div class="pc-dist" aria-label="850미터">850m</div>
+                <div class="pc-actions">
+                  <button class="pc-btn route" data-g="briefing" aria-label="해운대 해수욕장 길찾기">
+                    <svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기
+                  </button>
+                  <button class="pc-btn detail" data-g="detail" aria-label="해운대 해수욕장 상세정보">
+                    <svg aria-hidden="true"><use href="#i-info"/></svg>상세정보
+                  </button>
+                </div>
+              </div>
+
+              <!-- 장소 카드 3 -->
+              <div class="place-card" role="article" aria-label="해운대역 엘리베이터, 1.2킬로미터">
+                <div class="pc-bm">
+                  <button class="pc-bm-btn" aria-label="해운대역 엘리베이터 북마크">
+                    <svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bookmark"/></svg>북마크
+                  </button>
+                </div>
+                <div class="pc-info">
+                  <div class="pc-label"><svg aria-hidden="true"><use href="#i-star"/></svg> 추천 장소</div>
+                  <div class="pc-name">해운대역 엘리베이터</div>
+                  <div class="pc-addr"><svg aria-hidden="true"><use href="#i-pin"/></svg> 해운대구 해운대로 35</div>
+                  <div class="pc-badges">
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</span>
+                  </div>
+                </div>
+                <div class="pc-dist" aria-label="1.2킬로미터">1.2km</div>
+                <div class="pc-actions">
+                  <button class="pc-btn route" data-g="briefing" aria-label="해운대역 엘리베이터 길찾기">
+                    <svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기
+                  </button>
+                  <button class="pc-btn detail" data-g="detail" aria-label="해운대역 엘리베이터 상세정보">
+                    <svg aria-hidden="true"><use href="#i-info"/></svg>상세정보
+                  </button>
+                </div>
+              </div>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab" data-g="home" aria-label="홈"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks" aria-label="북마크"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab" data-g="cat-grid" aria-label="카테고리"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage" aria-label="마이페이지"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               04 북마크
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc" id="sc-bookmarks" role="main" aria-label="북마크">
+            <div class="scroll">
+              <div class="hdr">
+                <button class="btn-back" data-g="home" aria-label="홈으로">
+                  <svg aria-hidden="true"><use href="#i-back"/></svg>
+                </button>
+                <span class="hdr-title">북마크</span>
+              </div>
+
+              <div class="place-card" role="article" aria-label="카페 온도, 420미터, 저장된 장소">
+                <div class="pc-bm">
+                  <button class="pc-bm-btn" style="background:var(--y);" aria-label="카페 온도 북마크 해제">
+                    <svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bookmark"/></svg>북마크
+                  </button>
+                </div>
+                <div class="pc-info">
+                  <div class="pc-label"><svg aria-hidden="true"><use href="#i-star"/></svg> 저장한 장소</div>
+                  <div class="pc-name">카페 온도</div>
+                  <div class="pc-addr"><svg aria-hidden="true"><use href="#i-pin"/></svg> 해운대구 해운대로 123</div>
+                  <div class="pc-badges">
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</span>
+                  </div>
+                </div>
+                <div class="pc-dist">420m</div>
+                <div class="pc-actions">
+                  <button class="pc-btn route" data-g="briefing" aria-label="카페 온도 길찾기"><svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기</button>
+                  <button class="pc-btn detail" data-g="detail" aria-label="카페 온도 상세정보"><svg aria-hidden="true"><use href="#i-info"/></svg>상세정보</button>
+                </div>
+              </div>
+
+              <div class="place-card" role="article" aria-label="해운대 해수욕장, 850미터, 저장된 장소">
+                <div class="pc-bm">
+                  <button class="pc-bm-btn" aria-label="해운대 해수욕장 북마크 해제">
+                    <svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bookmark"/></svg>북마크
+                  </button>
+                </div>
+                <div class="pc-info">
+                  <div class="pc-label"><svg aria-hidden="true"><use href="#i-star"/></svg> 저장한 장소</div>
+                  <div class="pc-name">해운대 해수욕장</div>
+                  <div class="pc-addr"><svg aria-hidden="true"><use href="#i-pin"/></svg> 해운대구 해운대해변로 264</div>
+                  <div class="pc-badges">
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</span>
+                  </div>
+                </div>
+                <div class="pc-dist">850m</div>
+                <div class="pc-actions">
+                  <button class="pc-btn route" data-g="briefing"><svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기</button>
+                  <button class="pc-btn detail" data-g="detail"><svg aria-hidden="true"><use href="#i-info"/></svg>상세정보</button>
+                </div>
+              </div>
+
+              <div class="place-card" role="article" aria-label="해운대역 엘리베이터, 1.2킬로미터, 저장된 장소">
+                <div class="pc-bm">
+                  <button class="pc-bm-btn" aria-label="해운대역 엘리베이터 북마크 해제">
+                    <svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bookmark"/></svg>북마크
+                  </button>
+                </div>
+                <div class="pc-info">
+                  <div class="pc-label"><svg aria-hidden="true"><use href="#i-star"/></svg> 저장한 장소</div>
+                  <div class="pc-name">해운대역 엘리베이터</div>
+                  <div class="pc-addr"><svg aria-hidden="true"><use href="#i-pin"/></svg> 해운대구 해운대로 35</div>
+                  <div class="pc-badges">
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</span>
+                  </div>
+                </div>
+                <div class="pc-dist">1.2km</div>
+                <div class="pc-actions">
+                  <button class="pc-btn route" data-g="briefing"><svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기</button>
+                  <button class="pc-btn detail" data-g="detail"><svg aria-hidden="true"><use href="#i-info"/></svg>상세정보</button>
+                </div>
+              </div>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab" data-g="home" aria-label="홈"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab on" data-g="bookmarks" aria-label="북마크 (현재)"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab" data-g="cat-grid" aria-label="카테고리"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage" aria-label="마이페이지"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               05 카테고리 그리드
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc" id="sc-cat-grid" role="main" aria-label="카테고리 선택">
+            <div class="scroll">
+              <div class="hdr">
+                <button class="btn-back" data-g="home" aria-label="홈으로">
+                  <svg aria-hidden="true"><use href="#i-back"/></svg>
+                </button>
+                <span class="hdr-title">카테고리</span>
+              </div>
+              <div class="cat-grid" role="list">
+                <button class="cat-tile" data-g="cat-results" role="listitem" aria-label="화장실">
+                  <div class="ct-icon" aria-hidden="true"><svg><use href="#i-toilet"/></svg></div>
+                  <div class="ct-label">화장실</div>
+                </button>
+                <button class="cat-tile" data-g="cat-results" role="listitem" aria-label="음식점">
+                  <div class="ct-icon" aria-hidden="true"><svg><use href="#i-food"/></svg></div>
+                  <div class="ct-label">음식점</div>
+                </button>
+                <button class="cat-tile" data-g="cat-results" role="listitem" aria-label="숙박시설">
+                  <div class="ct-icon" aria-hidden="true"><svg><use href="#i-bed"/></svg></div>
+                  <div class="ct-label">숙박시설</div>
+                </button>
+                <button class="cat-tile active-cat" data-g="cat-results" role="listitem" aria-label="병원">
+                  <div class="ct-icon" aria-hidden="true"><svg><use href="#i-hospital"/></svg></div>
+                  <div class="ct-label">병원</div>
+                </button>
+                <button class="cat-tile" data-g="cat-results" role="listitem" aria-label="보건소">
+                  <div class="ct-icon" aria-hidden="true"><svg><use href="#i-health"/></svg></div>
+                  <div class="ct-label">보건소</div>
+                </button>
+                <button class="cat-tile" data-g="cat-results" role="listitem" aria-label="음성안내">
+                  <div class="ct-icon" aria-hidden="true"><svg><use href="#i-speaker"/></svg></div>
+                  <div class="ct-label">음성안내</div>
+                </button>
+              </div>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab" data-g="home" aria-label="홈"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks" aria-label="북마크"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab on" data-g="cat-grid" aria-label="카테고리 (현재)"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage" aria-label="마이페이지"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               06 카테고리 결과
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc" id="sc-cat-results" role="main" aria-label="카테고리 결과">
+            <div class="scroll">
+              <div class="hdr">
+                <button class="btn-back" data-g="cat-grid" aria-label="카테고리로">
+                  <svg aria-hidden="true"><use href="#i-back"/></svg>
+                </button>
+                <span class="hdr-title">카테고리 결과</span>
+              </div>
+
+              <!-- 필터 칩 -->
+              <div class="chip-row" role="group" aria-label="접근성 필터">
+                <button class="chip on" aria-pressed="true">
+                  <svg aria-hidden="true" style="width:14px;height:14px;"><use href="#i-filter"/></svg>
+                  접근 가능 장소
+                </button>
+                <span style="display:flex;align-items:center;gap:4px;color:var(--y);font-size:14px;font-weight:700;">
+                  <svg aria-hidden="true" style="width:14px;height:14px;color:var(--y);"><use href="#i-arrow-right-simple"/></svg>
+                  엘리베이터
+                </span>
+              </div>
+
+              <div class="place-card" role="article" aria-label="해운대역 엘리베이터, 1.2킬로미터">
+                <div class="pc-bm">
+                  <button class="pc-bm-btn" aria-label="해운대역 엘리베이터 북마크"><svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bookmark"/></svg>북마크</button>
+                </div>
+                <div class="pc-info">
+                  <div class="pc-label"><svg aria-hidden="true"><use href="#i-star"/></svg> 엘리베이터</div>
+                  <div class="pc-name">해운대역 엘리베이터</div>
+                  <div class="pc-addr"><svg aria-hidden="true"><use href="#i-pin"/></svg> 해운대구 해운대로 35</div>
+                  <div class="pc-badges">
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</span>
+                  </div>
+                </div>
+                <div class="pc-dist">1.2km</div>
+                <div class="pc-actions">
+                  <button class="pc-btn route" data-g="briefing"><svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기</button>
+                  <button class="pc-btn detail" data-g="detail"><svg aria-hidden="true"><use href="#i-info"/></svg>상세정보</button>
+                </div>
+              </div>
+
+              <div class="place-card" role="article" aria-label="부산역 엘리베이터, 2.1킬로미터">
+                <div class="pc-bm">
+                  <button class="pc-bm-btn" aria-label="부산역 엘리베이터 북마크"><svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bookmark"/></svg>북마크</button>
+                </div>
+                <div class="pc-info">
+                  <div class="pc-label"><svg aria-hidden="true"><use href="#i-star"/></svg> 엘리베이터</div>
+                  <div class="pc-name">부산역 엘리베이터</div>
+                  <div class="pc-addr"><svg aria-hidden="true"><use href="#i-pin"/></svg> 동구 중앙대로 206</div>
+                  <div class="pc-badges">
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</span>
+                    <span class="badge"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</span>
+                  </div>
+                </div>
+                <div class="pc-dist">2.1km</div>
+                <div class="pc-actions">
+                  <button class="pc-btn route" data-g="briefing"><svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기</button>
+                  <button class="pc-btn detail" data-g="detail"><svg aria-hidden="true"><use href="#i-info"/></svg>상세정보</button>
+                </div>
+              </div>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab" data-g="home" aria-label="홈"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks" aria-label="북마크"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab on" data-g="cat-grid" aria-label="카테고리 (현재)"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage" aria-label="마이페이지"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               07 상세정보
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc" id="sc-detail" role="main" aria-label="장소 상세정보">
+            <div class="scroll">
+              <div class="hdr">
+                <button class="btn-back" data-g="cat-results" aria-label="카테고리 결과로">
+                  <svg aria-hidden="true"><use href="#i-back"/></svg>
+                </button>
+                <span class="hdr-title">상세정보</span>
+              </div>
+
+              <div class="detail-hero">
+                <div class="dh-category">
+                  <svg aria-hidden="true"><use href="#i-health"/></svg>
+                  보건소
+                </div>
+                <div class="dh-name">해운대구 보건소</div>
+                <div class="dh-addr">
+                  <svg aria-hidden="true"><use href="#i-pin"/></svg>
+                  부산 해운대구 양운로 37
+                </div>
+                <div class="dh-dist">
+                  <svg aria-hidden="true"><use href="#i-walk"/></svg>
+                  540m
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <div class="ds-title">
+                  <svg aria-hidden="true"><use href="#i-wheelchair"/></svg>
+                  접근성 정보
+                </div>
+                <div class="access-pills">
+                  <div class="access-pill"><svg aria-hidden="true"><use href="#i-wheelchair"/></svg>출입 가능</div>
+                  <div class="access-pill"><svg aria-hidden="true"><use href="#i-stairs"/></svg>단차 없음</div>
+                  <div class="access-pill"><svg aria-hidden="true"><use href="#i-elevator"/></svg>엘리베이터 있음</div>
+                  <div class="access-pill"><svg aria-hidden="true"><use href="#i-speaker"/></svg>음성안내 가능</div>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <div class="ds-title">
+                  <svg aria-hidden="true"><use href="#i-info"/></svg>
+                  기본 정보
+                </div>
+                <div class="info-row">
+                  <svg aria-hidden="true"><use href="#i-clock"/></svg>
+                  <span class="ir-label">운영시간</span>
+                  <span class="ir-value">09:00 - 18:00</span>
+                </div>
+                <div class="info-row">
+                  <svg aria-hidden="true"><use href="#i-phone"/></svg>
+                  <span class="ir-label">전화</span>
+                  <span class="ir-value">051-749-7500</span>
+                </div>
+                <div class="info-row">
+                  <svg aria-hidden="true"><use href="#i-desk"/></svg>
+                  <span class="ir-label">안내 가능 여부</span>
+                  <span class="ir-value">안내데스크 이용 가능</span>
+                </div>
+              </div>
+
+              <div class="detail-nav-section">
+                <div class="ds-title">
+                  <svg aria-hidden="true"><use href="#i-nav"/></svg>
+                  안내 및 길찾기
+                </div>
+                <button class="big-btn outline" data-g="briefing" aria-label="해운대구 보건소 길찾기">
+                  <svg aria-hidden="true"><use href="#i-turn-right"/></svg>길찾기
+                </button>
+                <button class="big-btn solid" data-g="briefing" aria-label="현재 위치에서 안내 시작">
+                  <svg aria-hidden="true"><use href="#i-nav"/></svg>현재 위치에서 안내
+                </button>
+                <button class="big-btn outline" data-g="bookmarks" aria-label="북마크 저장">
+                  <svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크 저장
+                </button>
+              </div>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab" data-g="home"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab on" data-g="cat-grid"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               08 경로 브리핑
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc briefing-screen" id="sc-briefing" role="main" aria-label="경로 브리핑">
+            <div class="scroll" style="padding-top:0;padding-bottom:100px;">
+              <div class="briefing-title">경로 브리핑</div>
+              <div class="briefing-uline" aria-hidden="true"></div>
+              <div class="briefing-steps" role="list">
+                <div class="b-step" role="listitem" aria-label="1단계: 100미터 직진">
+                  <span class="b-step-num">01</span>
+                  <span class="b-step-text">100미터 직진</span>
+                  <span class="b-step-icon" aria-hidden="true"><svg><use href="#i-arrow-up"/></svg></span>
+                </div>
+                <div class="b-step" role="listitem" aria-label="2단계: 지하도 입구">
+                  <span class="b-step-num">02</span>
+                  <span class="b-step-text">지하도 입구</span>
+                  <span class="b-step-icon" aria-hidden="true"><svg><use href="#i-subway"/></svg></span>
+                </div>
+                <div class="b-step" role="listitem" aria-label="3단계: 도착지 우측">
+                  <span class="b-step-num">03</span>
+                  <span class="b-step-text">도착지 우측</span>
+                  <span class="b-step-icon" aria-hidden="true"><svg><use href="#i-turn-right"/></svg></span>
+                </div>
+              </div>
+
+              <!-- 지도 미니 -->
+              <div class="mini-map" aria-label="경로 지도">
+                <div class="mini-map-grid" aria-hidden="true"></div>
+                <svg class="route-svg" viewBox="0 0 320 160" aria-hidden="true">
+                  <circle cx="60" cy="120" r="8" fill="#ffd60a"/>
+                  <circle cx="260" cy="40" r="10" fill="#ffd60a"/>
+                  <path d="M60 120 Q80 120 90 100 L120 60 Q130 44 150 44 L260 44" stroke="#ffd60a" stroke-width="3" stroke-dasharray="8,5" fill="none"/>
+                </svg>
+              </div>
+
+              <!-- 재생/중지 -->
+              <div class="briefing-ctrl">
+                <button class="briefing-play-btn" id="play-btn" aria-label="경로 안내 시작">
+                  <svg aria-hidden="true" style="width:28px;height:28px;"><use href="#i-play"/></svg>
+                  시작
+                </button>
+                <div class="waveform" id="waveform" style="display:none;" aria-hidden="true">
+                  <div class="wave-bar" style="height:6px;animation-delay:.0s;"></div>
+                  <div class="wave-bar" style="height:12px;animation-delay:.05s;"></div>
+                  <div class="wave-bar" style="height:18px;animation-delay:.1s;"></div>
+                  <div class="wave-bar" style="height:22px;animation-delay:.15s;"></div>
+                  <div class="wave-bar" style="height:14px;animation-delay:.2s;"></div>
+                  <div class="wave-dot"></div>
+                  <div class="wave-bar" style="height:10px;animation-delay:.25s;"></div>
+                  <div class="wave-bar" style="height:16px;animation-delay:.3s;"></div>
+                  <div class="wave-bar" style="height:20px;animation-delay:.35s;"></div>
+                  <div class="wave-bar" style="height:8px;animation-delay:.4s;"></div>
+                  <div class="wave-bar" style="height:18px;animation-delay:.45s;"></div>
+                  <div class="wave-bar" style="height:12px;animation-delay:.5s;"></div>
+                </div>
+              </div>
+            </div>
+
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab on" data-g="home"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab" data-g="cat-grid"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               09 길 안내
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc guidance-screen" id="sc-guidance" role="main" aria-label="실시간 길 안내">
+            <div class="guidance-main">
+              <div class="g-arrow" aria-label="직진">
+                <svg aria-hidden="true"><use href="#i-arrow-up"/></svg>
+              </div>
+              <div class="g-dist" aria-label="50미터">50M</div>
+              <div class="g-action" aria-live="polite">직진</div>
+              <div class="g-next-card" aria-label="다음 안내: 2분 후">
+                <div class="g-next-label">다음 안내</div>
+                <div class="g-next-value">2분 후</div>
+              </div>
+            </div>
+            <div class="g-ctrl">
+              <button class="g-loc-btn" aria-label="현재 위치 확인">
+                <svg aria-hidden="true" style="width:26px;height:26px;"><use href="#i-pin"/></svg>
+                현재 위치
+              </button>
+              <button class="g-end-btn" data-g="arrival" aria-label="안내 종료">
+                <svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-close-circle"/></svg>
+                안내 종료
+              </button>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab on" data-g="home"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab" data-g="cat-grid"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               10 도착
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc arrival-screen" id="sc-arrival" role="main" aria-label="목적지 도착">
+            <div class="arrival-main">
+              <div class="arrival-marker-anim" aria-hidden="true">
+                <div class="arrival-glow"></div>
+                <div class="arrival-ring1"></div>
+                <div class="arrival-ring2"></div>
+                <svg class="arrival-pin-svg" aria-hidden="true"><use href="#i-pin"/></svg>
+              </div>
+              <div class="arrival-big-text" aria-live="assertive">도착</div>
+              <div class="arrival-sub-text">도착했습니다.</div>
+            </div>
+            <div class="arrival-bottom">
+              <div class="arrival-handle" aria-hidden="true"></div>
+              <button class="big-btn solid" style="margin-bottom:10px;" data-g="bookmarks" aria-label="도착지 저장">
+                <svg aria-hidden="true"><use href="#i-bookmark"/></svg>도착지 저장
+              </button>
+              <button class="big-btn outline" data-g="home" aria-label="탐색 완료">
+                <svg aria-hidden="true"><use href="#i-check-circle"/></svg>완료
+              </button>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab" data-g="home"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab on" data-g="cat-grid"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab" data-g="mypage"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               11 마이페이지
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc" id="sc-mypage" role="main" aria-label="마이페이지">
+            <div class="scroll">
+              <div class="hdr">
+                <button class="btn-back" data-g="home" aria-label="홈으로">
+                  <svg aria-hidden="true"><use href="#i-back"/></svg>
+                </button>
+                <span class="hdr-title">마이페이지</span>
+              </div>
+
+              <div class="my-profile-card" aria-label="사용자 프로필">
+                <div class="my-avatar" aria-hidden="true">
+                  <svg><use href="#i-user"/></svg>
+                </div>
+                <div class="my-profile-info">
+                  <div class="my-name">이음길 사용자</div>
+                  <div class="my-mode">시각장애 사용자 모드</div>
+                  <button class="my-type-btn" aria-label="사용자 유형 변경">
+                    사용자 유형 변경
+                    <svg aria-hidden="true"><use href="#i-arrow-right-simple"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="my-section-label">주요 메뉴</div>
+              <div class="my-divider" aria-hidden="true"></div>
+
+              <button class="my-menu-item" data-g="bookmarks" aria-label="북마크 관리">
+                <svg class="mi-icon" aria-hidden="true"><use href="#i-bookmark"/></svg>
+                북마크 관리
+                <span class="mi-chev" aria-hidden="true"><svg><use href="#i-arrow-right-simple"/></svg></span>
+              </button>
+              <button class="my-menu-item" aria-label="설정">
+                <svg class="mi-icon" aria-hidden="true"><use href="#i-settings"/></svg>
+                설정
+                <span class="mi-chev" aria-hidden="true"><svg><use href="#i-arrow-right-simple"/></svg></span>
+              </button>
+              <button class="my-menu-item" data-g="help" aria-label="앱 정보 및 도움말">
+                <svg class="mi-icon" aria-hidden="true"><use href="#i-info"/></svg>
+                앱 정보 및 도움말
+                <span class="mi-chev" aria-hidden="true"><svg><use href="#i-arrow-right-simple"/></svg></span>
+              </button>
+
+              <div class="my-section-label" style="margin-top:16px;">알림 설정</div>
+              <div class="my-divider" aria-hidden="true"></div>
+
+              <div class="my-toggle-row" role="group" aria-label="푸시 알림 설정">
+                <div class="my-toggle-label">
+                  <svg aria-hidden="true" style="width:22px;height:22px;"><use href="#i-bell"/></svg>
+                  푸시 알림
+                </div>
+                <div class="toggle-switch" role="switch" aria-checked="true" tabindex="0" aria-label="푸시 알림 켜짐"></div>
+              </div>
+
+              <button class="my-logout-btn" aria-label="로그아웃">
+                <svg aria-hidden="true" style="width:20px;height:20px;"><use href="#i-logout"/></svg>
+                로그아웃
+              </button>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab" data-g="home"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab" data-g="cat-grid"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab on" data-g="mypage"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+          <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+               12 앱 정보 및 도움말
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+          <div class="sc" id="sc-help" role="main" aria-label="앱 정보 및 도움말">
+            <div class="scroll">
+              <div class="hdr">
+                <button class="btn-back" data-g="mypage" aria-label="마이페이지로">
+                  <svg aria-hidden="true"><use href="#i-back"/></svg>
+                </button>
+                <span class="hdr-title">앱 정보 및 도움말</span>
+              </div>
+
+              <div class="help-app-card">
+                <div class="help-app-icon" aria-hidden="true">
+                  <svg><use href="#i-pin"/></svg>
+                </div>
+                <div>
+                  <div class="help-app-name">부산이음길</div>
+                  <div class="help-app-version">버전 1.0.0</div>
+                  <div class="help-app-desc">부산 지역 이동 약자를 위한 무장애 길찾기 서비스</div>
+                </div>
+              </div>
+
+              <div class="help-menu" role="list">
+                <div class="help-item" role="listitem" tabindex="0" aria-label="이용 가이드">
+                  <svg aria-hidden="true"><use href="#i-book"/></svg>
+                  이용 가이드
+                  <span class="hi-chev" aria-hidden="true"><svg><use href="#i-arrow-right-simple"/></svg></span>
+                </div>
+                <div class="help-item" role="listitem" tabindex="0" aria-label="고객센터, 전화번호 051-123-4567">
+                  <svg aria-hidden="true"><use href="#i-phone"/></svg>
+                  고객센터
+                  <span class="hi-value">051-123-4567</span>
+                  <span class="hi-chev" aria-hidden="true"><svg><use href="#i-arrow-right-simple"/></svg></span>
+                </div>
+                <div class="help-item" role="listitem" tabindex="0" aria-label="1:1 문의하기">
+                  <svg aria-hidden="true"><use href="#i-chat"/></svg>
+                  1:1 문의하기
+                  <span class="hi-chev" aria-hidden="true"><svg><use href="#i-arrow-right-simple"/></svg></span>
+                </div>
+                <div class="help-item" role="listitem" tabindex="0" aria-label="개인정보 처리방침">
+                  <svg aria-hidden="true"><use href="#i-shield"/></svg>
+                  개인정보 처리방침
+                  <span class="hi-chev" aria-hidden="true"><svg><use href="#i-arrow-right-simple"/></svg></span>
+                </div>
+                <div class="help-item" role="listitem" tabindex="0" aria-label="서비스 이용약관">
+                  <svg aria-hidden="true"><use href="#i-doc"/></svg>
+                  서비스 이용약관
+                  <span class="hi-chev" aria-hidden="true"><svg><use href="#i-arrow-right-simple"/></svg></span>
+                </div>
+              </div>
+
+              <button class="help-leave-btn" aria-label="회원탈퇴">
+                <svg aria-hidden="true" style="width:20px;height:20px;"><use href="#i-logout"/></svg>
+                회원탈퇴
+              </button>
+            </div>
+            <nav class="tabnav" aria-label="주요 메뉴">
+              <button class="tab" data-g="home"><svg aria-hidden="true"><use href="#i-home"/></svg>홈</button>
+              <button class="tab" data-g="bookmarks"><svg aria-hidden="true"><use href="#i-bookmark"/></svg>북마크</button>
+              <button class="tab" data-g="cat-grid"><svg aria-hidden="true"><use href="#i-grid"/></svg>카테고리</button>
+              <button class="tab on" data-g="mypage"><svg aria-hidden="true"><use href="#i-user"/></svg>마이페이지</button>
+            </nav>
+          </div>
+
+        </div><!-- /screen-wrap -->
+      </div><!-- /phone -->
+    </div><!-- /phone-wrap -->
+
+    <!-- ══════════════════════════════════════
+         인스펙터 패널
+    ══════════════════════════════════════ -->
+    <div class="inspector" aria-label="화면 상세 설명">
+      <div class="ins-badge" id="ins-badge">
+        <svg aria-hidden="true" style="width:10px;height:10px;"><use href="#i-info"/></svg>
+        화면 정보
+      </div>
+      <div class="ins-title" id="ins-title">홈</div>
+      <div class="ins-desc" id="ins-desc">음성 입력 버튼과 현재 위치 버튼으로 구성된 메인 화면입니다.</div>
+      <div class="ins-divider"></div>
+      <div class="ins-section-title">화면 흐름</div>
+      <div id="ins-flow"></div>
+      <div class="ins-a11y" id="ins-a11y"></div>
+    </div>
+
+  </div><!-- /workspace -->
+</div><!-- /shell -->
+
+<script>
+  const SCREENS = {
+    home:        { sid: "sc-home",        tab: "home" },
+    listening:   { sid: "sc-listening",   tab: "home" },
+    search:      { sid: "sc-search",      tab: null },
+    bookmarks:   { sid: "sc-bookmarks",   tab: "bookmarks" },
+    "cat-grid":  { sid: "sc-cat-grid",    tab: "cat-grid" },
+    "cat-results":{ sid: "sc-cat-results",tab: "cat-grid" },
+    detail:      { sid: "sc-detail",      tab: "cat-grid" },
+    briefing:    { sid: "sc-briefing",    tab: "home" },
+    guidance:    { sid: "sc-guidance",    tab: "home" },
+    arrival:     { sid: "sc-arrival",     tab: "cat-grid" },
+    mypage:      { sid: "sc-mypage",      tab: "mypage" },
+    help:        { sid: "sc-help",        tab: "mypage" },
+  };
+
+  const INS_DATA = {
+    home: {
+      badge: "01 메인 화면",
+      title: "홈",
+      desc: "대형 노란 버튼 두 개로 음성 입력과 현재 위치 안내에 즉시 접근할 수 있는 메인 화면입니다. 시각장애인이 터치 인터페이스에서 쉽게 찾을 수 있도록 버튼 크기를 최대화했습니다.",
+      flow: [
+        "<strong>음성 입력 →</strong> 화면 전체를 차지하는 노란 버튼. 탭 시 음성 입력 화면 전환.",
+        "<strong>현재 위치 →</strong> GPS 기반 주변 시설 탐색 시작.",
+        "<strong>하단 탭 →</strong> 북마크·카테고리·마이페이지 직접 이동."
+      ],
+      a11y: ["aria-live=polite", "role=status", "대형 터치 타겟"]
+    },
+    listening: {
+      badge: "02 음성 입력",
+      title: "음성 입력 중",
+      desc: "지도 격자 배경 위에 펄스 애니메이션 마이크가 표시됩니다. 음성 인식이 활성화된 상태를 시각·청각 모두로 전달합니다.",
+      flow: [
+        "<strong>펄스 링 →</strong> CSS 애니메이션으로 청취 중임을 표시.",
+        "<strong>aria-live=assertive →</strong> '음성 입력 중' 상태를 스크린리더가 즉시 읽음.",
+        "<strong>취소 →</strong> 음성 입력 중단 후 홈 복귀."
+      ],
+      a11y: ["aria-live=assertive", "map-bg 장식 요소 숨김", "고대비 노란 아이콘"]
+    },
+    search: {
+      badge: "03 검색 결과",
+      title: "검색 결과",
+      desc: "음성 입력 후 도출된 장소 목록입니다. 각 카드에 북마크·길찾기·상세정보 버튼이 포함됩니다.",
+      flow: [
+        "<strong>장소 카드 →</strong> 이름·주소·접근성 배지·거리·버튼 구성.",
+        "<strong>배지 →</strong> 휠체어·단차·엘리베이터를 SVG 아이콘으로 표시.",
+        "<strong>길찾기 →</strong> 경로 브리핑 화면으로 이동."
+      ],
+      a11y: ["role=article", "aria-label 거리 포함", "SVG 접근성 배지"]
+    },
+    bookmarks: {
+      badge: "04 북마크",
+      title: "북마크",
+      desc: "저장된 즐겨찾기 장소 목록입니다. 검색 결과와 동일한 카드 레이아웃을 공유합니다.",
+      flow: [
+        "<strong>북마크 버튼 →</strong> 노란 활성 상태로 표시.",
+        "<strong>카드 탭 →</strong> 상세정보 화면으로 이동.",
+      ],
+      a11y: ["role=article", "북마크 상태 aria-label 명시"]
+    },
+    "cat-grid": {
+      badge: "05 카테고리",
+      title: "카테고리",
+      desc: "6개 카테고리를 2열 그리드로 배치합니다. 활성 카테고리(병원)는 노란 배경으로 강조됩니다. 모든 아이콘은 SVG로 구성됩니다.",
+      flow: [
+        "<strong>화장실·음식점·숙박시설·병원·보건소·음성안내 →</strong> SVG 아이콘 + 텍스트.",
+        "<strong>활성 타일 →</strong> background: var(--y) 강조 스타일.",
+        "<strong>탭 →</strong> 카테고리 결과 화면으로 이동."
+      ],
+      a11y: ["role=listitem", "각 타일 aria-label", "충분한 터치 타겟 148px+"]
+    },
+    "cat-results": {
+      badge: "06 카테고리 결과",
+      title: "카테고리 결과",
+      desc: "선택한 카테고리 내 장소 목록입니다. 상단 필터 칩으로 접근성 조건을 추가 필터링할 수 있습니다.",
+      flow: [
+        "<strong>필터 칩 →</strong> 접근 가능 장소 > 엘리베이터 경로 표시.",
+        "<strong>카드 →</strong> 검색 결과와 동일 구조.",
+      ],
+      a11y: ["aria-pressed 칩 상태", "role=group 필터 영역"]
+    },
+    detail: {
+      badge: "07 상세정보",
+      title: "상세정보",
+      desc: "선택 장소의 접근성 정보·기본 정보·안내 버튼이 섹션별로 정리됩니다. 실제 이미지 시안과 동일하게 구성했습니다.",
+      flow: [
+        "<strong>접근성 정보 →</strong> 4가지 배지(SVG 아이콘 포함).",
+        "<strong>기본 정보 →</strong> 운영시간·전화·안내데스크.",
+        "<strong>안내 버튼 →</strong> 길찾기·현재 위치에서 안내·북마크 저장."
+      ],
+      a11y: ["접근성 배지 SVG+텍스트", "big-btn 62px 높이", "모든 버튼 aria-label"]
+    },
+    briefing: {
+      badge: "08 경로 브리핑",
+      title: "경로 브리핑",
+      desc: "출발 전 전체 경로를 단계별로 요약합니다. 재생 버튼을 누르면 웨이브폼 애니메이션이 활성화됩니다.",
+      flow: [
+        "<strong>단계 카드 →</strong> 번호·텍스트·방향 SVG 아이콘 3열 구성.",
+        "<strong>미니맵 →</strong> SVG 경로 선으로 시각화.",
+        "<strong>시작/중지 →</strong> 웨이브폼 애니메이션 토글."
+      ],
+      a11y: ["role=listitem 각 단계", "SVG 지도 aria-label", "aria-label 재생 버튼"]
+    },
+    guidance: {
+      badge: "09 길 안내",
+      title: "길 안내",
+      desc: "50M 직진, 2분 후 등 핵심 안내를 최대 폰트로 표시합니다. 이미지 4번 시안과 동일한 구성입니다.",
+      flow: [
+        "<strong>대형 화살표 SVG →</strong> 현재 방향을 즉시 인식.",
+        "<strong>거리·다음 안내 →</strong> 굵은 노란 텍스트.",
+        "<strong>안내 종료 →</strong> 도착 화면 시뮬레이션."
+      ],
+      a11y: ["aria-live=polite 안내 변경", "현재 위치 버튼 aria-label", "고대비 노란 텍스트"]
+    },
+    arrival: {
+      badge: "10 도착",
+      title: "도착",
+      desc: "대형 '도착' 텍스트와 핀 아이콘 바운스 애니메이션으로 도착을 알립니다. 도착지 저장·완료 버튼을 제공합니다.",
+      flow: [
+        "<strong>aria-live=assertive →</strong> '도착' 텍스트를 스크린리더가 즉시 읽음.",
+        "<strong>핀 바운스 →</strong> CSS @keyframes 애니메이션.",
+        "<strong>도착지 저장 →</strong> 북마크 화면으로 이동."
+      ],
+      a11y: ["aria-live=assertive", "pin-bounce 장식 aria-hidden", "big-btn 62px"]
+    },
+    mypage: {
+      badge: "11 마이페이지",
+      title: "마이페이지",
+      desc: "사용자 프로필, 주요 메뉴, 푸시 알림 토글, 로그아웃을 포함합니다. 실제 시안(이미지9)과 동일하게 구성했습니다.",
+      flow: [
+        "<strong>프로필 카드 →</strong> 아바타 SVG·이름·사용자 유형 변경 버튼.",
+        "<strong>메뉴 →</strong> 북마크 관리·설정·앱 정보 (SVG 아이콘).",
+        "<strong>푸시 알림 →</strong> 토글 스위치 role=switch."
+      ],
+      a11y: ["role=switch 토글", "각 메뉴 aria-label", "SVG 아이콘 aria-hidden"]
+    },
+    help: {
+      badge: "12 앱 정보",
+      title: "앱 정보 및 도움말",
+      desc: "앱 버전 정보, 이용 가이드, 고객센터, 1:1 문의, 개인정보 처리방침 등을 제공합니다.",
+      flow: [
+        "<strong>앱 카드 →</strong> 버전·설명 포함.",
+        "<strong>메뉴 목록 →</strong> 각 항목 SVG 아이콘+텍스트+화살표.",
+        "<strong>회원탈퇴 →</strong> 하단 경고 버튼."
+      ],
+      a11y: ["role=listitem 각 항목", "고객센터 번호 aria-label 포함", "tabindex=0 클릭 영역"]
+    }
+  };
+
+  function goTo(target) {
+    if (!SCREENS[target]) return;
+
+    // 화면 전환
+    document.querySelectorAll(".sc").forEach(s => s.classList.remove("on"));
+    document.getElementById(SCREENS[target].sid).classList.add("on");
+
+    // 사이드바
+    document.querySelectorAll(".sl").forEach(l => {
+      l.classList.toggle("on", l.dataset.t === target);
+    });
+
+    // 인스펙터
+    const d = INS_DATA[target];
+    if (d) {
+      document.getElementById("ins-badge").innerHTML = `<svg aria-hidden="true" style="width:10px;height:10px;"><use href="#i-info"/></svg> ${d.badge}`;
+      document.getElementById("ins-title").textContent = d.title;
+      document.getElementById("ins-desc").textContent = d.desc;
+      document.getElementById("ins-flow").innerHTML = d.flow.map(f => `<div class="flow-item">${f}</div>`).join("");
+      document.getElementById("ins-a11y").innerHTML = d.a11y
+        ? `<div class="ins-section-title" style="margin-top:14px;">접근성 속성</div>` +
+          d.a11y.map(a => `<span class="a11y-chip"><svg style="width:12px;height:12px;"><use href="#i-check-circle"/></svg>${a}</span>`).join("")
+        : "";
+    }
+  }
+
+  // 클릭 이벤트 위임
+  document.addEventListener("click", e => {
+    const btn = e.target.closest("[data-g]");
+    if (btn) goTo(btn.dataset.g);
+
+    const sl = e.target.closest(".sl");
+    if (sl && sl.dataset.t) goTo(sl.dataset.t);
+  });
+
+  // 경로 브리핑 시작/중지 토글
+  const playBtn = document.getElementById("play-btn");
+  const waveform = document.getElementById("waveform");
+  let playing = false;
+
+  if (playBtn) {
+    playBtn.addEventListener("click", () => {
+      playing = !playing;
+      if (playing) {
+        playBtn.innerHTML = `<svg aria-hidden="true" style="width:28px;height:28px;"><use href="#i-stop"/></svg>중지`;
+        playBtn.setAttribute("aria-label", "경로 안내 중지");
+        waveform.style.display = "flex";
+      } else {
+        playBtn.innerHTML = `<svg aria-hidden="true" style="width:28px;height:28px;"><use href="#i-play"/></svg>시작`;
+        playBtn.setAttribute("aria-label", "경로 안내 시작");
+        waveform.style.display = "none";
+      }
+    });
+  }
+
+  // 초기화
+  goTo("home");
+</script>
+</body>
+</html>

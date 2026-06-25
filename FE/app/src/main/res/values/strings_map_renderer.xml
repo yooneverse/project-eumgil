@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="map_viewport_status_renderer_error">&#xC9C0;&#xB3C4; &#xC5D4;&#xC9C4; &#xCD08;&#xAE30;&#xD654; &#xC2E4;&#xD328;</string>
+    <string name="map_viewport_title_renderer_loading">&#xC9C0;&#xB3C4;&#xB97C; &#xBD88;&#xB7EC;&#xC624;&#xB294; &#xC911;&#xC785;&#xB2C8;&#xB2E4;</string>
+    <string name="map_viewport_description_renderer_loading">&#xC7A0;&#xC2DC;&#xB9CC; &#xAE30;&#xB2E4;&#xB824;&#xC8FC;&#xC138;&#xC694;.</string>
+    <string name="map_viewport_title_renderer_retrying">&#xC9C0;&#xB3C4;&#xB97C; &#xB2E4;&#xC2DC; &#xBD88;&#xB7EC;&#xC624;&#xB294; &#xC911;&#xC785;&#xB2C8;&#xB2E4;</string>
+    <string name="map_viewport_description_renderer_retrying">&#xC9C0;&#xB3C4; &#xC2DC;&#xC791;&#xC774; &#xB290;&#xB824; &#xD55C; &#xBC88; &#xB354; &#xC2DC;&#xB3C4;&#xD558;&#xACE0; &#xC788;&#xC2B5;&#xB2C8;&#xB2E4;.</string>
+    <string name="map_viewport_title_renderer_error">&#xC9C0;&#xB3C4;&#xB97C; &#xBD88;&#xB7EC;&#xC624;&#xC9C0; &#xBABB;&#xD588;&#xC2B5;&#xB2C8;&#xB2E4;</string>
+    <string name="map_viewport_description_renderer_error">&#xB124;&#xD2B8;&#xC6CC;&#xD06C; &#xB610;&#xB294; &#xC9C0;&#xB3C4; &#xC5D4;&#xC9C4; &#xC0C1;&#xD0DC;&#xB97C; &#xD655;&#xC778;&#xD55C; &#xB4A4; &#xB2E4;&#xC2DC; &#xC2DC;&#xB3C4;&#xD574;&#xC8FC;&#xC138;&#xC694;.</string>
+    <string name="map_viewport_supporting_renderer_error">&#xC624;&#xB958; &#xC6D0;&#xC778;: %1$s</string>
+    <string name="map_viewport_retry">&#xC9C0;&#xB3C4; &#xB2E4;&#xC2DC; &#xBD88;&#xB7EC;&#xC624;&#xAE30;</string>
+</resources>

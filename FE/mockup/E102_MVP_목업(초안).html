@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E102 배리어프리 지도 앱 — MVP 목업 (SCR-006 접근성 맵)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1A73E8;
+    --primary-light: #E8F0FE;
+    --primary-dark: #1557B0;
+    --accent: #FBBC04;
+    --accent-dark: #E37400;
+    --success: #34A853;
+    --danger: #EA4335;
+    --gray-50: #F8F9FA;
+    --gray-100: #F1F3F4;
+    --gray-200: #E8EAED;
+    --gray-300: #DADCE0;
+    --gray-400: #BDC1C6;
+    --gray-500: #9AA0A6;
+    --gray-600: #80868B;
+    --gray-700: #5F6368;
+    --gray-800: #3C4043;
+    --gray-900: #202124;
+    --white: #FFFFFF;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+  }
+
+  /* ── 외부 레이아웃 ── */
+  .studio {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  /* ── 사이드바 ── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+
+  .screen-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .screen-item {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+
+  .screen-item:hover {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .screen-item.active {
+    background: rgba(26,115,232,0.25);
+    border-color: rgba(26,115,232,0.5);
+  }
+
+  .screen-item-id {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .screen-item-name {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.4;
+  }
+
+  .screen-item.active .screen-item-name {
+    color: #fff;
+  }
+
+  /* ── 폰 프레임 ── */
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    background: #111;
+    border-radius: 50px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 2px #2a2a2a,
+      0 0 0 6px #1a1a1a,
+      0 40px 80px rgba(0,0,0,0.6);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--white);
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* status bar */
+  .status-bar {
+    height: 44px;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .status-bar.dark {
+    background: transparent;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+  }
+
+  .status-time {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+
+  .status-bar.dark .status-time { color: white; }
+
+  .status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .status-bar.dark .status-icons svg { stroke: white; fill: white; }
+
+  /* ── 화면 공통 ── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    background: var(--white);
+    border-radius: 40px;
+    overflow: hidden;
+  }
+
+  .screen.active { display: flex; }
+
+  .screen-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .screen-body::-webkit-scrollbar { display: none; }
+
+  /* ── 공통 컴포넌트 ── */
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    padding: 16px 24px 0;
+  }
+
+  .progress-dot {
+    height: 4px;
+    flex: 1;
+    border-radius: 99px;
+    background: var(--gray-200);
+  }
+
+  .progress-dot.done { background: var(--primary); }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gray-900);
+    padding: 20px 24px 8px;
+    line-height: 1.3;
+  }
+
+  .page-sub {
+    font-size: 14px;
+    color: var(--gray-600);
+    padding: 0 24px 24px;
+    line-height: 1.6;
+  }
+
+  .btn-primary {
+    width: calc(100% - 48px);
+    margin: 0 24px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-primary:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; transform: none; }
+
+  .btn-text {
+    background: none;
+    border: none;
+    color: var(--gray-600);
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    padding: 12px 24px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-text:hover { color: var(--primary); }
+
+  .bottom-actions {
+    padding: 16px 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-top: 1px solid var(--gray-100);
+    margin-top: auto;
+    background: white;
+  }
+
+  /* ── 선택 카드 ── */
+  .select-card {
+    margin: 0 24px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .select-card:hover { border-color: var(--primary); background: var(--primary-light); }
+  .select-card.selected { border-color: var(--primary); background: var(--primary-light); }
+
+  .select-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: rgba(26,115,232,0.1);
+    flex-shrink: 0;
+  }
+
+  .select-card.selected .select-card-icon { background: rgba(26,115,232,0.15); }
+
+  .select-card-text { flex: 1; }
+  .select-card-title { font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+  .select-card-desc { font-size: 13px; color: var(--gray-600); line-height: 1.4; }
+
+  .select-card .check {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-300);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .select-card.selected .check {
+    border-color: var(--primary);
+    background: var(--primary);
+  }
+
+  /* ── 라디오 리스트 ── */
+  .radio-list { padding: 0 24px; display: flex; flex-direction: column; gap: 4px; }
+
+  .radio-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    border: 1.5px solid var(--gray-200);
+    transition: all 0.15s;
+  }
+
+  .radio-item:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .radio-item.selected { border-color: var(--primary); background: var(--primary-light); }
+
+  .radio-dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-300);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .radio-item.selected .radio-dot { border-color: var(--primary); }
+
+  .radio-dot-inner {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: none;
+  }
+
+  .radio-item.selected .radio-dot-inner { display: block; }
+  .radio-label { font-size: 15px; color: var(--gray-800); font-weight: 500; }
+
+  /* ── 체크박스 ── */
+  .checkbox-group { padding: 0 24px; display: flex; flex-direction: column; gap: 4px; }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--gray-100);
+    cursor: pointer;
+  }
+
+  .checkbox-item:last-child { border-bottom: none; }
+
+  .checkbox-box {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--gray-300);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .checkbox-item.checked .checkbox-box { background: var(--primary); border-color: var(--primary); }
+
+  .checkbox-text { flex: 1; }
+  .checkbox-label { font-size: 14px; color: var(--gray-800); font-weight: 500; }
+  .checkbox-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-left: 6px;
+  }
+  .badge-required { background: #FFEBEE; color: #C62828; }
+  .badge-optional { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ── 약관 스크롤 ── */
+  .terms-box {
+    margin: 0 24px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    height: 120px;
+    overflow-y: auto;
+    font-size: 12px;
+    color: var(--gray-600);
+    line-height: 1.7;
+  }
+
+  /* ── 지도 화면 ── */
+  .map-bg {
+    flex: 1;
+    position: relative;
+    background: #e8f4ea;
+    overflow: hidden;
+  }
+
+  .map-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .map-road-h {
+    position: absolute;
+    left: 0; right: 0;
+    background: rgba(255,255,255,0.7);
+  }
+
+  .map-road-v {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: rgba(255,255,255,0.7);
+  }
+
+  .map-search-bar {
+    position: absolute;
+    top: 12px; left: 16px; right: 16px;
+    height: 48px;
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 10px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .map-search-bar span { font-size: 14px; color: var(--gray-500); }
+
+  .filter-chips {
+    position: absolute;
+    top: 72px; left: 0; right: 0;
+    display: flex;
+    gap: 8px;
+    padding: 0 16px;
+    overflow-x: auto;
+    z-index: 10;
+    scrollbar-width: none;
+  }
+
+  .filter-chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.15s;
+    background: white;
+    color: var(--gray-700);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .chip.active { background: var(--primary); color: white; }
+
+  .map-search-bar .search-icon {
+    font-size: 18px;
+    color: var(--gray-700);
+  }
+
+  .map-search-bar .search-copy {
+    font-size: 15px;
+    color: var(--gray-800);
+    font-weight: 600;
+  }
+
+  .map-search-bar .search-action {
+    margin-left: auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gray-50);
+    box-shadow: inset 0 0 0 1px var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+
+  .filter-chips.fixed-three {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-x: auto;
+    gap: 7px;
+    padding-right: 16px;
+  }
+
+  .filter-chips.fixed-three .chip {
+    flex: 0 0 auto;
+    min-height: 42px;
+    padding: 0 11px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1;
+    box-shadow: 0 6px 14px rgba(32, 33, 36, 0.12);
+  }
+
+  .filter-chips.fixed-three .chip-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+  }
+
+  .filter-chips.fixed-three .chip-symbol {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .filter-chips.fixed-three .chip.active {
+    background: #f8f9fb;
+    color: var(--gray-800);
+  }
+
+  .filter-chips.fixed-three .chip.pink-outline.active {
+    background: #fff1f6;
+    color: #d94884;
+  }
+
+  .filter-chips.fixed-three .chip.dark-outline.active {
+    background: #202124;
+    color: white;
+  }
+
+  .filter-chips.fixed-three .chip.green-outline.active {
+    background: #edf8f0;
+    color: #1d7b3a;
+  }
+
+  .filter-chips.fixed-three .chip.charge-outline.active {
+    background: #eef3ff;
+    color: #3367d6;
+  }
+
+  .filter-chips.fixed-three .chip.restaurant-outline.active {
+    background: #fff4ea;
+    color: #c55400;
+  }
+
+  .chip.pink-outline {
+    border-color: #f06292;
+    color: #d94884;
+  }
+
+  .chip.pink-outline .chip-symbol {
+    background: #fff1f6;
+    color: #f04d8a;
+  }
+
+  .chip.dark-outline {
+    border-color: #202124;
+    color: #202124;
+  }
+
+  .chip.dark-outline .chip-symbol {
+    background: #f3f4f6;
+    color: #202124;
+  }
+
+  .chip.green-outline {
+    border-color: #34A853;
+    color: #1d7b3a;
+  }
+
+  .chip.charge-outline {
+    border-color: #5b84f1;
+    color: #3367d6;
+  }
+
+  .chip.green-outline .chip-symbol {
+    background: #edf8f0;
+    color: #228043;
+  }
+
+  .chip.charge-outline .chip-symbol {
+    background: #eef3ff;
+    color: #3367d6;
+  }
+
+  .chip.restaurant-outline {
+    border-color: #EA4335;
+    color: #c55400;
+  }
+
+  .chip.restaurant-outline .chip-symbol {
+    background: #fff4ea;
+    color: #c55400;
+  }
+
+  .restaurant-glyph {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .accessibility-map {
+    background: #efe9db;
+  }
+
+  .accessibility-map .map-grid {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.24) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.24) 1px, transparent 1px);
+    background-size: 44px 44px;
+    opacity: 0.72;
+  }
+
+  .map-block {
+    position: absolute;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(213, 205, 186, 0.9);
+  }
+
+  .map-label {
+    position: absolute;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(60, 64, 67, 0.74);
+    background: rgba(255,255,255,0.72);
+    padding: 3px 8px;
+    border-radius: 99px;
+  }
+
+  .map-poi-badge {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: #4a90e2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .map-marker {
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .map-marker.is-hidden {
+    display: none;
+  }
+
+  .map-marker:hover { transform: scale(1.2); }
+
+  .marker-bubble {
+    background: white;
+    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+    border: 2px solid;
+  }
+
+  .marker-pin {
+    width: 36px; height: 36px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm);
+    font-size: 14px;
+  }
+
+  .marker-pin span { transform: rotate(45deg); }
+
+  .marker-pin.large {
+    width: 44px;
+    height: 44px;
+  }
+
+  .marker-pin.accessible-toilet { background: #f04d8a; }
+  .marker-pin.restaurant-pin { background: #EA4335; }
+  .marker-pin.elevator-pin { background: #34A853; }
+  .marker-pin.charge-pin { background: #5b84f1; }
+
+  .marker-inner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    transform: rotate(45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+  }
+
+  .marker-pin.accessible-toilet .marker-inner { color: #f04d8a; }
+  .marker-pin.restaurant-pin .marker-inner {
+    color: #c55400;
+    font-size: 0;
+  }
+  .marker-pin.elevator-pin .marker-inner { color: #228043; font-size: 16px; }
+  .marker-pin.charge-pin .marker-inner { color: #3367d6; font-size: 17px; }
+
+  .marker-pin.restaurant-pin .marker-inner svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .user-marker {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid white;
+    box-shadow: 0 0 0 4px rgba(26,115,232,0.25), var(--shadow-sm);
+  }
+
+  .map-fab-group {
+    position: absolute;
+    right: 16px; bottom: 80px;
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 10;
+  }
+
+  .fab {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    transition: all 0.15s;
+  }
+
+  .fab:hover { transform: scale(1.08); box-shadow: var(--shadow-lg); }
+  .fab.primary { background: var(--primary); }
+
+  /* ── 하단 탭바 ── */
+  .bottom-nav {
+    height: 64px;
+    background: white;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    align-items: stretch;
+    position: relative;
+    z-index: 20;
+    flex-shrink: 0;
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    padding: 8px 0 4px;
+  }
+
+  .nav-item:hover { background: var(--gray-50); }
+
+  .nav-icon { font-size: 22px; line-height: 1; }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--gray-500); }
+  .nav-item.active .nav-label { color: var(--primary); }
+  .nav-item.active .nav-icon { filter: none; }
+
+  /* ── 시설 팝업 ── */
+  .bottom-sheet {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+    z-index: 50;
+    padding-bottom: 20px;
+  }
+
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: var(--gray-300);
+    border-radius: 99px;
+    margin: 12px auto 16px;
+  }
+
+  .sheet-facility-name { font-size: 18px; font-weight: 700; color: var(--gray-900); padding: 0 20px 4px; }
+  .sheet-address { font-size: 13px; color: var(--gray-500); padding: 0 20px 16px; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 16px; }
+
+  .tag {
+    display: flex; align-items: center; gap: 4px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .tag-yes { background: #E8F5E9; color: #2E7D32; }
+  .tag-no { background: #FFEBEE; color: #C62828; }
+  .tag-info { background: var(--primary-light); color: var(--primary); }
+
+  .sheet-actions { display: flex; gap: 12px; padding: 0 20px; }
+
+  .sheet-btn-bookmark {
+    width: 52px; height: 52px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .sheet-btn-route {
+    flex: 1; height: 52px;
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* ── 검색 화면 ── */
+  .search-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+  }
+
+  .search-input-box {
+    flex: 1;
+    height: 44px;
+    background: var(--gray-100);
+    border-radius: var(--radius-xl);
+    border: none;
+    padding: 0 16px;
+    font-size: 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--gray-900);
+    outline: none;
+  }
+
+  .back-btn {
+    width: 40px; height: 40px;
+    background: none; border: none;
+    cursor: pointer; font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray-700);
+  }
+
+  .section-header {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-500);
+    letter-spacing: 0.05em;
+    padding: 16px 20px 8px;
+  }
+
+  .list-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--gray-100);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .list-item:hover { background: var(--gray-50); }
+
+  .list-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--gray-100);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .list-main { flex: 1; }
+  .list-title { font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 2px; }
+  .list-sub { font-size: 12px; color: var(--gray-500); }
+  .list-dist { font-size: 12px; color: var(--primary); font-weight: 600; }
+
+  /* ── 경로 설정 ── */
+  .route-header {
+    background: white;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+  }
+
+  .route-input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+  }
+
+  .route-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .route-input {
+    flex: 1;
+    height: 44px;
+    background: var(--gray-100);
+    border-radius: var(--radius-md);
+    border: none;
+    padding: 0 14px;
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--gray-900);
+    outline: none;
+  }
+
+  .segment-ctrl {
+    display: flex;
+    background: var(--gray-100);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    gap: 4px;
+    margin-top: 12px;
+  }
+
+  .seg-btn {
+    flex: 1;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    color: var(--gray-600);
+  }
+
+  .seg-btn.active { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
+
+  .route-card {
+    margin: 16px 20px;
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    border: 2px solid transparent;
+    background: var(--gray-50);
+  }
+
+  .route-card.highlighted { border-color: var(--primary); background: var(--primary-light); }
+
+  .route-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .route-card-type { font-size: 13px; font-weight: 700; color: var(--primary); }
+  .route-card-badge { font-size: 11px; background: var(--primary); color: white; padding: 2px 8px; border-radius: 99px; }
+  .route-card-time { font-size: 28px; font-weight: 700; color: var(--gray-900); }
+  .route-card-dist { font-size: 13px; color: var(--gray-500); }
+  .route-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .route-tag { font-size: 11px; padding: 3px 10px; border-radius: 99px; background: rgba(26,115,232,0.1); color: var(--primary); font-weight: 600; }
+
+  .mini-map {
+    height: 140px;
+    margin: 0 20px 16px;
+    background: #e8f4ea;
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── 내비게이션 진행 ── */
+  .navi-map { flex: 1; background: #ddeede; position: relative; overflow: hidden; }
+
+  .navi-top-card {
+    position: absolute;
+    top: 56px; left: 16px; right: 16px;
+    background: var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    color: white;
+    z-index: 10;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .navi-direction { font-size: 13px; opacity: 0.8; margin-bottom: 4px; }
+  .navi-instruction { font-size: 22px; font-weight: 700; }
+  .navi-dist-next { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+  .navi-bottom-panel {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 20px;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+    z-index: 10;
+  }
+
+  .navi-eta-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; }
+  .navi-eta-label { font-size: 12px; color: var(--gray-500); }
+  .navi-eta-value { font-size: 28px; font-weight: 700; color: var(--gray-900); }
+  .navi-eta-sub { font-size: 13px; color: var(--gray-500); }
+
+  .navi-controls { display: flex; gap: 10px; }
+
+  .navi-ctrl-btn {
+    flex: 1; height: 48px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    color: var(--gray-700);
+  }
+
+  .navi-ctrl-btn.danger { border-color: var(--danger); color: var(--danger); }
+
+  /* ── 제보 ── */
+  .form-section { padding: 20px 20px 0; }
+  .form-label { font-size: 13px; font-weight: 700; color: var(--gray-700); margin-bottom: 8px; }
+
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+
+  .form-chip {
+    padding: 7px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--gray-700);
+  }
+
+  .form-chip.selected { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+  .image-picker {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .image-slot {
+    width: 80px; height: 80px;
+    border-radius: var(--radius-md);
+    border: 2px dashed var(--gray-300);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--gray-400);
+    background: var(--gray-50);
+    transition: all 0.15s;
+  }
+
+  .image-slot:hover { border-color: var(--primary); background: var(--primary-light); }
+  .image-slot.filled { border-style: solid; border-color: var(--gray-300); background: var(--gray-100); }
+
+  .form-textarea {
+    width: 100%;
+    height: 100px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gray-200);
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--gray-900);
+    resize: none;
+    outline: none;
+    background: var(--gray-50);
+    margin-bottom: 16px;
+  }
+
+  .form-textarea:focus { border-color: var(--primary); background: white; }
+
+  .form-notice {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 16px;
+    background: var(--accent);
+    background: #FFF8E1;
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: #795548;
+  }
+
+  /* ── 마이페이지 ── */
+  .mypage-header {
+    background: linear-gradient(135deg, #1A73E8 0%, #0D47A1 100%);
+    padding: 32px 20px 24px;
+    flex-shrink: 0;
+  }
+
+  .mypage-avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .mypage-name { font-size: 20px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .mypage-badge-row { display: flex; gap: 8px; }
+  .mypage-badge { font-size: 12px; padding: 3px 10px; border-radius: 99px; background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-weight: 600; }
+
+  .menu-group { padding: 8px 0; }
+  .menu-group-title { font-size: 11px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.08em; padding: 12px 20px 4px; text-transform: uppercase; }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .menu-item:hover { background: var(--gray-50); }
+
+  .menu-icon { font-size: 20px; width: 28px; text-align: center; }
+  .menu-text { flex: 1; font-size: 15px; color: var(--gray-800); font-weight: 500; }
+  .menu-arrow { font-size: 18px; color: var(--gray-400); }
+  .menu-badge { font-size: 11px; background: var(--primary-light); color: var(--primary); padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+
+  /* ── 저장한 장소 ── */
+  .bookmark-card {
+    margin: 8px 16px;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    border: 1px solid var(--gray-100);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .bookmark-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+  .bookmark-thumb {
+    width: 52px; height: 52px;
+    border-radius: var(--radius-md);
+    background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .bookmark-info { flex: 1; }
+  .bookmark-name { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 2px; }
+  .bookmark-addr { font-size: 12px; color: var(--gray-500); margin-bottom: 8px; }
+  .bookmark-tags { display: flex; gap: 6px; }
+  .bookmark-tag { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+  .bookmark-actions { display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+  .bm-action-btn {
+    width: 36px; height: 36px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    background: white;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: all 0.15s;
+  }
+  .bm-action-btn:hover { background: var(--gray-100); }
+  .bm-action-btn.danger:hover { background: #FFEBEE; border-color: var(--danger); }
+
+  /* ── 네비게이션 경로 SVG ── */
+  .route-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* ── 로그인 화면 ── */
+  .login-wrap { padding: 32px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .social-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 0 20px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--gray-800);
+  }
+  .social-btn:hover { background: var(--gray-50); }
+  .social-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+  /* ── 페이지 헤더 ── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+  }
+
+  .header-title { font-size: 17px; font-weight: 700; color: var(--gray-900); }
+
+  /* ── 네비게이션 path 애니메이션 ── */
+  .nav-path {
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    animation: draw 1.5s ease forwards;
+  }
+
+  @keyframes draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ── 사이드바 하단 정보 ── */
+  .sidebar-info {
+    margin-top: 24px;
+    padding: 14px;
+    background: rgba(255,255,255,0.05);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .sidebar-info-title { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+  .sidebar-info-text { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
+  /* 상단 브랜딩 */
+  .top-brand {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .brand-name { font-size: 22px; font-weight: 700; color: white; letter-spacing: -0.02em; }
+  .brand-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+  /* nav path animation on screen */
+  .navi-route-line {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    animation: drawRoute 2s ease forwards;
+  }
+
+  @keyframes drawRoute { to { stroke-dashoffset: 0; } }
+
+  /* 미니맵 경로 */
+  .mini-route-line {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 4;
+    stroke-linecap: round;
+    opacity: 0.8;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="top-brand">
+  <div class="brand-name">E102 배리어프리 지도</div>
+  <div class="brand-sub">MVP 화면 목업 · 11개 화면</div>
+</div>
+
+<div class="studio">
+
+  <!-- 사이드바 -->
+  <div class="sidebar">
+    <div class="sidebar-title">화면 목록</div>
+    <div class="screen-list">
+      <div class="screen-item" onclick="goTo('s001', this)">
+        <div class="screen-item-id">SCR-001</div>
+        <div class="screen-item-name">온보딩 — 장애유형 선택</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s002', this)">
+        <div class="screen-item-id">SCR-002</div>
+        <div class="screen-item-name">온보딩 — 장애등급 선택</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s003', this)">
+        <div class="screen-item-id">SCR-003</div>
+        <div class="screen-item-name">위치정보 이용약관 동의</div>
+      </div>
+      <div class="screen-item active" onclick="goTo('s006', this)">
+        <div class="screen-item-id">SCR-006</div>
+        <div class="screen-item-name">지도 메인</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s007', this)">
+        <div class="screen-item-id">SCR-007</div>
+        <div class="screen-item-name">시설 상세 팝업</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s008', this)">
+        <div class="screen-item-id">SCR-008</div>
+        <div class="screen-item-name">검색</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s009', this)">
+        <div class="screen-item-id">SCR-009</div>
+        <div class="screen-item-name">내비게이션 경로 설정</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s010', this)">
+        <div class="screen-item-id">SCR-010</div>
+        <div class="screen-item-name">내비게이션 진행</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s011', this)">
+        <div class="screen-item-id">SCR-011</div>
+        <div class="screen-item-name">도로 상태 제보</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s013', this)">
+        <div class="screen-item-id">SCR-013</div>
+        <div class="screen-item-name">마이페이지</div>
+      </div>
+      <div class="screen-item" onclick="goTo('s014', this)">
+        <div class="screen-item-id">SCR-014</div>
+        <div class="screen-item-name">저장한 장소 관리</div>
+      </div>
+    </div>
+
+    <div class="sidebar-info">
+      <div class="sidebar-info-title">인터랙션 안내</div>
+      <div class="sidebar-info-text">버튼을 탭하면 다음 화면으로 이동합니다. 각 화면의 컴포넌트를 직접 눌러볼 수 있습니다.</div>
+    </div>
+  </div>
+
+  <!-- 폰 프레임 -->
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="phone-screen">
+
+        <!-- ══════════════════════════════════════════
+             SCR-001 온보딩 장애유형 선택
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s001">
+          <div class="status-bar">
+            <span class="status-time">9:41</span>
+            <div class="status-icons">
+              <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="3" width="3" height="9" rx="1" fill="#202124"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#202124"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#202124"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" fill="#dadce0"/></svg>
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2C10.5 2 12.7 3.1 14.2 4.9L15.5 3.5C13.6 1.3 10.9 0 8 0C5.1 0 2.4 1.3 0.5 3.5L1.8 4.9C3.3 3.1 5.5 2 8 2Z" fill="#202124"/><path d="M8 5C9.7 5 11.2 5.7 12.3 6.9L13.6 5.5C12.1 3.9 10.2 3 8 3C5.8 3 3.9 3.9 2.4 5.5L3.7 6.9C4.8 5.7 6.3 5 8 5Z" fill="#202124"/><circle cx="8" cy="10" r="2" fill="#202124"/></svg>
+              <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="#202124" stroke-width="1.2" fill="none"/><rect x="22.5" y="3.5" width="2" height="5" rx="1" fill="#202124"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="#202124"/></svg>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="progress-bar">
+              <div class="progress-dot done"></div>
+              <div class="progress-dot"></div>
+              <div class="progress-dot"></div>
+            </div>
+            <div class="page-title">어떤 도움이<br>필요하신가요?</div>
+            <div class="page-sub">선택하신 유형에 맞게 화면과 안내 방식이 조정돼요.</div>
+
+            <div class="select-card" id="card-visual" onclick="selectType('visual')">
+              <div class="select-card-icon">👁️</div>
+              <div class="select-card-text">
+                <div class="select-card-title">시각장애</div>
+                <div class="select-card-desc">음성 안내·TTS 기반의 UI로 전환됩니다</div>
+              </div>
+              <div class="check" id="check-visual"></div>
+            </div>
+
+            <div class="select-card" id="card-walk" onclick="selectType('walk')">
+              <div class="select-card-icon">♿</div>
+              <div class="select-card-text">
+                <div class="select-card-title">보행약자</div>
+                <div class="select-card-desc">경사로·엘리베이터 기반 경로를 우선합니다</div>
+              </div>
+              <div class="check" id="check-walk"></div>
+            </div>
+          </div>
+
+          <div class="bottom-actions">
+            <button class="btn-primary" id="btn-001-next" disabled onclick="goTo('s002')">다음</button>
+            <button class="btn-text" onclick="goTo('s002')">건너뛰기</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-002 온보딩 장애등급 선택
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s002">
+          <div class="status-bar">
+            <span class="status-time">9:41</span>
+            <div class="status-icons">
+              <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="#202124" stroke-width="1.2" fill="none"/><rect x="22.5" y="3.5" width="2" height="5" rx="1" fill="#202124"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="#202124"/></svg>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="progress-bar">
+              <div class="progress-dot done"></div>
+              <div class="progress-dot done"></div>
+              <div class="progress-dot"></div>
+            </div>
+            <div class="page-title">장애 등급을<br>선택해주세요</div>
+            <div class="page-sub">안내 강도와 글자 크기를 등급에 맞게 조정해드려요.</div>
+
+            <div class="radio-list">
+              <div class="radio-item" onclick="selectGrade(this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><span class="radio-label">1급</span></div>
+              <div class="radio-item" onclick="selectGrade(this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><span class="radio-label">2급</span></div>
+              <div class="radio-item" onclick="selectGrade(this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><span class="radio-label">3급</span></div>
+              <div class="radio-item" onclick="selectGrade(this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><span class="radio-label">4급</span></div>
+              <div class="radio-item" onclick="selectGrade(this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><span class="radio-label">5급</span></div>
+              <div class="radio-item" onclick="selectGrade(this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><span class="radio-label">6급</span></div>
+              <div class="radio-item" onclick="selectGrade(this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><span class="radio-label">해당없음</span></div>
+            </div>
+          </div>
+
+          <div class="bottom-actions">
+            <button class="btn-primary" id="btn-002-next" disabled onclick="goTo('s003')">다음</button>
+            <button class="btn-text" onclick="goTo('s003')">건너뛰기</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-003 위치정보 이용약관 동의
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s003">
+          <div class="status-bar">
+            <span class="status-time">9:41</span>
+            <div class="status-icons">
+              <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="#202124" stroke-width="1.2" fill="none"/><rect x="22.5" y="3.5" width="2" height="5" rx="1" fill="#202124"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="#202124"/></svg>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="progress-bar">
+              <div class="progress-dot done"></div>
+              <div class="progress-dot done"></div>
+              <div class="progress-dot done"></div>
+            </div>
+            <div class="page-title">위치정보<br>이용약관</div>
+            <div class="page-sub">경로 안내와 주변 시설 탐색을 위해 위치 정보가 필요합니다.</div>
+
+            <div class="terms-box">
+              제1조 (목적) 본 약관은 E102 배리어프리 지도 서비스의 위치정보 이용 및 제공과 관련하여 필요한 사항을 규정함을 목적으로 합니다.<br><br>
+              제2조 (위치정보의 수집) 서비스는 경로 안내, 주변 시설 탐색, 내비게이션 기능 제공을 위해 이용자의 위치 정보를 수집·이용합니다.<br><br>
+              제3조 (개인위치정보의 보호) 수집된 위치 정보는 서비스 제공 목적 외에는 사용하지 않으며, 이용자의 동의 없이 제3자에게 제공하지 않습니다.
+            </div>
+
+            <div class="checkbox-group">
+              <div class="checkbox-item" id="chk-all" onclick="toggleAll()">
+                <div class="checkbox-box">✓</div>
+                <div class="checkbox-text">
+                  <span class="checkbox-label" style="font-weight:700;">전체 동의</span>
+                </div>
+              </div>
+              <div class="checkbox-item checked" id="chk-loc" onclick="toggleChk('chk-loc')">
+                <div class="checkbox-box">✓</div>
+                <div class="checkbox-text">
+                  <span class="checkbox-label">위치정보 이용 동의</span>
+                  <span class="checkbox-badge badge-required">필수</span>
+                </div>
+              </div>
+              <div class="checkbox-item" id="chk-priv" onclick="toggleChk('chk-priv')">
+                <div class="checkbox-box"></div>
+                <div class="checkbox-text">
+                  <span class="checkbox-label">개인정보 처리방침</span>
+                  <span class="checkbox-badge badge-optional">선택</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-actions">
+            <button class="btn-primary" onclick="goTo('s006')">동의하고 시작</button>
+            <button class="btn-text" style="color:var(--gray-400);">나중에 하기</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-006 지도 메인
+        ══════════════════════════════════════════ -->
+        <div class="screen active" id="s006">
+          <div class="status-bar dark">
+            <span class="status-time" style="color:white;">9:41</span>
+            <div class="status-icons" style="filter:brightness(10)">
+              <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="22.5" y="3.5" width="2" height="5" rx="1" fill="white"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/></svg>
+            </div>
+          </div>
+
+          <div class="map-bg accessibility-map" style="flex:1;">
+            <div class="map-grid"></div>
+            <div class="map-block" style="top:13%;left:7%;width:26%;height:9%;"></div>
+            <div class="map-block" style="top:15%;left:39%;width:32%;height:11%;"></div>
+            <div class="map-block" style="top:43%;left:10%;width:26%;height:12%;"></div>
+            <div class="map-block" style="top:52%;left:44%;width:34%;height:10%;"></div>
+            <div class="map-block" style="top:69%;left:18%;width:29%;height:11%;"></div>
+            <div class="map-block" style="top:72%;left:58%;width:22%;height:10%;"></div>
+            <!-- 도로 -->
+            <div class="map-road-h" style="top:34%;height:20px;background:#f6e27d;"></div>
+            <div class="map-road-h" style="top:58%;height:16px;background:#f6e27d;"></div>
+            <div class="map-road-h" style="top:75%;height:20px;background:#f6e27d;"></div>
+            <div class="map-road-v" style="left:30%;width:16px;background:rgba(255,255,255,0.78);"></div>
+            <div class="map-road-v" style="left:64%;width:12px;background:rgba(255,255,255,0.78);"></div>
+            <div class="map-label" style="top:26%;left:54%;">해운대역 1번 출구</div>
+            <div class="map-label" style="top:63%;left:18%;">중앙 환승광장</div>
+            <div class="map-label" style="top:78%;left:53%;">보행 약자 우선 구역</div>
+            <div class="map-poi-badge" style="top:42%;left:73%;">🅿</div>
+            <div class="map-poi-badge" style="top:67%;left:46%;">🚌</div>
+
+            <!-- 검색바 -->
+            <div class="map-search-bar" onclick="goTo('s008')">
+              <span class="search-icon">☰</span>
+              <span class="search-copy">장소 검색하기</span>
+              <span class="search-action">🎤</span>
+            </div>
+
+            <!-- 필터 칩 -->
+            <div class="filter-chips fixed-three">
+              <div class="chip restaurant-outline" data-filter-chip data-filter="restaurant" onclick="setMapFilter('restaurant')">
+                <span class="chip-symbol" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="restaurant-glyph">
+                    <path d="M6 3v5"></path>
+                    <path d="M8 3v5"></path>
+                    <path d="M10 3v5"></path>
+                    <path d="M8 8v10"></path>
+                    <path d="M15 3v15"></path>
+                    <path d="M15 3c2 1.2 3 3.3 3 5.5S17 12.8 15 14"></path>
+                  </svg>
+                </span>
+                <span class="chip-label">음식점</span>
+              </div>
+              <div class="chip active pink-outline" data-filter-chip data-filter="toilet" onclick="setMapFilter('toilet')">
+                <span class="chip-symbol">♿</span>
+                <span class="chip-label">화장실</span>
+              </div>
+              <div class="chip green-outline" data-filter-chip data-filter="elevator" onclick="setMapFilter('elevator')">
+                <span class="chip-symbol">🛗</span>
+                <span class="chip-label">엘리베이터</span>
+              </div>
+              <div class="chip charge-outline" data-filter-chip data-filter="charging" onclick="setMapFilter('charging')">
+                <span class="chip-symbol">⚡</span>
+                <span class="chip-label">충전소</span>
+              </div>
+            </div>
+
+            <!-- 마커들 -->
+            <div class="map-marker facility-marker" data-marker-type="toilet" data-name="해운대역 장애인 화장실" data-address="부산시 해운대구 중동1로 35, 1번 출구 인근" data-badge="♿ 화장실" data-badge-bg="#FCE4EC" data-badge-color="#D94884" data-tags="♿ 휠체어 회전 공간||🚪 자동문 있음||🧻 위생용품 비치||🛗 엘리베이터 20m" style="top:25%;left:19%;" onclick="openFacilitySheet(this)">
+              <div class="marker-pin accessible-toilet large"><div class="marker-inner">♿</div></div>
+            </div>
+            <div class="map-marker facility-marker is-hidden" data-marker-type="restaurant" data-name="카페 온도" data-address="부산시 해운대구 해운대로 123" data-badge="🍴 음식점" data-badge-bg="#FFF4EA" data-badge-color="#C55400" data-tags="♿ 경사로 입구||🚪 자동문 있음||🧑‍🦽 테이블 간격 여유||🅿 장애인 주차 1면" style="top:43%;left:50%;" onclick="openFacilitySheet(this)">
+              <div class="marker-pin restaurant-pin large">
+                <div class="marker-inner" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="restaurant-glyph">
+                    <path d="M6 3v5"></path>
+                    <path d="M8 3v5"></path>
+                    <path d="M10 3v5"></path>
+                    <path d="M8 8v10"></path>
+                    <path d="M15 3v15"></path>
+                    <path d="M15 3c2 1.2 3 3.3 3 5.5S17 12.8 15 14"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="map-marker facility-marker is-hidden" data-marker-type="restaurant" data-name="해변마루 식당" data-address="부산시 해운대구 구남로 42" data-badge="🍴 음식점" data-badge-bg="#FFF4EA" data-badge-color="#C55400" data-tags="♿ 무단차 출입구||🚻 장애인 화장실 보유||📏 좌석 간 거리 여유||🛗 건물 엘리베이터 연결" style="top:66%;left:17%;" onclick="openFacilitySheet(this)">
+              <div class="marker-pin restaurant-pin large">
+                <div class="marker-inner" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="restaurant-glyph">
+                    <path d="M6 3v5"></path>
+                    <path d="M8 3v5"></path>
+                    <path d="M10 3v5"></path>
+                    <path d="M8 8v10"></path>
+                    <path d="M15 3v15"></path>
+                    <path d="M15 3c2 1.2 3 3.3 3 5.5S17 12.8 15 14"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="map-marker facility-marker" data-marker-type="toilet" data-name="중앙 환승광장 무장애 화장실" data-address="부산시 해운대구 우동 539-10, 환승광장 내부" data-badge="♿ 화장실" data-badge-bg="#FCE4EC" data-badge-color="#D94884" data-tags="♿ 출입문 폭 900mm 이상||🚪 자동문 있음||🧻 기저귀 교환대||🕒 24시간 개방" style="top:59%;left:56%;" onclick="openFacilitySheet(this)">
+              <div class="marker-pin accessible-toilet large"><div class="marker-inner">♿</div></div>
+            </div>
+            <div class="map-marker facility-marker is-hidden" data-marker-type="elevator" data-name="해운대역 1번 출구 엘리베이터" data-address="부산시 해운대구 중동1로 35, 역사 출구 연결" data-badge="🛗 엘리베이터" data-badge-bg="#EDF8F0" data-badge-color="#1D7B3A" data-tags="🛗 역사-지상 직결||♿ 휠체어 진입 가능||🔔 호출 버튼 낮은 위치||📍 지하철 출구 바로 앞" style="top:27%;left:71%;" onclick="openFacilitySheet(this)">
+              <div class="marker-pin elevator-pin"><div class="marker-inner">🛗</div></div>
+            </div>
+            <div class="map-marker facility-marker is-hidden" data-marker-type="charging" data-name="우동 공영주차장 전동휠체어 충전소" data-address="부산시 해운대구 우동 541-3, 지상 1층" data-badge="⚡ 충전소" data-badge-bg="#EEF3FF" data-badge-color="#3367D6" data-tags="⚡ 급속 충전기 2기||🔌 실내 충전존||♿ 턱 없는 진입||🕒 24시간 이용" style="top:69%;left:72%;" onclick="openFacilitySheet(this)">
+              <div class="marker-pin charge-pin"><div class="marker-inner">⚡</div></div>
+            </div>
+
+            <!-- 현재 위치 -->
+            <div class="map-marker" style="top:51%;left:40%;cursor:default;">
+              <div class="user-marker"></div>
+            </div>
+
+            <!-- FAB -->
+            <div class="map-fab-group">
+              <button class="fab" title="내 위치">📍</button>
+              <button class="fab primary" onclick="goTo('s009')" style="color:white;font-size:18px;" title="길안내">🗺️</button>
+              <button class="fab" onclick="goTo('s011')" title="제보">⚠️</button>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item active">
+              <div class="nav-icon">🗺️</div>
+              <div class="nav-label" style="color:var(--primary);">지도</div>
+            </div>
+            <div class="nav-item" onclick="goTo('s008')">
+              <div class="nav-icon">🔍</div>
+              <div class="nav-label">검색</div>
+            </div>
+            <div class="nav-item" onclick="goTo('s013')">
+              <div class="nav-icon">👤</div>
+              <div class="nav-label">마이페이지</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-007 시설 상세 팝업
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s007">
+          <div class="status-bar dark">
+            <span class="status-time" style="color:white;">9:41</span>
+          </div>
+
+          <div class="map-bg accessibility-map" style="flex:1;">
+            <div class="map-grid"></div>
+            <div class="map-road-h" style="top:34%;height:20px;background:#f6e27d;"></div>
+            <div class="map-road-v" style="left:30%;width:16px;background:rgba(255,255,255,0.78);"></div>
+            <div class="map-label" style="top:22%;left:48%;">해운대역 1번 출구</div>
+            <div class="map-marker" id="sheet-map-marker" style="top:28%;left:40%;cursor:default;">
+              <div class="marker-pin accessible-toilet large"><div class="marker-inner">♿</div></div>
+            </div>
+            <div class="map-marker" style="top:48%;left:38%;cursor:default;">
+              <div class="user-marker"></div>
+            </div>
+          </div>
+
+          <!-- 바텀 시트 -->
+          <div class="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:0 20px 4px;">
+              <div>
+                <div id="sheet-badge" style="font-size:11px;background:#FCE4EC;color:#D94884;padding:3px 10px;border-radius:99px;font-weight:700;display:inline-block;margin-bottom:8px;">♿ 화장실</div>
+                <div class="sheet-facility-name" id="sheet-facility-name" style="padding:0;">해운대역 장애인 화장실</div>
+              </div>
+              <button class="sheet-btn-bookmark" onclick="this.textContent=this.textContent==='🤍'?'💙':'🤍'">🤍</button>
+            </div>
+            <div class="sheet-address" id="sheet-address">부산시 해운대구 중동1로 35, 1번 출구 인근</div>
+
+            <div class="tag-list" id="sheet-tags">
+              <div class="tag tag-yes">♿ 휠체어 회전 공간</div>
+              <div class="tag tag-yes">🚪 자동문 있음</div>
+              <div class="tag tag-yes">🧻 위생용품 비치</div>
+              <div class="tag tag-yes">🛗 엘리베이터 20m</div>
+            </div>
+
+            <div class="sheet-actions">
+              <button class="sheet-btn-route" onclick="goTo('s009')">길안내 시작</button>
+            </div>
+          </div>
+
+          <div style="position:absolute;top:52px;left:16px;z-index:60;">
+            <button class="fab" style="width:40px;height:40px;font-size:16px;" onclick="goTo('s006')">←</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-008 검색
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s008">
+          <div class="status-bar"><span class="status-time">9:41</span></div>
+
+          <div class="search-header" style="flex-shrink:0;">
+            <button class="back-btn" onclick="goTo('s006')">←</button>
+            <input class="search-input-box" placeholder="장소명, 주소 검색" id="searchInput" oninput="filterSearch(this.value)">
+          </div>
+
+          <div class="screen-body">
+            <div id="searchResults">
+              <div class="section-header">검색 결과</div>
+              <div class="list-item" onclick="goTo('s009')">
+                <div class="list-icon">🍴</div>
+                <div class="list-main">
+                  <div class="list-title">카페 온도</div>
+                  <div class="list-sub">해운대구 해운대로 123</div>
+                </div>
+                <div class="list-dist">120m</div>
+              </div>
+              <div class="list-item" onclick="goTo('s009')">
+                <div class="list-icon">🏛️</div>
+                <div class="list-main">
+                  <div class="list-title">해운대 해수욕장</div>
+                  <div class="list-sub">해운대구 해운대해변로 264</div>
+                </div>
+                <div class="list-dist">850m</div>
+              </div>
+              <div class="list-item" onclick="goTo('s009')">
+                <div class="list-icon">🚻</div>
+                <div class="list-main">
+                  <div class="list-title">해운대역 공공화장실</div>
+                  <div class="list-sub">해운대구 중동 1로 35</div>
+                </div>
+                <div class="list-dist">230m</div>
+              </div>
+              <div class="list-item" onclick="goTo('s009')">
+                <div class="list-icon">🛗</div>
+                <div class="list-main">
+                  <div class="list-title">해운대역 1번 출구 엘리베이터</div>
+                  <div class="list-sub">해운대구 해운대로 35</div>
+                </div>
+                <div class="list-dist">410m</div>
+              </div>
+            </div>
+
+            <div class="section-header" style="margin-top:8px;">자주 가는 길</div>
+            <div class="list-item" onclick="goTo('s009')">
+              <div class="list-icon">🏠</div>
+              <div class="list-main">
+                <div class="list-title">집 → 부산대병원</div>
+                <div class="list-sub">베리어프리 우선 · 약 12분</div>
+              </div>
+              <div style="font-size:18px;">›</div>
+            </div>
+            <div class="list-item" onclick="goTo('s009')">
+              <div class="list-icon">🚇</div>
+              <div class="list-main">
+                <div class="list-title">집 → 해운대역</div>
+                <div class="list-sub">베리어프리 우선 · 약 8분</div>
+              </div>
+              <div style="font-size:18px;">›</div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item" onclick="goTo('s006')"><div class="nav-icon">🗺️</div><div class="nav-label">지도</div></div>
+            <div class="nav-item active"><div class="nav-icon">🔍</div><div class="nav-label" style="color:var(--primary);">검색</div></div>
+            <div class="nav-item" onclick="goTo('s013')"><div class="nav-icon">👤</div><div class="nav-label">마이페이지</div></div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-009 내비게이션 경로 설정
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s009">
+          <div class="status-bar"><span class="status-time">9:41</span></div>
+
+          <div class="route-header">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <button class="back-btn" onclick="goTo('s006')" style="width:32px;height:32px;font-size:18px;">←</button>
+              <span style="font-size:16px;font-weight:700;color:var(--gray-900);">경로 설정</span>
+            </div>
+            <div class="route-input-row">
+              <div class="route-dot" style="background:var(--success);"></div>
+              <input class="route-input" value="내 현재 위치" readonly>
+            </div>
+            <div class="route-input-row">
+              <div class="route-dot" style="background:var(--danger);"></div>
+              <input class="route-input" value="카페 온도" readonly>
+            </div>
+            <div class="segment-ctrl">
+              <button class="seg-btn active" onclick="selectSeg(this)">♿ 베리어프리 우선</button>
+              <button class="seg-btn" onclick="selectSeg(this)">⚡ 최단거리</button>
+            </div>
+          </div>
+
+          <div class="screen-body">
+            <!-- 추천 경로 카드 -->
+            <div class="route-card highlighted">
+              <div class="route-card-header">
+                <span class="route-card-type">♿ 베리어프리 우선</span>
+                <span class="route-card-badge">추천</span>
+              </div>
+              <div class="route-card-time">14분 <span style="font-size:16px;font-weight:400;color:var(--gray-500);">· 680m</span></div>
+              <div class="route-tags">
+                <div class="route-tag">♿ 경사로 포함</div>
+                <div class="route-tag">🛗 엘리베이터 포함</div>
+                <div class="route-tag">🚫 계단 없음</div>
+              </div>
+            </div>
+
+            <div class="route-card">
+              <div class="route-card-header">
+                <span class="route-card-type" style="color:var(--gray-600);">⚡ 최단거리</span>
+              </div>
+              <div class="route-card-time" style="font-size:22px;">9분 <span style="font-size:14px;font-weight:400;color:var(--gray-500);">· 450m</span></div>
+              <div class="route-tags">
+                <div class="route-tag" style="background:rgba(234,67,53,0.1);color:var(--danger);">⚠️ 계단 2구간 포함</div>
+              </div>
+            </div>
+
+            <!-- 미니맵 미리보기 -->
+            <div class="mini-map">
+              <svg class="route-svg" viewBox="0 0 300 140">
+                <rect width="300" height="140" fill="#e8f4ea"/>
+                <line x1="0" y1="70" x2="300" y2="70" stroke="white" stroke-width="14"/>
+                <line x1="180" y1="0" x2="180" y2="140" stroke="white" stroke-width="10"/>
+                <polyline class="mini-route-line" points="40,70 180,70 180,30 240,30"/>
+                <circle cx="40" cy="70" r="7" fill="var(--success)" stroke="white" stroke-width="2"/>
+                <circle cx="240" cy="30" r="7" fill="var(--danger)" stroke="white" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="bottom-actions" style="padding:16px 24px 12px;">
+            <button class="btn-primary" style="width:100%;margin:0;" onclick="goTo('s010')">경로 시작</button>
+            <button class="btn-text">자주 가는 길로 저장</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-010 내비게이션 진행
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s010">
+          <div class="status-bar dark">
+            <span class="status-time" style="color:white;">9:41</span>
+          </div>
+
+          <div class="navi-map">
+            <div class="map-grid" style="background-image:linear-gradient(rgba(255,255,255,0.2) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.2) 1px,transparent 1px);"></div>
+            <div class="map-road-h" style="top:45%;height:22px;"></div>
+            <div class="map-road-v" style="left:55%;width:22px;"></div>
+
+            <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 375 480">
+              <polyline class="navi-route-line" points="80,360 55,240 55,100 200,100 200,60 310,60"/>
+              <circle cx="80" cy="360" r="10" fill="var(--success)" stroke="white" stroke-width="3"/>
+              <circle cx="310" cy="60" r="10" fill="var(--danger)" stroke="white" stroke-width="3"/>
+              <!-- 현재 위치 -->
+              <circle cx="80" cy="280" r="12" fill="var(--primary)" stroke="white" stroke-width="3"/>
+              <circle cx="80" cy="280" r="22" fill="rgba(26,115,232,0.2)"/>
+            </svg>
+
+            <!-- 상단 안내 카드 -->
+            <div class="navi-top-card">
+              <div class="navi-direction">100m 앞</div>
+              <div class="navi-instruction">↑ 직진 후 좌회전</div>
+              <div class="navi-dist-next">다음 안내까지 80m</div>
+            </div>
+
+            <!-- 하단 패널 -->
+            <div class="navi-bottom-panel">
+              <div class="navi-eta-row">
+                <div>
+                  <div class="navi-eta-label">남은 시간</div>
+                  <div class="navi-eta-value">8분</div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="navi-eta-label">남은 거리</div>
+                  <div style="font-size:16px;font-weight:600;color:var(--gray-700);">420m</div>
+                </div>
+              </div>
+              <div class="navi-controls">
+                <button class="navi-ctrl-btn" onclick="this.style.background=this.style.background?'':'var(--primary-light)'">
+                  🔊 음성 ON
+                </button>
+                <button class="navi-ctrl-btn">🗺️ 전체경로</button>
+                <button class="navi-ctrl-btn danger" onclick="goTo('s006')">✕ 종료</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-011 도로 상태 제보
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s011">
+          <div class="status-bar"><span class="status-time">9:41</span></div>
+
+          <div class="page-header">
+            <button class="back-btn" onclick="goTo('s006')">←</button>
+            <div class="header-title">도로 상태 제보</div>
+          </div>
+
+          <div class="screen-body">
+            <!-- 미니 지도 -->
+            <div style="height:160px;margin:16px 20px 0;border-radius:var(--radius-lg);overflow:hidden;position:relative;background:#e8f4ea;">
+              <svg style="width:100%;height:100%;" viewBox="0 0 300 160">
+                <rect width="300" height="160" fill="#e8f4ea"/>
+                <line x1="0" y1="80" x2="300" y2="80" stroke="white" stroke-width="18"/>
+                <line x1="150" y1="0" x2="150" y2="160" stroke="white" stroke-width="12"/>
+                <text x="150" y="78" text-anchor="middle" font-size="28">📍</text>
+              </svg>
+              <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:white;padding:4px 14px;border-radius:99px;font-size:12px;color:var(--gray-700);font-weight:600;box-shadow:var(--shadow-sm);white-space:nowrap;">
+                해운대구 해운대로 123
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-label">제보 유형</div>
+              <div class="chip-group">
+                <button class="form-chip selected" onclick="selectChip(this)">🚧 도로 공사</button>
+                <button class="form-chip" onclick="selectChip(this)">⛔ 장애물</button>
+                <button class="form-chip" onclick="selectChip(this)">⬜ 점자블록 손상</button>
+                <button class="form-chip" onclick="selectChip(this)">📝 기타</button>
+              </div>
+
+              <div class="form-label">사진 첨부 (최대 3장)</div>
+              <div class="image-picker">
+                <div class="image-slot" onclick="this.textContent='📷';this.classList.add('filled')">+</div>
+                <div class="image-slot">+</div>
+                <div class="image-slot">+</div>
+              </div>
+
+              <div class="form-label">상세 설명</div>
+              <textarea class="form-textarea" placeholder="제보 내용을 입력해주세요. (선택)"></textarea>
+
+              <div class="form-notice">
+                ℹ️ 제보 내용은 검토 후 지도에 반영됩니다.
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-actions" style="padding:12px 20px;">
+            <button class="btn-primary" style="width:100%;margin:0;" onclick="goTo('s006')">제보 제출</button>
+            <button class="btn-text" onclick="goTo('s006')">취소</button>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-013 마이페이지
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s013">
+          <div class="status-bar dark">
+            <span class="status-time" style="color:white;">9:41</span>
+          </div>
+          <div class="screen-body">
+            <div class="mypage-header">
+              <div class="mypage-avatar">♿</div>
+              <div class="mypage-name">익명 사용자</div>
+              <div class="mypage-badge-row">
+                <div class="mypage-badge">보행약자</div>
+                <div class="mypage-badge">3급</div>
+                <div class="mypage-badge">비로그인</div>
+              </div>
+            </div>
+
+            <div class="menu-group">
+              <div class="menu-group-title">나의 장소</div>
+              <div class="menu-item" onclick="goTo('s014')">
+                <div class="menu-icon">🔖</div>
+                <div class="menu-text">저장한 장소</div>
+                <div class="menu-badge">3</div>
+                <div class="menu-arrow">›</div>
+              </div>
+            </div>
+
+            <div style="height:1px;background:var(--gray-100);margin:4px 20px;"></div>
+
+            <div class="menu-group">
+              <div class="menu-group-title">앱 정보</div>
+              <div class="menu-item">
+                <div class="menu-icon">ℹ️</div>
+                <div class="menu-text">앱 버전</div>
+                <div style="font-size:13px;color:var(--gray-400);">v1.0.0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item" onclick="goTo('s006')"><div class="nav-icon">🗺️</div><div class="nav-label">지도</div></div>
+            <div class="nav-item" onclick="goTo('s008')"><div class="nav-icon">🔍</div><div class="nav-label">검색</div></div>
+            <div class="nav-item active"><div class="nav-icon">👤</div><div class="nav-label" style="color:var(--primary);">마이페이지</div></div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SCR-014 저장한 장소 관리
+        ══════════════════════════════════════════ -->
+        <div class="screen" id="s014">
+          <div class="status-bar"><span class="status-time">9:41</span></div>
+
+          <div class="page-header">
+            <button class="back-btn" onclick="goTo('s013')">←</button>
+            <div class="header-title">저장한 장소</div>
+          </div>
+
+          <div class="screen-body" style="padding-top:8px;">
+            <div class="bookmark-card">
+              <div class="bookmark-thumb">🍴</div>
+              <div class="bookmark-info">
+                <div class="bookmark-name">카페 온도</div>
+                <div class="bookmark-addr">해운대구 해운대로 123</div>
+                <div class="bookmark-tags">
+                  <div class="bookmark-tag">♿ 경사로</div>
+                  <div class="bookmark-tag">🚪 자동문</div>
+                </div>
+              </div>
+              <div class="bookmark-actions">
+                <button class="bm-action-btn" onclick="goTo('s009')" title="길안내">🗺️</button>
+                <button class="bm-action-btn danger" title="삭제">🗑️</button>
+              </div>
+            </div>
+
+            <div class="bookmark-card">
+              <div class="bookmark-thumb">🏛️</div>
+              <div class="bookmark-info">
+                <div class="bookmark-name">해운대 해수욕장</div>
+                <div class="bookmark-addr">해운대구 해운대해변로 264</div>
+                <div class="bookmark-tags">
+                  <div class="bookmark-tag">♿ 경사로</div>
+                  <div class="bookmark-tag">🚻 장애인화장실</div>
+                </div>
+              </div>
+              <div class="bookmark-actions">
+                <button class="bm-action-btn" onclick="goTo('s009')" title="길안내">🗺️</button>
+                <button class="bm-action-btn danger" title="삭제">🗑️</button>
+              </div>
+            </div>
+
+            <div class="bookmark-card">
+              <div class="bookmark-thumb">🛗</div>
+              <div class="bookmark-info">
+                <div class="bookmark-name">해운대역 엘리베이터</div>
+                <div class="bookmark-addr">해운대구 해운대로 35</div>
+                <div class="bookmark-tags">
+                  <div class="bookmark-tag">🛗 엘리베이터</div>
+                </div>
+              </div>
+              <div class="bookmark-actions">
+                <button class="bm-action-btn" onclick="goTo('s009')" title="길안내">🗺️</button>
+                <button class="bm-action-btn danger" title="삭제">🗑️</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- phone-screen -->
+    </div><!-- phone-frame -->
+  </div><!-- phone-wrap -->
+
+</div><!-- studio -->
+
+<script>
+  function goTo(id, sidebarEl) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+
+    document.querySelectorAll('.screen-item').forEach(s => s.classList.remove('active'));
+    const map = {
+      s001:'SCR-001',s002:'SCR-002',s003:'SCR-003',
+      s006:'SCR-006',s007:'SCR-007',s008:'SCR-008',
+      s009:'SCR-009',s010:'SCR-010',s011:'SCR-011',
+      s013:'SCR-013',s014:'SCR-014'
+    };
+    const idStr = map[id];
+    document.querySelectorAll('.screen-item').forEach(el => {
+      if (el.querySelector('.screen-item-id')?.textContent === idStr) {
+        el.classList.add('active');
+      }
+    });
+  }
+
+  /* SCR-001 카드 선택 */
+  function selectType(type) {
+    document.querySelectorAll('.select-card').forEach(c => {
+      c.classList.remove('selected');
+      c.querySelector('.check').innerHTML = '';
+    });
+    const card = document.getElementById('card-' + type);
+    card.classList.add('selected');
+    card.querySelector('.check').innerHTML = '<svg width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5L5 9.5L13 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    document.getElementById('btn-001-next').disabled = false;
+  }
+
+  /* SCR-002 등급 선택 */
+  function selectGrade(el) {
+    document.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('btn-002-next').disabled = false;
+  }
+
+  /* SCR-003 체크박스 */
+  function toggleChk(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('checked');
+    const box = el.querySelector('.checkbox-box');
+    box.textContent = el.classList.contains('checked') ? '✓' : '';
+  }
+
+  function toggleAll() {
+    const loc = document.getElementById('chk-loc');
+    const priv = document.getElementById('chk-priv');
+    const allChecked = loc.classList.contains('checked') && priv.classList.contains('checked');
+    [loc, priv].forEach(el => {
+      if (allChecked) {
+        el.classList.remove('checked');
+        el.querySelector('.checkbox-box').textContent = '';
+      } else {
+        el.classList.add('checked');
+        el.querySelector('.checkbox-box').textContent = '✓';
+      }
+    });
+  }
+
+  /* SCR-009 세그먼트 */
+  function selectSeg(el) {
+    el.closest('.segment-ctrl').querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  /* SCR-011 유형 칩 */
+  function selectChip(el) {
+    el.closest('.chip-group').querySelectorAll('.form-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function setMapFilter(type) {
+    document.querySelectorAll('#s006 [data-filter-chip]').forEach(chip => {
+      chip.classList.toggle('active', chip.dataset.filter === type);
+    });
+
+    document.querySelectorAll('#s006 .facility-marker').forEach(marker => {
+      marker.classList.toggle('is-hidden', marker.dataset.markerType !== type);
+    });
+  }
+
+  function openFacilitySheet(markerEl) {
+    const badge = document.getElementById('sheet-badge');
+    const name = document.getElementById('sheet-facility-name');
+    const address = document.getElementById('sheet-address');
+    const tags = document.getElementById('sheet-tags');
+    const mapMarker = document.getElementById('sheet-map-marker');
+    const sourcePin = markerEl.querySelector('.marker-pin');
+
+    if (badge) {
+      badge.textContent = markerEl.dataset.badge || '';
+      badge.style.background = markerEl.dataset.badgeBg || '#FCE4EC';
+      badge.style.color = markerEl.dataset.badgeColor || '#D94884';
+    }
+
+    if (name) {
+      name.textContent = markerEl.dataset.name || '';
+    }
+
+    if (address) {
+      address.textContent = markerEl.dataset.address || '';
+    }
+
+    if (tags) {
+      const tagItems = (markerEl.dataset.tags || '')
+        .split('||')
+        .filter(Boolean)
+        .map(tag => `<div class="tag tag-yes">${tag}</div>`)
+        .join('');
+      tags.innerHTML = tagItems;
+    }
+
+    if (mapMarker && sourcePin) {
+      mapMarker.innerHTML = sourcePin.outerHTML;
+    }
+
+    goTo('s007');
+  }
+
+  /* 검색 필터 (SCR-008) */
+  function filterSearch(val) {
+    const items = document.querySelectorAll('#searchResults .list-item');
+    items.forEach(item => {
+      const title = item.querySelector('.list-title')?.textContent.toLowerCase() || '';
+      item.style.display = title.includes(val.toLowerCase()) || val === '' ? 'flex' : 'none';
+    });
+  }
+
+  setMapFilter('toilet');
+</script>
+</body>
+</html>

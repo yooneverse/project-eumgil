@@ -1,0 +1,166 @@
+name: s14p31e102-dev
+
+services:
+  postgres:
+    extends:
+      file: docker-compose.shared.yml
+      service: postgres
+
+  redis:
+    extends:
+      file: docker-compose.shared.yml
+      service: redis
+
+  minio:
+    extends:
+      file: docker-compose.shared.yml
+      service: minio
+
+  minio-init:
+    extends:
+      file: docker-compose.shared.yml
+      service: minio-init
+
+  graphhopper-build:
+    profiles:
+      - graphhopper-build
+    build:
+      context: .
+      dockerfile: INF/graphhopper/Dockerfile
+    entrypoint: ["graphhopper-build-entrypoint.sh"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres:5432/e102}
+      DB_USERNAME: ${DB_USERNAME:-e102}
+      DB_PASSWORD: ${DB_PASSWORD:-e102}
+      DB_SSLMODE: ${DB_SSLMODE:-prefer}
+      GRAPHHOPPER_GRAPH_LOCATION: ${GRAPHHOPPER_GRAPH_LOCATION:-/graphhopper/data}
+      GRAPHHOPPER_OSM_IMPORT_FILE: ${GRAPHHOPPER_OSM_IMPORT_FILE:-/graphhopper/import/road-network.osm}
+      GRAPHHOPPER_PBF_IMPORT_FILE: ${GRAPHHOPPER_PBF_IMPORT_FILE:-/graphhopper/import/road-network.osm.pbf}
+      GRAPHHOPPER_VALIDATION_REPORT_FILE: ${GRAPHHOPPER_VALIDATION_REPORT_FILE:-/graphhopper/import/road-network-validation-report.json}
+      GRAPHHOPPER_PBF_REPORT_FILE: ${GRAPHHOPPER_PBF_REPORT_FILE:-/graphhopper/import/road-network-pbf-report.json}
+      GRAPHHOPPER_IMPORT_TIMEOUT_SECONDS: ${GRAPHHOPPER_IMPORT_TIMEOUT_SECONDS:-1800}
+      GRAPHHOPPER_ROAD_NODES_SQL: ${GRAPHHOPPER_ROAD_NODES_SQL:-}
+      GRAPHHOPPER_ROAD_SEGMENTS_SQL: ${GRAPHHOPPER_ROAD_SEGMENTS_SQL:-}
+      OSMIUM_BIN: ${OSMIUM_BIN:-osmium}
+    volumes:
+      - graphhopper-dev-data:/graphhopper/data
+      - graphhopper-dev-build:/graphhopper/build-cache
+      - graphhopper-dev-import:/graphhopper/import
+      - graphhopper-dev-previous:/graphhopper/previous-cache
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  graphhopper:
+    build:
+      context: .
+      dockerfile: INF/graphhopper/Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres:5432/e102}
+      DB_USERNAME: ${DB_USERNAME:-e102}
+      DB_PASSWORD: ${DB_PASSWORD:-e102}
+      DB_SSLMODE: ${DB_SSLMODE:-prefer}
+      GRAPHHOPPER_GRAPH_LOCATION: ${GRAPHHOPPER_GRAPH_LOCATION:-/graphhopper/data}
+    ports:
+      - "${GRAPHHOPPER_PORT:-8989}:8989"
+      - "${GRAPHHOPPER_ADMIN_PORT:-8990}:8990"
+    volumes:
+      - graphhopper-dev-data:/graphhopper/data
+      - graphhopper-dev-previous:/graphhopper/previous-cache
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8990/healthcheck >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 3m
+
+  ai:
+    build:
+      context: ./AI
+    restart: unless-stopped
+    environment:
+      APP_ENV: dev
+      AI_HOST: ${AI_HOST:-0.0.0.0}
+      GMS_KEY: ${GMS_KEY:?GMS_KEY is required}
+      DEFAULT_MODEL: ${DEFAULT_MODEL:-gemini}
+    expose:
+      - "5000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import json, urllib.request; data = json.load(urllib.request.urlopen('http://localhost:5000/health', timeout=3)); assert 'POST /voice/analyze' in data.get('endpoints', []); assert isinstance(data.get('providers'), list) and data['providers']\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./BE
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      graphhopper:
+        condition: service_healthy
+      ai:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SERVER_PORT: ${SERVER_PORT:-8080}
+      MANAGEMENT_SERVER_PORT: ${MANAGEMENT_SERVER_PORT:-18080}
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres:5432/e102}
+      DB_USERNAME: ${DB_USERNAME:-e102}
+      DB_PASSWORD: ${DB_PASSWORD:-e102}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${JPA_DDL_AUTO:-validate}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_SSL: ${REDIS_SSL:-false}
+      S3_ENDPOINT: ${MINIO_PUBLIC_ENDPOINT:-http://localhost:${MINIO_API_PORT:-9000}}
+      S3_BUCKET: ${MINIO_BUCKET:-e102-dev}
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-e102}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-e102-e102}
+      S3_REGION: ${MINIO_REGION:-ap-northeast-2}
+      GRAPHHOPPER_BASE_URL: ${GRAPHHOPPER_BASE_URL:-http://graphhopper:8989}
+      AI_BASE_URL: ${AI_BASE_URL:-http://ai:5000}
+      KAKAO_LOCAL_BASE_URL: ${KAKAO_LOCAL_BASE_URL:-https://dapi.kakao.com}
+      KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY:-}
+      ODSAY_API_BASE_URL: ${ODSAY_API_BASE_URL:-https://api.odsay.com/v1/api}
+      ODSAY_API_KEY: ${ODSAY_API_KEY:?ODSAY_API_KEY is required}
+      ODSAY_CONNECT_TIMEOUT: ${ODSAY_CONNECT_TIMEOUT:-5s}
+      ODSAY_READ_TIMEOUT: ${ODSAY_READ_TIMEOUT:-5s}
+      BUSAN_BIMS_API_BASE_URL: ${BUSAN_BIMS_API_BASE_URL:-https://apis.data.go.kr/6260000/BusanBIMS}
+      BUSAN_BIMS_SERVICE_KEY_DECODING: ${BUSAN_BIMS_SERVICE_KEY_DECODING:?BUSAN_BIMS_SERVICE_KEY_DECODING is required}
+      BUSAN_BIMS_CONNECT_TIMEOUT: ${BUSAN_BIMS_CONNECT_TIMEOUT:-5s}
+      BUSAN_BIMS_READ_TIMEOUT: ${BUSAN_BIMS_READ_TIMEOUT:-5s}
+      AUTH_TEST_ENABLED: ${AUTH_TEST_ENABLED:-true}
+      AUTH_TEST_KAKAO_JAVASCRIPT_KEY: ${AUTH_TEST_KAKAO_JAVASCRIPT_KEY:-}
+      AUTH_TEST_NAVER_CLIENT_ID: ${AUTH_TEST_NAVER_CLIENT_ID:-}
+      AUTH_TEST_GOOGLE_CLIENT_ID: ${AUTH_TEST_GOOGLE_CLIENT_ID:-}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: ${JWT_ISSUER:-e102-dev}
+      JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL:-15m}
+      JWT_REFRESH_TOKEN_TTL: ${JWT_REFRESH_TOKEN_TTL:-14d}
+      JWT_SIGNUP_TOKEN_TTL: ${JWT_SIGNUP_TOKEN_TTL:-10m}
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+      - "127.0.0.1:${MANAGEMENT_SERVER_PORT:-18080}:18080"
+
+volumes:
+  postgres-shared-data:
+  redis-shared-data:
+  minio-shared-data:
+  graphhopper-dev-data:
+  graphhopper-dev-build:
+  graphhopper-dev-import:
+  graphhopper-dev-previous:

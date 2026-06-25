@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adjusted UI</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <style>
+        :root {
+            --bg-black: #000000;
+            --brand-yellow: #FFD400;
+            --dark-gray: #1e1e1e; /* 안내 메시지 가독성을 위해 살짝 밝게 조정 */
+            --sub-text: #cccccc;
+        }
+
+        body {
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 760px;
+            background-color: var(--bg-black);
+            border: 10px solid #1a1a1a;
+            border-radius: 48px;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 상단 바 여백 확보 */
+        .status-bar {
+            height: 50px;
+            padding: 0 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        /* 메인 콘텐츠 영역 여백 확장 */
+        .content {
+            flex: 1;
+            padding: 24px; /* 전체적인 여백 증가 */
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* 요소 간 간격 넓힘 */
+        }
+
+        .card {
+            background-color: var(--brand-yellow);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #000;
+            transition: transform 0.1s;
+        }
+
+        /* 비율 조정: 위아래 버튼이 너무 비대하지 않게 조절 */
+        .mic-section { flex: 1.5; }
+        .loc-section { flex: 0.7; }
+
+        .card .icon-main { font-size: 64px; margin-bottom: 8px; }
+        .card .label { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+
+        /* 음성 입력 안내 메시지 가독성 강화 */
+        .info-box {
+            background: var(--dark-gray);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid #333; /* 경계선 추가로 구분감 확보 */
+        }
+
+        .info-box .info-txt p:first-child { 
+            color: #fff; 
+            font-weight: 700; 
+            font-size: 1.1rem; /* 글자 크기 키움 */
+            margin-bottom: 4px;
+        }
+
+        .info-box .info-txt p:last-child { 
+            font-size: 0.9rem; 
+            color: var(--sub-text); /* 대비를 높인 색상 */
+        }
+
+        /* 하단 탭바 */
+        .bottom-nav {
+            height: 75px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 5px;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: #777;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .nav-item.active { color: var(--brand-yellow); }
+
+        /* 안드로이드 바 하단 여백 처리 */
+        .android-bar {
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 70px;
+            align-items: center;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span>9:41</span>
+            <div style="display:flex; gap:6px;">
+                <span class="material-symbols-outlined" style="font-size: 18px;">signal_cellular_4_bar</span>
+                <span class="material-symbols-outlined" style="font-size: 18px;">wifi</span>
+                <span>85%</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="card mic-section">
+                <span class="material-symbols-outlined icon-main">mic</span>
+                <span class="label">음성 입력</span>
+            </div>
+
+            <div class="card loc-section">
+                <span class="material-symbols-outlined" style="font-size: 40px; margin-bottom: 5px;">location_on</span>
+                <span class="label" style="font-size: 1.4rem;">현재 위치</span>
+            </div>
+
+            <div class="info-box">
+                <span class="material-symbols-outlined" style="color: var(--brand-yellow); font-size: 32px;">info</span>
+                <div class="info-txt">
+                    <p>음성 입력 대기 중</p>
+                    <p>마이크를 누르고 말씀해 주세요</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active">
+                <span class="material-symbols-outlined">home</span><br>홈
+            </div>
+            <div class="nav-item">
+                <span class="material-symbols-outlined">bookmark</span><br>북마크
+            </div>
+            <div class="nav-item">
+                <span class="material-symbols-outlined">grid_view</span><br>카테고리
+            </div>
+            <div class="nav-item">
+                <span class="material-symbols-outlined">person</span><br>마이페이지
+            </div>
+        </nav>
+
+        <div class="android-bar">
+            <div style="width:16px; height:12px; display:flex; gap:3px;">
+                <div style="width:2px; height:100%; background:#888;"></div>
+                <div style="width:2px; height:100%; background:#888;"></div>
+                <div style="width:2px; height:100%; background:#888;"></div>
+            </div>
+            <div style="width:16px; height:16px; border:2px solid #888; border-radius:50%;"></div>
+            <div style="width:12px; height:12px; border-left:2px solid #888; border-bottom:2px solid #888; transform: rotate(45deg);"></div>
+        </div>
+    </div>
+
+</body>
+</html>

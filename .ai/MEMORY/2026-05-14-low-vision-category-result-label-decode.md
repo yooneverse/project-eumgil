@@ -1,0 +1,12 @@
+# 2026-05-14 Low Vision Category Result Label Decode
+
+## Debug Report
+
+- Symptom: low-vision category result screens showed no results for every category, then later category results appeared around the hard-coded Busan City Hall/Yeonje-gu coordinate instead of the user's current location.
+- Root cause: `LowVisionRoute.CategoryResult.createRoute()` URL-encoded Korean category labels, but `LowVisionNavGraph` passed the encoded route argument directly to `LowVisionSearchRoute`. Category search then used an internal `/places` browse path and a hard-coded fallback anchor (`35.1796, 129.0756`) when no fresh current location was available, so results could silently shift to Yeonje-gu.
+- Fix: decode and trim the category route argument before search. Category result entry starts location updates and shows loading while waiting for a fresh current location. The repository no longer has a default coordinate fallback: category search requires a fresh current location, queries `/places` around that location first, then falls back to live `/places/search` with the same current-location anchor. If location cannot be resolved, it surfaces a location-permission/services retry message instead of querying another area.
+- Result ordering: low-vision search passes the current-location anchor into live search requests and sorts returned results by haversine distance from that same fresh location.
+- Current location voice/address: home current-location speech no longer falls back to GPS coordinate narration; it announces the resolved address when available, otherwise just the current-location label. The address resolver prefers road-address components before falling back to the sanitized geocoder line.
+- Regression tests: added routing coverage for category argument decoding, category filter mapping, empty/failed `/places` fallback to live search, welfare/public-office keyword reinforcement, no hard-coded fallback coordinate, current-location-required error behavior, road-address formatting, and no GPS coordinate narration.
+- Verification: `.\gradlew.bat --no-daemon --project-prop ksp.incremental=false :app:testDebugUnitTest --tests "*LowVisionNavGraphRoutingTest" --tests "*LowVisionSearchRepositoryTest" --tests "*LowVisionSearchScreenTest" --tests "*LowVisionHomeScreenTest" --tests "*CurrentLocationAddressResolverTest"` passed on 2026-05-14.
+- Note: normal KSP incremental test runs previously failed on stale `build/generated/ksp/debug/java/byRounds` generated-output paths. Disabling KSP incremental isolated and verified these code changes.

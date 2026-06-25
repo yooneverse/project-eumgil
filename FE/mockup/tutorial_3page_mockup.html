@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>부산이음길 3페이지 튜토리얼 목업</title>
+  <style>
+    :root {
+      --blue: #1463f3;
+      --blue-700: #0f4fd1;
+      --navy: #081946;
+      --green: #18a058;
+      --red: #e51b2b;
+      --orange: #f97316;
+      --purple: #6d47d9;
+      --ink: #101828;
+      --muted: #667085;
+      --line: #d9e2f1;
+      --soft: #f4f7fb;
+      --card: #ffffff;
+      --shadow: 0 22px 42px rgba(8, 25, 70, 0.18);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f7f9fc;
+      color: var(--ink);
+    }
+
+    .board {
+      min-height: 100vh;
+      padding: 48px 56px 64px;
+    }
+
+    .board-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .board-header h1 {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 44px;
+      line-height: 1.18;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .board-header p {
+      margin: 0;
+      color: #526075;
+      font-size: 21px;
+      font-weight: 600;
+    }
+
+    .tutorial-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(280px, 1fr));
+      gap: 48px;
+      align-items: start;
+      max-width: 1720px;
+      margin: 0 auto;
+    }
+
+    .step-caption {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 16px;
+      align-items: center;
+      margin: 0 auto 16px;
+      max-width: 390px;
+    }
+
+    .step-number {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--blue);
+      color: white;
+      font-size: 22px;
+      font-weight: 900;
+      box-shadow: 0 10px 18px rgba(20, 99, 243, 0.24);
+    }
+
+    .step-caption h2 {
+      margin: 0 0 5px;
+      color: var(--blue);
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .step-caption p {
+      margin: 0;
+      color: #667085;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.42;
+    }
+
+    .phone {
+      width: 390px;
+      height: 790px;
+      margin: 0 auto;
+      padding: 12px;
+      border-radius: 42px;
+      background: #111318;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border-radius: 38px;
+      border: 2px solid rgba(255, 255, 255, 0.14);
+      pointer-events: none;
+    }
+
+    .screen {
+      height: 100%;
+      border-radius: 32px;
+      background: #fff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .status-bar {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      color: #151a23;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .camera {
+      position: absolute;
+      top: 13px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #121722;
+      box-shadow: inset 0 0 0 3px #1c2635;
+    }
+
+    .app-bar {
+      height: 52px;
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding: 0 10px;
+    }
+
+    .back {
+      font-size: 30px;
+      line-height: 1;
+      color: #111827;
+    }
+
+    .app-title {
+      text-align: center;
+      font-size: 18px;
+      color: #101828;
+      font-weight: 900;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 18px 20px 0;
+      background: linear-gradient(#ffffff 0%, #f8fbff 100%);
+    }
+
+    .hero {
+      min-height: 315px;
+      border-radius: 26px;
+      background: #eef5ff;
+      border: 1px solid #d7e5ff;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 12px 24px rgba(20, 99, 243, 0.08);
+    }
+
+    .hero.map {
+      background:
+        linear-gradient(90deg, rgba(28, 104, 229, 0.08) 1px, transparent 1px),
+        linear-gradient(rgba(28, 104, 229, 0.08) 1px, transparent 1px),
+        #f3f8ff;
+      background-size: 34px 34px;
+    }
+
+    .river {
+      position: absolute;
+      width: 100px;
+      height: 360px;
+      right: 38px;
+      top: -18px;
+      transform: rotate(24deg);
+      background: #d4ecff;
+      border-left: 10px solid #c5e0f9;
+      border-right: 10px solid #c5e0f9;
+    }
+
+    .search-card {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 18px;
+      min-height: 68px;
+      border-radius: 18px;
+      background: white;
+      border: 1px solid #dce6f5;
+      box-shadow: 0 8px 18px rgba(8, 25, 70, 0.08);
+      padding: 12px 14px;
+    }
+
+    .search-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #0f172a;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .search-label::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border: 3px solid var(--blue);
+      border-radius: 50%;
+      box-shadow: 11px 11px 0 -8px var(--blue);
+    }
+
+    .search-help {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .filter-row {
+      position: absolute;
+      top: 100px;
+      left: 18px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      width: 250px;
+    }
+
+    .chip {
+      border-radius: 12px;
+      background: white;
+      border: 1px solid #dce6f5;
+      color: var(--blue);
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 5px 12px rgba(8, 25, 70, 0.06);
+    }
+
+    .map-pin {
+      position: absolute;
+      width: 33px;
+      height: 33px;
+      border-radius: 50% 50% 50% 4px;
+      transform: rotate(-45deg);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 8px 14px rgba(8, 25, 70, 0.2);
+    }
+
+    .map-pin span {
+      transform: rotate(45deg);
+    }
+
+    .pin-blue { background: var(--blue); }
+    .pin-green { background: var(--green); }
+    .pin-red { background: var(--red); }
+    .pin-1 { left: 64px; top: 190px; }
+    .pin-2 { right: 70px; top: 160px; }
+    .pin-3 { left: 162px; bottom: 52px; }
+
+    .page-copy {
+      padding: 20px 2px 0;
+    }
+
+    .page-copy h3 {
+      margin: 0 0 9px;
+      color: var(--navy);
+      font-size: 25px;
+      line-height: 1.24;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .page-copy p {
+      margin: 0;
+      color: #526075;
+      font-size: 15px;
+      line-height: 1.62;
+      font-weight: 700;
+    }
+
+    .bullets {
+      display: grid;
+      gap: 9px;
+      margin: 18px 0 0;
+    }
+
+    .bullet {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.46;
+      font-weight: 800;
+    }
+
+    .bullet::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      margin-top: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .footer {
+      margin-top: auto;
+      padding: 18px 20px 20px;
+      background: #fff;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #c9d6ea;
+    }
+
+    .dot.active {
+      width: 22px;
+      border-radius: 999px;
+      background: var(--blue);
+    }
+
+    .primary-button {
+      height: 56px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--blue);
+      font-size: 18px;
+      font-weight: 900;
+      box-shadow: 0 12px 22px rgba(20, 99, 243, 0.22);
+    }
+
+    .system-nav {
+      height: 31px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      color: #8b95a5;
+      font-size: 20px;
+      font-weight: 500;
+      border-top: 1px solid #eef2f7;
+    }
+
+    .hero.routes {
+      padding: 16px;
+      background: #fff;
+    }
+
+    .route-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1px solid #dce6f5;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .metric {
+      padding: 13px 6px;
+      text-align: center;
+      border-right: 1px solid #e7edf6;
+    }
+
+    .metric:last-child {
+      border-right: 0;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--navy);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .metric span {
+      color: #667085;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .route-card {
+      margin-top: 14px;
+      border-radius: 18px;
+      border: 2px solid var(--blue);
+      background: #f8fbff;
+      padding: 14px;
+    }
+
+    .route-card.alt {
+      border: 1px solid #dde6f3;
+      background: #fff;
+    }
+
+    .route-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--navy);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .badge {
+      border-radius: 999px;
+      background: #e8f1ff;
+      color: var(--blue);
+      padding: 6px 9px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .route-tags {
+      margin-top: 11px;
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .route-line {
+      height: 82px;
+      margin-top: 16px;
+      position: relative;
+    }
+
+    .route-line::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 5px;
+      bottom: 5px;
+      width: 4px;
+      border-radius: 999px;
+      background: linear-gradient(var(--green), var(--blue), var(--purple));
+    }
+
+    .route-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .route-step i {
+      z-index: 1;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--blue);
+      font-style: normal;
+      font-weight: 900;
+      box-shadow: 0 7px 14px rgba(20, 99, 243, 0.2);
+    }
+
+    .hero.guide {
+      background:
+        linear-gradient(90deg, rgba(28, 104, 229, 0.08) 1px, transparent 1px),
+        linear-gradient(rgba(28, 104, 229, 0.08) 1px, transparent 1px),
+        #f6fbff;
+      background-size: 32px 32px;
+    }
+
+    .guide-card {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      top: 16px;
+      min-height: 122px;
+      border-radius: 18px;
+      background: var(--blue);
+      color: white;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 76px;
+      gap: 12px;
+      box-shadow: 0 12px 24px rgba(20, 99, 243, 0.24);
+    }
+
+    .guide-card strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1.32;
+      font-weight: 900;
+    }
+
+    .guide-card span {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      opacity: 0.9;
+    }
+
+    .speaker {
+      align-self: center;
+      justify-self: center;
+      width: 62px;
+      height: 72px;
+      border-radius: 15px;
+      background: white;
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      font-size: 31px;
+      font-weight: 900;
+    }
+
+    .dashed-route {
+      position: absolute;
+      left: 82px;
+      top: 174px;
+      width: 194px;
+      height: 100px;
+      border-left: 7px dotted var(--blue);
+      border-bottom: 7px dotted var(--blue);
+      border-radius: 0 0 0 40px;
+      transform: rotate(-8deg);
+    }
+
+    .floating-pin {
+      position: absolute;
+      left: 172px;
+      top: 210px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: 6px solid white;
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 900;
+      box-shadow: 0 14px 28px rgba(8, 25, 70, 0.2);
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .quick-action {
+      min-height: 74px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid #dce6f5;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 900;
+      padding: 8px;
+    }
+
+    .quick-action b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--blue);
+      font-size: 22px;
+    }
+
+    @media (max-width: 1260px) {
+      .board {
+        padding: 36px 28px 48px;
+      }
+
+      .tutorial-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <header class="board-header">
+      <h1>3페이지 사용법 튜토리얼 목업</h1>
+      <p>앱 소개보다 실제 사용 흐름에 집중해, 목적지 검색부터 안내와 다시보기까지 짧게 안내합니다.</p>
+    </header>
+
+    <section class="tutorial-grid" aria-label="부산이음길 튜토리얼 3페이지 목업">
+      <article>
+        <div class="step-caption">
+          <div class="step-number">01</div>
+          <div>
+            <h2>목적지 찾기</h2>
+            <p>검색창과 접근성 필터로 가고 싶은 장소를 찾습니다.</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>12:30</span><span>▾ 100%</span></div>
+            <div class="camera"></div>
+            <div class="app-bar">
+              <div class="back">‹</div>
+              <div class="app-title">목적지 찾기</div>
+              <div></div>
+            </div>
+            <div class="content">
+              <div class="hero map">
+                <div class="river"></div>
+                <div class="search-card">
+                  <div class="search-label">어디로 이동할까요?</div>
+                  <div class="search-help">장소명 또는 주소로 검색</div>
+                </div>
+                <div class="filter-row">
+                  <div class="chip">엘리베이터</div>
+                  <div class="chip">화장실</div>
+                  <div class="chip">점자블록</div>
+                </div>
+                <div class="map-pin pin-blue pin-1"><span>현</span></div>
+                <div class="map-pin pin-green pin-2"><span>편</span></div>
+                <div class="map-pin pin-red pin-3"><span>목</span></div>
+              </div>
+              <div class="page-copy">
+                <h3>가고 싶은 장소를 검색해요</h3>
+                <p>지도 상단 검색창에서 목적지를 찾고, 주변 접근성 정보를 함께 확인합니다.</p>
+                <div class="bullets">
+                  <div class="bullet">현재 위치 기준으로 주변 시설을 확인</div>
+                  <div class="bullet">접근성 필터로 필요한 정보만 보기</div>
+                </div>
+              </div>
+            </div>
+            <div class="footer">
+              <div class="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+              <div class="primary-button">다음</div>
+            </div>
+            <div class="system-nav"><span>|||</span><span>□</span><span>‹</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <div class="step-caption">
+          <div class="step-number">02</div>
+          <div>
+            <h2>경로 비교하기</h2>
+            <p>안전한 길과 최단거리의 시간, 거리, 위험도를 비교합니다.</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>12:30</span><span>▾ 100%</span></div>
+            <div class="camera"></div>
+            <div class="app-bar">
+              <div class="back">‹</div>
+              <div class="app-title">경로 비교하기</div>
+              <div></div>
+            </div>
+            <div class="content">
+              <div class="hero routes">
+                <div class="route-summary">
+                  <div class="metric"><strong>24분</strong><span>예상 시간</span></div>
+                  <div class="metric"><strong>1.8km</strong><span>이동 거리</span></div>
+                  <div class="metric"><strong>낮음</strong><span>위험도</span></div>
+                </div>
+                <div class="route-card">
+                  <div class="route-title">안전한 길 <span class="badge">추천</span></div>
+                  <div class="route-tags">
+                    <span class="chip">경사 낮음</span>
+                    <span class="chip">신호 횡단</span>
+                    <span class="chip">점자블록</span>
+                  </div>
+                  <div class="route-line">
+                    <div class="route-step"><i>출</i><span>부산시청 출발</span></div>
+                    <div class="route-step"><i>도</i><span>목적지까지 안내</span></div>
+                  </div>
+                </div>
+                <div class="route-card alt">
+                  <div class="route-title">최단거리 <span class="badge">빠름</span></div>
+                  <div class="route-tags">
+                    <span class="chip">주의 구간</span>
+                    <span class="chip">단차 확인</span>
+                  </div>
+                </div>
+              </div>
+              <div class="page-copy">
+                <h3>거리만 보지 않고 비교해요</h3>
+                <p>목적지를 선택하면 안전한 길과 최단거리를 비교하고, 이동 중 주의 정보를 확인합니다.</p>
+                <div class="bullets">
+                  <div class="bullet">예상 시간, 거리, 위험도 확인</div>
+                  <div class="bullet">경사, 단차, 횡단보도 등 주의 정보 확인</div>
+                </div>
+              </div>
+            </div>
+            <div class="footer">
+              <div class="dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
+              <div class="primary-button">다음</div>
+            </div>
+            <div class="system-nav"><span>|||</span><span>□</span><span>‹</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article>
+        <div class="step-caption">
+          <div class="step-number">03</div>
+          <div>
+            <h2>안내·저장·제보</h2>
+            <p>길안내를 시작하고, 자주 가는 장소와 불편한 구간을 관리합니다.</p>
+          </div>
+        </div>
+        <div class="phone">
+          <div class="screen">
+            <div class="status-bar"><span>12:30</span><span>▾ 100%</span></div>
+            <div class="camera"></div>
+            <div class="app-bar">
+              <div class="back">‹</div>
+              <div class="app-title">안내받기</div>
+              <div></div>
+            </div>
+            <div class="content">
+              <div class="hero guide">
+                <div class="guide-card">
+                  <div>
+                    <strong>120m 앞 횡단보도를 건너세요</strong>
+                    <span>안내 중에도 상세 정보를 확인할 수 있어요.</span>
+                  </div>
+                  <div class="speaker">♪</div>
+                </div>
+                <div class="dashed-route"></div>
+                <div class="floating-pin">↱</div>
+                <div class="map-pin pin-green pin-1"><span>출</span></div>
+                <div class="map-pin pin-red pin-2"><span>도</span></div>
+              </div>
+              <div class="quick-actions">
+                <div class="quick-action"><b>★</b>저장</div>
+                <div class="quick-action"><b>!</b>제보</div>
+                <div class="quick-action"><b>?</b>도움말</div>
+              </div>
+              <div class="page-copy">
+                <h3>필요한 기능을 다시 찾기 쉽게</h3>
+                <p>길안내를 받고, 자주 가는 장소는 저장하고, 불편한 구간은 제보합니다.</p>
+                <div class="bullets">
+                  <div class="bullet">사용법은 MY &gt; 도움말에서 다시보기</div>
+                </div>
+              </div>
+            </div>
+            <div class="footer">
+              <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
+              <div class="primary-button">시작하기</div>
+            </div>
+            <div class="system-nav"><span>|||</span><span>□</span><span>‹</span></div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

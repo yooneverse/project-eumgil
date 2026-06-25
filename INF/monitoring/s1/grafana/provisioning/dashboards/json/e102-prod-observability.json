@@ -1,0 +1,1053 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "S2 prod 서비스 상태와 운영 로그를 빠르게 확인하는 단순화된 관측 대시보드",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 5
+      },
+      "id": 1,
+      "options": {
+        "content": "### 이 화면에서 먼저 볼 것\n1. **API / DB 연결 / Redis 연결 / AI / Admin / GraphHopper 상태**가 모두 `UP`인지 먼저 봅니다.\n2. 장애 의심 시 아래 **최근 경고/오류 로그 건수**가 튀는지 확인합니다.\n3. 자세한 원인은 맨 아래 **prod 경고/오류 로그**와 Grafana Explore에서 추적합니다.\n\n- 이 화면의 `DB 연결 상태`, `Redis 연결 상태`는 RDS/ElastiCache 자체 상태가 아닙니다.\n- 대신 backend가 실제로 보고 있는 `db`, `redis` actuator dependency health를 공개 health endpoint로 가공해 확인합니다.\n- `GraphHopper active / blue / green 상태`는 Redis active slot 기준 공개 health와 슬롯별 원시 health를 함께 확인합니다.\n- prod 관측은 `public health endpoint + Loki 로그`만으로 유지합니다.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.3.1",
+      "title": "운영 체크 포인트",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "gray",
+            "mode": "fixed"
+          },
+          "noValue": "0",
+          "unit": "short",
+          "displayName": "최근 5분 전체 로그 건수"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\"}[5m])) or vector(0)",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "최근 5분 전체 로그 건수",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short",
+          "displayName": "최근 5분 경고/오류 로그 건수"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\"} |~ \"(?:^|[[:space:]])(?:level|lvl|severity)=(?:warn|warning|error|fatal|critical|WARN|WARNING|ERROR|FATAL|CRITICAL)(?:[[:space:],]|$)|^[WEFwef][0-9]{4}[[:space:]]|^(?:[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[T ][^[:space:]]+)?[[:space:]]+)?(?:WARN|WARNING|ERROR|FATAL|CRITICAL|warn|warning|error|fatal|critical)(?:[[:space:],]|$)\" [5m])) or vector(0)",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "최근 5분 경고/오류 로그 건수",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "gray",
+            "mode": "fixed"
+          },
+          "noValue": "0",
+          "unit": "short",
+          "displayName": "최근 1시간 전체 로그 건수"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\"}[1h])) or vector(0)",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "최근 1시간 전체 로그 건수",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short",
+          "displayName": "최근 1시간 경고/오류 로그 건수"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 0,
+        "w": 4,
+        "h": 5
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\"} |~ \"(?:^|[[:space:]])(?:level|lvl|severity)=(?:warn|warning|error|fatal|critical|WARN|WARNING|ERROR|FATAL|CRITICAL)(?:[[:space:],]|$)|^[WEFwef][0-9]{4}[[:space:]]|^(?:[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[T ][^[:space:]]+)?[[:space:]]+)?(?:WARN|WARNING|ERROR|FATAL|CRITICAL|warn|warning|error|fatal|critical)(?:[[:space:],]|$)\" [1h])) or vector(0)",
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "title": "최근 1시간 경고/오류 로그 건수",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "11.3.1",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 8,
+        "h": 8
+      },
+      "id": 12,
+      "targets": [
+        {
+          "expr": "sum by (compose_service) (count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\", compose_service=~\"$prod_service\"}[5m]))",
+          "queryType": "range",
+          "refId": "A",
+          "legendFormat": "{{compose_service}}"
+        }
+      ],
+      "title": "서비스별 5분 로그 유입량"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "11.3.1",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 8,
+        "y": 5,
+        "w": 8,
+        "h": 8
+      },
+      "id": 13,
+      "targets": [
+        {
+          "expr": "sum by (compose_service) (count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\", compose_service=~\"$prod_service\"} |~ \"(?:^|[[:space:]])(?:level|lvl|severity)=(?:warn|warning|error|fatal|critical|WARN|WARNING|ERROR|FATAL|CRITICAL)(?:[[:space:],]|$)|^[WEFwef][0-9]{4}[[:space:]]|^(?:[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[T ][^[:space:]]+)?[[:space:]]+)?(?:WARN|WARNING|ERROR|FATAL|CRITICAL|warn|warning|error|fatal|critical)(?:[[:space:],]|$)\" [5m]))",
+          "queryType": "range",
+          "refId": "A",
+          "legendFormat": "{{compose_service}}"
+        }
+      ],
+      "title": "서비스별 5분 경고/오류 로그량"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "11.3.1",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 16,
+        "y": 5,
+        "w": 8,
+        "h": 8
+      },
+      "id": 14,
+      "targets": [
+        {
+          "expr": "sum by (compose_service) (count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\", compose_service=~\"$prod_service\"}[1h]))",
+          "queryType": "range",
+          "refId": "A",
+          "legendFormat": "{{compose_service}}"
+        }
+      ],
+      "title": "서비스별 1시간 로그 유입량"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "11.3.1",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 8,
+        "h": 8
+      },
+      "id": 15,
+      "targets": [
+        {
+          "expr": "sum by (compose_service) (count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\", compose_service=~\"$prod_service\"} |~ \"(?:^|[[:space:]])(?:level|lvl|severity)=(?:warn|warning|error|fatal|critical|WARN|WARNING|ERROR|FATAL|CRITICAL)(?:[[:space:],]|$)|^[WEFwef][0-9]{4}[[:space:]]|^(?:[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[T ][^[:space:]]+)?[[:space:]]+)?(?:WARN|WARNING|ERROR|FATAL|CRITICAL|warn|warning|error|fatal|critical)(?:[[:space:],]|$)\" [1h]))",
+          "queryType": "range",
+          "refId": "A",
+          "legendFormat": "{{compose_service}}"
+        }
+      ],
+      "title": "서비스별 1시간 경고/오류 로그량"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 13,
+        "w": 16,
+        "h": 8
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({environment=\"prod\", runtime_stack=\"s2-prod\", compose_service=~\"$prod_service\"}[5m]))",
+          "legendFormat": "총 로그",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": "1h",
+      "title": "최근 1시간 총 로그 추이",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "UNKNOWN",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "displayName": "API 상태"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 4,
+        "h": 4
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max(probe_success{job=\"blackbox-prod-http\", target_name=\"api\"})",
+          "legendFormat": "API 상태",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "API 상태",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "UNKNOWN",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "displayName": "DB 연결 상태"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 21,
+        "w": 4,
+        "h": 4
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max(probe_success{job=\"blackbox-prod-http\", target_name=\"db\"})",
+          "legendFormat": "DB 연결 상태",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "DB 연결 상태",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "UNKNOWN",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "displayName": "Redis 연결 상태"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 21,
+        "w": 4,
+        "h": 4
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max(probe_success{job=\"blackbox-prod-http\", target_name=\"redis\"})",
+          "legendFormat": "Redis 연결 상태",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Redis 연결 상태",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "UNKNOWN",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "displayName": "AI 상태"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 21,
+        "w": 4,
+        "h": 4
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max(probe_success{job=\"blackbox-prod-http\", target_name=\"ai\"})",
+          "legendFormat": "AI 상태",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "AI 상태",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "UNKNOWN",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "displayName": "Admin 상태"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 21,
+        "w": 4,
+        "h": 4
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max(probe_success{job=\"blackbox-prod-http\", target_name=\"admin\"})",
+          "legendFormat": "Admin 상태",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Admin 상태",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 24,
+        "h": 13
+      },
+      "id": 11,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": true,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "expr": "{environment=\"prod\", runtime_stack=\"s2-prod\", compose_service=~\"$prod_service\"} |~ \"(?:^|[[:space:]])(?:level|lvl|severity)=(?:warn|warning|error|fatal|critical|WARN|WARNING|ERROR|FATAL|CRITICAL)(?:[[:space:],]|$)|^[WEFwef][0-9]{4}[[:space:]]|^(?:[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[T ][^[:space:]]+)?[[:space:]]+)?(?:WARN|WARNING|ERROR|FATAL|CRITICAL|warn|warning|error|fatal|critical)(?:[[:space:],]|$)\"",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "prod 경고/오류 로그",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "noValue": "UNKNOWN",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "displayName": "GraphHopper ${__field.labels.target_name}"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 21,
+        "w": 4,
+        "h": 4
+      },
+      "id": 17,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.1",
+      "targets": [
+        {
+          "expr": "probe_success{job=\"blackbox-prod-http\", target_name=~\"graphhopper|graphhopper-blue|graphhopper-green\"}",
+          "instant": true,
+          "legendFormat": "{{target_name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "GraphHopper active / blue / green 상태",
+      "type": "stat"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "monitoring",
+    "prod",
+    "korean",
+    "simple"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "label": "로그 서비스",
+        "multi": false,
+        "name": "prod_service",
+        "options": [
+          {
+            "selected": false,
+            "text": "backend",
+            "value": "backend"
+          },
+          {
+            "selected": false,
+            "text": "ai",
+            "value": "ai"
+          },
+          {
+            "selected": false,
+            "text": "graphhopper",
+            "value": "graphhopper"
+          },
+          {
+            "selected": false,
+            "text": "admin",
+            "value": "admin"
+          },
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          }
+        ],
+        "query": "backend,ai,graphhopper,admin",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "E102 운영 관측 개요 - Prod",
+  "uid": "e102-prod-observability",
+  "version": 4,
+  "weekStart": ""
+}

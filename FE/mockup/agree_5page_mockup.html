@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이음길 약관동의 화면 일람</title>
+    <style>
+        :root {
+            --main-yellow: #FFCC00;
+            --bg-black: #000000;
+            --nav-bg: #000000;
+            --text-white: #FFFFFF;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            background-color: #333333; /* 배경과 구분하기 위한 어두운 회색 */
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+            display: flex;
+            gap: 30px;
+            overflow-x: auto;
+        }
+
+        /* 개별 모바일 화면 프레임 */
+        .mobile-frame {
+            min-width: 360px;
+            height: 740px;
+            background-color: var(--bg-black);
+            border-radius: 40px;
+            border: 8px solid #1a1a1a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        /* 상단 인디케이터 구역 */
+        .header-area {
+            margin-top: 50px;
+            text-align: center;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .dot { 
+            width: 8px; height: 8px; 
+            background: #444; 
+            border-radius: 50%; 
+        }
+        .dot.active { background: var(--main-yellow); }
+        
+        .header-text {
+            color: var(--main-yellow);
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        /* 중앙 노란색 카드 */
+        .main-card {
+            margin-top: 40px;
+            width: 80%;
+            aspect-ratio: 1 / 1.15;
+            background-color: var(--main-yellow);
+            border-radius: 35px;
+            border: 2.5px solid #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-svg {
+            width: 90px;
+            height: 90px;
+            fill: black;
+            margin-bottom: 10px;
+        }
+
+        .card-label {
+            color: black;
+            font-size: 40px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        /* 하단 안내 문구 및 버튼 */
+        .bottom-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: auto;
+            margin-bottom: 100px; /* 네비게이션 공간 확보 */
+        }
+
+        .hint-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .more-button {
+            width: 80%;
+            background-color: var(--main-yellow);
+            color: black;
+            border: none;
+            padding: 18px 0;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        /* 하단 고정 내비게이션 바 */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70px;
+            background-color: var(--nav-bg);
+            display: flex;
+            border-top: 1px solid #222;
+        }
+
+        .nav-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            font-size: 10px;
+        }
+
+        .nav-tab.active {
+            background-color: var(--main-yellow);
+            color: black;
+        }
+
+        .nav-tab svg {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 3px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-frame">
+        <div class="header-area">
+            <div class="pagination"><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <h1 class="header-text">약관 안내</h1>
+        </div>
+        <div class="main-card">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <div class="card-label">약관 동의</div>
+        </div>
+        <div class="bottom-content">
+            <p class="hint-text">두 번 탭하면 동의합니다</p>
+            <button class="more-button">자세히 보기</button>
+        </div>
+        <nav class="bottom-nav">
+            <div class="nav-tab active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>북마크</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>카테고리</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>마이</div>
+        </nav>
+    </div>
+
+    <div class="mobile-frame">
+        <div class="header-area">
+            <div class="pagination"><div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <h1 class="header-text">약관 안내</h1>
+        </div>
+        <div class="main-card">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 10h2v2h-2v-2zm0-4h2v2h-2V7z"/></svg>
+            <div class="card-label">민감정보</div>
+        </div>
+        <div class="bottom-content">
+            <p class="hint-text">두 번 탭하면 동의합니다</p>
+            <button class="more-button">자세히 보기</button>
+        </div>
+        <nav class="bottom-nav">
+            <div class="nav-tab active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>북마크</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>카테고리</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>마이</div>
+        </nav>
+    </div>
+
+    <div class="mobile-frame">
+        <div class="header-area">
+            <div class="pagination"><div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+            <h1 class="header-text">약관 안내</h1>
+        </div>
+        <div class="main-card">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <div class="card-label">위치정보</div>
+        </div>
+        <div class="bottom-content">
+            <p class="hint-text">두 번 탭하면 동의합니다</p>
+            <button class="more-button">자세히 보기</button>
+        </div>
+        <nav class="bottom-nav">
+            <div class="nav-tab active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>북마크</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>카테고리</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>마이</div>
+        </nav>
+    </div>
+
+    <div class="mobile-frame">
+        <div class="header-area">
+            <div class="pagination"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
+            <h1 class="header-text">약관 안내</h1>
+        </div>
+        <div class="main-card">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <div class="card-label">14세 이상</div>
+        </div>
+        <div class="bottom-content">
+            <p class="hint-text">두 번 탭하면 확인합니다</p>
+            <button class="more-button" style="visibility: hidden;">자세히 보기</button>
+        </div>
+        <nav class="bottom-nav">
+            <div class="nav-tab active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>북마크</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>카테고리</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>마이</div>
+        </nav>
+    </div>
+
+    <div class="mobile-frame">
+        <div class="header-area">
+            <div class="pagination"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
+            <h1 class="header-text">약관 안내</h1>
+        </div>
+        <div class="main-card">
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 16H8v-2h8v2zm0-4H8v-2h8v2zm0-4H8V8h8v2z"/></svg>
+            <div class="card-label">처리방침</div>
+        </div>
+        <div class="bottom-content">
+            <p class="hint-text">두 번 탭하면 확인합니다</p>
+            <button class="more-button">자세히 보기</button>
+        </div>
+        <nav class="bottom-nav">
+            <div class="nav-tab active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>홈</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>북마크</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>카테고리</div>
+            <div class="nav-tab"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>마이</div>
+        </nav>
+    </div>
+
+</body>
+</html>

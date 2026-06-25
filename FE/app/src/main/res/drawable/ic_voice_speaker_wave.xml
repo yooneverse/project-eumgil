@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  홈 정보 박스 아이콘 (Figma node 371:139 info-box, variant 5).
+  스피커/음성 파형 모티프 — info 텍스트 옆에 작게 노출.
+  tint은 호출처에서 Color.White 등으로 지정.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="38dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,9V15H7L12,20V4L7,9H3Z" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M15,8C16.5,9 17,10.5 17,12C17,13.5 16.5,15 15,16"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M18,5C20,7 21,9.5 21,12C21,14.5 20,17 18,19"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2" />
+</vector>

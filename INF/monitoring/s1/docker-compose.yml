@@ -1,0 +1,179 @@
+name: e102-ops
+
+services:
+  portainer:
+    image: portainer/portainer-ce:2.21.5
+    container_name: e102-portainer
+    restart: unless-stopped
+    command: -H unix:///var/run/docker.sock
+    ports:
+      - "127.0.0.1:19000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    networks:
+      - ops
+
+  grafana:
+    image: grafana/grafana-oss:11.3.1
+    container_name: e102-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_SERVER_ROOT_URL: https://grafana.busaneumgil.com/
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_GITLAB_ENABLED: "true"
+      GF_AUTH_GITLAB_ALLOW_SIGN_UP: "true"
+      GF_AUTH_GITLAB_AUTO_LOGIN: "false"
+      GF_AUTH_GITLAB_CLIENT_ID: ${GRAFANA_GITLAB_OAUTH_CLIENT_ID}
+      GF_AUTH_GITLAB_CLIENT_SECRET: ${GRAFANA_GITLAB_OAUTH_CLIENT_SECRET}
+      GF_AUTH_GITLAB_SCOPES: openid email profile read_user api
+      GF_AUTH_GITLAB_AUTH_URL: ${GITLAB_BASE_URL:-https://git.example.com}/oauth/authorize
+      GF_AUTH_GITLAB_TOKEN_URL: ${GITLAB_BASE_URL:-https://git.example.com}/oauth/token
+      GF_AUTH_GITLAB_API_URL: ${GITLAB_BASE_URL:-https://git.example.com}/api/v4
+      GF_AUTH_GITLAB_ALLOWED_GROUPS: ${GITLAB_ALLOWED_GROUPS}
+      GF_AUTH_GITLAB_USE_PKCE: "true"
+      GF_AUTH_GITLAB_USE_REFRESH_TOKEN: "true"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - ops
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: e102-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - ops
+      - dev-stack
+
+  loki:
+    image: grafana/loki:3.2.1
+    container_name: e102-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/local-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    networks:
+      - ops
+
+  promtail:
+    image: grafana/promtail:3.2.1
+    container_name: e102-promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./promtail/config.yml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - ops
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.25.0
+    container_name: e102-blackbox-exporter
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/blackbox_exporter/config.yml
+    volumes:
+      - ./blackbox/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+    networks:
+      - ops
+      - dev-stack
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: e102-node-exporter
+    restart: unless-stopped
+    command:
+      - --path.rootfs=/host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    networks:
+      - ops
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: e102-cadvisor
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    networks:
+      - ops
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.67.0
+    container_name: e102-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: ${DEV_REDIS_EXPORTER_ADDR:-redis://redis:6379}
+    networks:
+      - ops
+      - dev-stack
+
+  sonarqube-db:
+    image: postgres:16-alpine
+    container_name: e102-sonarqube-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: ${SONAR_POSTGRES_PASSWORD}
+      POSTGRES_DB: sonarqube
+    volumes:
+      - sonarqube-db-data:/var/lib/postgresql/data
+    networks:
+      - ops
+
+  sonarqube:
+    image: sonarqube:10.7-community
+    container_name: e102-sonarqube
+    restart: unless-stopped
+    depends_on:
+      - sonarqube-db
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonarqube-db:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: ${SONAR_POSTGRES_PASSWORD}
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
+    networks:
+      - ops
+
+volumes:
+  portainer-data:
+  grafana-data:
+  prometheus-data:
+  loki-data:
+  sonarqube-db-data:
+  sonarqube-data:
+  sonarqube-extensions:
+  sonarqube-logs:
+
+networks:
+  ops:
+    external: true
+    name: e102-ops
+  dev-stack:
+    external: true
+    name: s14p31e102-dev_default

@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# ============================================================
+# prepare-commit-msg — Jira 이슈 키 자동 보정 Hook
+# ============================================================
+#
+# 지원 예시:
+#   Feat[#31]: 메시지
+#   ✨ Feat[#31]: 메시지
+#   Fix[#31, #32]: 메시지
+#   Feat: 메시지               (브랜치에서 Jira key 주입)
+#
+# 동작 순서:
+#   1. [#31] 형태를 [S14P31E102-31]로 확장
+#   2. 이미 Jira key가 있으면 그대로 종료
+#   3. 없으면 현재 브랜치명에서 Jira key를 읽어 첫 줄에 삽입
+#
+# 건드리지 않는 것:
+#   - merge / squash 자동 메시지
+#   - 이미 Jira key가 들어 있는 메시지
+#
+# ============================================================
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z "$REPO_ROOT" ]]; then
+  exit 0
+fi
+
+# shellcheck source=/dev/null
+source "$REPO_ROOT/scripts/init/jira-utils.sh"
+
+COMMIT_MSG_FILE="${1:-}"
+COMMIT_SOURCE="${2:-}"
+
+# ── 인자 / 환경 확인 ──────────────────────────────────────
+# Git이 넘긴 메시지 파일이 없으면 그대로 끝낸다.
+if [[ -z "$COMMIT_MSG_FILE" || ! -f "$COMMIT_MSG_FILE" ]]; then
+  exit 0
+fi
+
+# ── 자동 생성 메시지 예외 처리 ────────────────────────────
+# merge/squash가 만든 자동 메시지는 그대로 둔다.
+if [[ "$COMMIT_SOURCE" == "merge" || "$COMMIT_SOURCE" == "squash" ]]; then
+  exit 0
+fi
+
+JIRA_PREFIX="$(jira_get_prefix 2>/dev/null || true)"
+if [[ -z "$JIRA_PREFIX" ]]; then
+  exit 0
+fi
+
+# ── 1. [#31] 형태 우선 확장 ──────────────────────────────
+# 1) [#12] 같은 축약 표기가 있으면 먼저 Jira key로 바꾼다.
+if grep -Eq '\[[^]]*#[0-9]+[^]]*\]' "$COMMIT_MSG_FILE"; then
+  TEMP_FILE="$(mktemp)"
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    jira_expand_bracket_hash_refs "$JIRA_PREFIX" "$line"
+  done <"$COMMIT_MSG_FILE" >"$TEMP_FILE"
+  mv "$TEMP_FILE" "$COMMIT_MSG_FILE"
+fi
+
+# ── 2. 이미 Jira key가 있으면 종료 ───────────────────────
+# 2) 이미 Jira key가 있으면 여기서 끝낸다.
+if grep -Eq "\\[${JIRA_PREFIX}-[0-9]+" "$COMMIT_MSG_FILE"; then
+  exit 0
+fi
+
+# ── 3. 브랜치명에서 Jira key 읽어 주입 ───────────────────
+# 3) 없으면 현재 브랜치에서 Jira key를 읽어 첫 줄에 넣는다.
+JIRA_KEY="$(jira_find_branch_key "$JIRA_PREFIX" 2>/dev/null || true)"
+if [[ -z "$JIRA_KEY" ]]; then
+  exit 0
+fi
+
+TEMP_FILE="$(mktemp)"
+{
+  IFS= read -r first_line || first_line=""
+
+  if [[ -n "$first_line" || -s "$COMMIT_MSG_FILE" ]]; then
+    jira_inject_key_into_subject "$JIRA_KEY" "$first_line"
+  fi
+
+  cat
+} <"$COMMIT_MSG_FILE" >"$TEMP_FILE"
+
+# ── 반영 ─────────────────────────────────────────────────
+mv "$TEMP_FILE" "$COMMIT_MSG_FILE"

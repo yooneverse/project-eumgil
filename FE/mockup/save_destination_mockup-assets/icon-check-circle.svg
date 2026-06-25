@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <title>완료 카드 아이콘 — 체크 동그라미</title>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#FFCC00" stroke-width="8"/>
+  <path d="M38 62 L54 78 L84 46" stroke="#FFCC00" stroke-width="10"
+        stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

@@ -1,0 +1,50 @@
+graphhopper:
+  graph.location: graph-cache
+
+  profiles:
+    - name: pedestrian_safe
+      custom_model_files: [pedestrian_safe.json]
+    - name: pedestrian_fast
+      custom_model_files: [pedestrian_fast.json]
+    - name: visual_safe
+      custom_model_files: [visual_safe.json]
+    - name: visual_fast
+      custom_model_files: [visual_fast.json]
+    - name: wheelchair_manual_safe
+      custom_model_files: [wheelchair_manual_safe.json]
+    - name: wheelchair_manual_fast
+      custom_model_files: [wheelchair_manual_fast.json]
+    - name: wheelchair_auto_safe
+      custom_model_files: [wheelchair_auto_safe.json]
+    - name: wheelchair_auto_fast
+      custom_model_files: [wheelchair_auto_fast.json]
+
+  profiles_ch: []
+  profiles_lm: []
+
+  graph.encoded_values: |
+    foot_access, foot_average_speed, foot_priority, foot_road_access, hike_rating, country, road_class, mtb_rating,
+    db_edge_id, walk_access, avg_slope_percent, width_meter, braille_block_state, audio_signal_state,
+    width_state, surface_state, stairs_state, signal_state, segment_type
+  prepare.min_network_size: 2
+  prepare.subnetworks.threads: 1
+  custom_models.directory: /opt/graphhopper/custom_models
+  import.osm.ignored_highways: []
+  routing.non_ch.max_waypoint_distance: 1000000
+  graph.dataaccess.default_type: RAM_STORE
+
+server:
+  application_connectors:
+    - type: http
+      port: 8989
+      bind_host: 0.0.0.0
+  admin_connectors:
+    - type: http
+      port: 8990
+      bind_host: 0.0.0.0
+  request_log:
+    appenders: []
+
+logging:
+  appenders:
+    - type: console

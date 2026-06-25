@@ -1,0 +1,143 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  - job_name: node-exporter
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  - job_name: redis-exporter
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+        labels:
+          environment: dev
+          runtime_stack: s1-dev
+          service: redis
+
+  - job_name: s1-dev-backend
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["backend:18080"]
+        labels:
+          environment: dev
+          runtime_stack: s1-dev
+          service: backend
+
+  - job_name: blackbox-dev-http
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets: ["http://backend:8080/health"]
+        labels:
+          environment: dev
+          runtime_stack: s1-dev
+          service: backend
+          target_name: api
+      - targets: ["http://backend:8080/health/db"]
+        labels:
+          environment: dev
+          runtime_stack: s1-dev
+          service: backend
+          target_name: db
+      - targets: ["http://backend:8080/health/redis"]
+        labels:
+          environment: dev
+          runtime_stack: s1-dev
+          service: backend
+          target_name: redis
+      - targets: ["http://ai:5000/health"]
+        labels:
+          environment: dev
+          runtime_stack: s1-dev
+          service: ai
+          target_name: ai
+      - targets: ["http://graphhopper:8990/healthcheck"]
+        labels:
+          environment: dev
+          runtime_stack: s1-dev
+          service: graphhopper
+          target_name: graphhopper
+      - targets: ["http://minio:9000/minio/health/live"]
+        labels:
+          environment: dev
+          runtime_stack: s1-dev
+          service: minio
+          target_name: minio
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  - job_name: blackbox-prod-http
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets: ["https://api.busaneumgil.com/health"]
+        labels:
+          environment: prod
+          runtime_stack: s2-prod
+          service: backend
+          target_name: api
+      - targets: ["https://api.busaneumgil.com/health/db"]
+        labels:
+          environment: prod
+          runtime_stack: s2-prod
+          service: backend
+          target_name: db
+      - targets: ["https://api.busaneumgil.com/health/redis"]
+        labels:
+          environment: prod
+          runtime_stack: s2-prod
+          service: backend
+          target_name: redis
+      - targets: ["https://ai.busaneumgil.com/health"]
+        labels:
+          environment: prod
+          runtime_stack: s2-prod
+          service: ai
+          target_name: ai
+      - targets: ["https://admin.busaneumgil.com/health"]
+        labels:
+          environment: prod
+          runtime_stack: s2-prod
+          service: admin
+          target_name: admin
+      - targets: ["https://api.busaneumgil.com/graphhopper/healthcheck"]
+        labels:
+          environment: prod
+          runtime_stack: s2-prod
+          service: graphhopper
+          target_name: graphhopper
+      - targets: ["https://api.busaneumgil.com/graphhopper-blue/healthcheck"]
+        labels:
+          environment: prod
+          runtime_stack: s2-prod
+          service: graphhopper
+          target_name: graphhopper-blue
+      - targets: ["https://api.busaneumgil.com/graphhopper-green/healthcheck"]
+        labels:
+          environment: prod
+          runtime_stack: s2-prod
+          service: graphhopper
+          target_name: graphhopper-green
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

@@ -1,0 +1,30 @@
+FROM node:22-alpine AS build
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+ARG ADMIN_BACKEND_API_URL=https://api.busaneumgil.com
+ARG ADMIN_KAKAO_JS_PUBLIC=
+ARG ADMIN_NAVER_CLIENT_PUBLIC_ID=
+ARG ADMIN_GOOGLE_CLIENT_PUBLIC_ID=
+ARG ADMIN_KAKAO_MAP_PUBLIC=
+ARG ADMIN_GRAFANA_DASHBOARD_PUBLIC_URL=
+
+RUN VITE_BACKEND_API_URL="$ADMIN_BACKEND_API_URL" \
+  VITE_ADMIN_KAKAO_JAVASCRIPT_KEY="$ADMIN_KAKAO_JS_PUBLIC" \
+  VITE_ADMIN_NAVER_CLIENT_ID="$ADMIN_NAVER_CLIENT_PUBLIC_ID" \
+  VITE_ADMIN_GOOGLE_CLIENT_ID="$ADMIN_GOOGLE_CLIENT_PUBLIC_ID" \
+  VITE_KAKAO_MAP_KEY="$ADMIN_KAKAO_MAP_PUBLIC" \
+  VITE_GRAFANA_DASHBOARD_URL="$ADMIN_GRAFANA_DASHBOARD_PUBLIC_URL" \
+  npm run build:prod
+
+FROM nginx:1.27-alpine
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+HEALTHCHECK --interval=10s --timeout=3s --retries=10 CMD wget -qO- http://127.0.0.1/health >/dev/null

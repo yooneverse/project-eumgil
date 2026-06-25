@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  14세 이상 카드 아이콘 (Figma node 328:612, variant 8).
+  사용자 + 14 숫자 모티프. 최종 SVG가 들어오면 교체.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="90dp"
+    android:height="90dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M9,11C10.66,11 12,9.66 12,8C12,6.34 10.66,5 9,5C7.34,5 6,6.34 6,8C6,9.66 7.34,11 9,11Z"
+        android:strokeColor="#000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M3,19C3.8,15.6 6,14 9,14C12,14 14.2,15.6 15,19"
+        android:strokeColor="#000000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M16.4,8H17.6V14H19V8H20.2V7H16.4V8ZM21,7V14H22V12H23.5V11H22V7H21Z" />
+</vector>

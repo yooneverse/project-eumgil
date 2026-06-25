@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>소셜 로그인 테스트</title>
+	<style>
+		:root {
+			color-scheme: light;
+			--bg: #f7f8fa;
+			--panel: #ffffff;
+			--text: #17202a;
+			--muted: #64748b;
+			--line: #d8dee8;
+			--accent: #0f766e;
+			--accent-strong: #115e59;
+			--danger: #b42318;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			background: var(--bg);
+			color: var(--text);
+			font-family: Arial, sans-serif;
+			font-size: 14px;
+			line-height: 1.5;
+		}
+
+		main {
+			width: min(1180px, calc(100% - 32px));
+			margin: 0 auto;
+			padding: 24px 0;
+		}
+
+		header {
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 16px;
+			margin-bottom: 18px;
+		}
+
+		h1 {
+			margin: 0;
+			font-size: 24px;
+			line-height: 1.2;
+		}
+
+		.status {
+			color: var(--muted);
+			font-size: 13px;
+		}
+
+		.grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 16px;
+		}
+
+		.panel {
+			background: var(--panel);
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			padding: 16px;
+		}
+
+		.panel h2 {
+			margin: 0 0 14px;
+			font-size: 16px;
+		}
+
+		label {
+			display: block;
+			margin: 12px 0 6px;
+			color: var(--muted);
+			font-weight: 700;
+			font-size: 12px;
+		}
+
+		input,
+		textarea {
+			width: 100%;
+			border: 1px solid var(--line);
+			border-radius: 6px;
+			padding: 10px;
+			background: #ffffff;
+			color: var(--text);
+			font: inherit;
+		}
+
+		textarea {
+			min-height: 96px;
+			resize: vertical;
+		}
+
+		.row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+		}
+
+		.choice-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 8px;
+		}
+
+		.choice-grid.two {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.login-grid {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 10px;
+			margin-top: 12px;
+		}
+
+		.login-button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+			min-height: 48px;
+			margin-top: 0;
+			font-size: 15px;
+			border: 1px solid transparent;
+		}
+
+		.login-button.kakao {
+			background: #fee500;
+			color: #191600;
+		}
+
+		.login-button.kakao:hover {
+			background: #f5dc00;
+		}
+
+		.login-button.naver {
+			background: #03c75a;
+			color: #ffffff;
+		}
+
+		.login-button.naver:hover {
+			background: #02b351;
+		}
+
+		.login-button.google {
+			background: #ffffff;
+			color: #1f2937;
+			border-color: var(--line);
+		}
+
+		.login-button.google:hover {
+			background: #f8fafc;
+		}
+
+		.login-mark {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 22px;
+			height: 22px;
+			border-radius: 50%;
+			background: rgba(255, 255, 255, 0.32);
+			font-weight: 900;
+		}
+
+		.choice {
+			position: relative;
+			display: block;
+			margin: 0;
+		}
+
+		.choice input {
+			position: absolute;
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		.choice span {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-height: 42px;
+			border: 1px solid var(--line);
+			border-radius: 6px;
+			padding: 9px 10px;
+			background: #ffffff;
+			color: var(--text);
+			font-weight: 700;
+			cursor: pointer;
+			text-align: center;
+		}
+
+		.choice input:checked + span {
+			border-color: var(--accent);
+			background: #e6fffb;
+			color: var(--accent-strong);
+		}
+
+		.choice input:disabled + span {
+			background: #f1f5f9;
+			color: #94a3b8;
+			cursor: not-allowed;
+		}
+
+		.checkbox-line {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 12px;
+			color: var(--text);
+			font-weight: 700;
+			font-size: 14px;
+		}
+
+		.checkbox-line input {
+			width: 18px;
+			height: 18px;
+		}
+
+		button {
+			width: 100%;
+			border: 0;
+			border-radius: 6px;
+			margin-top: 14px;
+			padding: 11px 12px;
+			background: var(--accent);
+			color: #ffffff;
+			font-weight: 700;
+			cursor: pointer;
+		}
+
+		button:hover {
+			background: var(--accent-strong);
+		}
+
+		button.secondary {
+			background: #334155;
+		}
+
+		button.secondary:hover {
+			background: #1f2937;
+		}
+
+		button.small {
+			min-height: 0;
+			margin-top: 0;
+			padding: 10px 12px;
+		}
+
+		details {
+			margin-top: 14px;
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			padding: 12px;
+			background: #fbfdff;
+		}
+
+		summary {
+			cursor: pointer;
+			font-weight: 800;
+		}
+
+		.warning {
+			margin-top: 10px;
+			color: var(--danger);
+			font-size: 13px;
+		}
+
+		.help {
+			margin-top: 8px;
+			color: var(--muted);
+			font-size: 13px;
+		}
+
+		pre {
+			min-height: 220px;
+			margin: 0;
+			overflow: auto;
+			border: 1px solid var(--line);
+			border-radius: 8px;
+			padding: 14px;
+			background: #0f172a;
+			color: #d1fae5;
+			font-size: 13px;
+			white-space: pre-wrap;
+			word-break: break-word;
+		}
+
+		@media (max-width: 860px) {
+			header,
+			.grid,
+			.row {
+				display: block;
+			}
+
+			.panel {
+				margin-bottom: 16px;
+			}
+		}
+	</style>
+</head>
+<body>
+<main>
+	<header>
+		<div>
+			<h1>소셜 로그인 테스트</h1>
+			<div class="status">토큰은 localStorage/sessionStorage에 저장하지 않습니다.</div>
+		</div>
+		<div class="status" id="lastStatus">대기 중</div>
+	</header>
+
+	<div class="grid">
+		<section class="panel">
+			<h2>소셜 로그인</h2>
+			<div class="login-grid">
+				<button id="kakaoLoginButton" type="button" class="login-button kakao">
+					<span class="login-mark">K</span>
+					<span>카카오 로그인</span>
+				</button>
+				<button id="naverLoginButton" type="button" class="login-button naver">
+					<span class="login-mark">N</span>
+					<span>네이버 로그인</span>
+				</button>
+				<button id="googleLoginButton" type="button" class="login-button google">
+					<span class="login-mark">G</span>
+					<span>Google 로그인</span>
+				</button>
+			</div>
+			<div class="help">로그인 성공 시 provider access token을 받아 우리 `/auth/social-login`까지 자동 호출합니다.</div>
+
+			<div class="warning" id="configStatus">.env.test 소셜 로그인 설정 확인 중</div>
+			<div class="help" id="providerConsoleGuide"></div>
+
+			<label>직접 호출할 소셜 제공자</label>
+			<div class="choice-grid" id="providerChoices">
+				<label class="choice">
+					<input type="radio" name="socialProvider" value="KAKAO" checked>
+					<span>카카오</span>
+				</label>
+				<label class="choice">
+					<input type="radio" name="socialProvider" value="NAVER">
+					<span>네이버</span>
+				</label>
+				<label class="choice">
+					<input type="radio" name="socialProvider" value="GOOGLE">
+					<span>구글</span>
+				</label>
+			</div>
+
+			<label for="socialAccessToken">소셜 access token</label>
+			<textarea id="socialAccessToken" spellcheck="false" placeholder="카카오/네이버/구글에서 받은 access token"></textarea>
+			<button id="socialLoginButton">소셜 로그인 요청</button>
+
+			<label for="signupToken">회원가입 토큰</label>
+			<textarea id="signupToken" spellcheck="false"></textarea>
+
+			<label>1차 사용자 유형</label>
+			<div class="choice-grid two" id="primaryTypeChoices">
+				<label class="choice">
+					<input type="radio" name="primaryType" value="LOW_VISION" checked>
+					<span>시각장애</span>
+				</label>
+				<label class="choice">
+					<input type="radio" name="primaryType" value="MOBILITY_IMPAIRED">
+					<span>보행약자</span>
+				</label>
+			</div>
+
+			<label>보행약자 세부 유형</label>
+			<div class="choice-grid" id="mobilitySubtypeChoices">
+				<label class="choice">
+					<input type="radio" name="mobilitySubtype" value="POWER_WHEELCHAIR">
+					<span>전동 휠체어</span>
+				</label>
+				<label class="choice">
+					<input type="radio" name="mobilitySubtype" value="MANUAL_WHEELCHAIR">
+					<span>수동 휠체어</span>
+				</label>
+				<label class="choice">
+					<input type="radio" name="mobilitySubtype" value="OTHER_MOBILITY">
+					<span>기타 보행약자</span>
+				</label>
+			</div>
+
+			<label class="checkbox-line">
+				<input id="requiredTermsAccepted" type="checkbox" checked>
+				<span>필수 약관 동의</span>
+			</label>
+
+			<button id="signupButton">회원가입 완료 요청</button>
+		</section>
+
+		<section class="panel">
+			<h2>서비스 토큰</h2>
+			<label for="accessToken">서비스 access token</label>
+			<textarea id="accessToken" spellcheck="false"></textarea>
+			<label for="refreshToken">서비스 refresh token</label>
+			<textarea id="refreshToken" spellcheck="false"></textarea>
+			<button id="reissueButton" class="secondary">토큰 재발급 요청</button>
+			<button id="logoutButton" class="secondary">로그아웃 요청</button>
+			<button id="withdrawButton" type="button">회원탈퇴 요청</button>
+		</section>
+	</div>
+
+	<section class="panel" style="margin-top: 16px;">
+		<h2>응답</h2>
+		<pre id="responseOutput">{}</pre>
+	</section>
+</main>
+
+<script>
+	const $ = (id) => document.getElementById(id);
+	const NAVER_STATE_KEY = "authTestNaverState";
+	let authTestConfig = {
+		kakaoJavaScriptKey: "",
+		naverClientId: "",
+		googleClientId: ""
+	};
+
+	// 테스트 페이지는 우리 API가 받는 socialAccessToken을 바로 확보해야 해서 access token 로그인 함수를 제공하는 SDK를 사용한다.
+	const KAKAO_SDK_URL = "https://developers.kakao.com/sdk/js/kakao.min.js";
+
+	function loadScript(src) {
+		return new Promise((resolve, reject) => {
+			const existing = document.querySelector(`script[src="${src}"]`);
+			if (existing) {
+				resolve();
+				return;
+			}
+			const script = document.createElement("script");
+			script.src = src;
+			script.async = true;
+			script.onload = resolve;
+			script.onerror = reject;
+			document.head.appendChild(script);
+		});
+	}
+
+	function baseUrl() {
+		return "";
+	}
+
+	function endpoint(path) {
+		return `${baseUrl()}${path}`;
+	}
+
+	function setStatus(text) {
+		$("lastStatus").textContent = text;
+	}
+
+	function checkedValue(name) {
+		return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
+	}
+
+	function selectProvider(provider) {
+		const input = document.querySelector(`input[name="socialProvider"][value="${provider}"]`);
+		if (input) {
+			input.checked = true;
+		}
+	}
+
+	function requireValue(value, label) {
+		value = value?.trim() ?? "";
+		if (!value) {
+			throw new Error(`${label}을 입력해주세요.`);
+		}
+		return value;
+	}
+
+	function currentPageUrl() {
+		return `${window.location.origin}${window.location.pathname}`;
+	}
+
+	function setProviderAccessToken(provider, token) {
+		selectProvider(provider);
+		$("socialAccessToken").value = token;
+		return postJson("/auth/social-login", {
+			socialProvider: provider,
+			socialAccessToken: token
+		});
+	}
+
+	function refreshMobilityOptions() {
+		const isMobility = checkedValue("primaryType") === "MOBILITY_IMPAIRED";
+		document.querySelectorAll('input[name="mobilitySubtype"]').forEach((input, index) => {
+			input.disabled = !isMobility;
+			if (isMobility && index === 0 && !checkedValue("mobilitySubtype")) {
+				input.checked = true;
+			}
+			if (!isMobility) {
+				input.checked = false;
+			}
+		});
+	}
+
+	function showResponse(status, body) {
+		$("responseOutput").textContent = JSON.stringify({ status, body }, null, 2);
+	}
+
+	function clearServiceTokens() {
+		$("accessToken").value = "";
+		$("refreshToken").value = "";
+	}
+
+	function applyAuthData(data) {
+		if (!data) {
+			return;
+		}
+		if (data.signupToken) {
+			$("signupToken").value = data.signupToken;
+		}
+		if (data.accessToken) {
+			$("accessToken").value = data.accessToken;
+		}
+		if (data.refreshToken) {
+			$("refreshToken").value = data.refreshToken;
+		}
+	}
+
+	async function postJson(path, payload) {
+		setStatus(`${path} 호출 중`);
+		const response = await fetch(endpoint(path), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(payload)
+		});
+		const text = await response.text();
+		const body = text ? JSON.parse(text) : null;
+		showResponse(response.status, body);
+		applyAuthData(body?.data);
+		setStatus(`${path} 응답 ${response.status}`);
+		return body;
+	}
+
+	async function authorizedRequest(method, path, options = {}) {
+		const accessToken = requireValue($("accessToken").value, "서비스 access token");
+		setStatus(`${path} 호출 중`);
+		const response = await fetch(endpoint(path), {
+			method,
+			headers: {
+				"Authorization": `Bearer ${accessToken}`
+			}
+		});
+		const text = await response.text();
+		const body = text ? JSON.parse(text) : null;
+		const displayBody = body ?? (response.ok && options.emptySuccessMessage
+			? { message: options.emptySuccessMessage }
+			: null);
+		showResponse(response.status, displayBody);
+		if (response.status === 204 || (response.ok && options.clearTokensOnSuccess)) {
+			clearServiceTokens();
+		}
+		if (response.ok) {
+			setStatus(options.successStatus ?? `${path} 응답 ${response.status}`);
+			return body;
+		}
+		setStatus(options.failureStatus ?? `${path} 실패 ${response.status}`);
+		return body;
+	}
+
+	async function loadAuthTestConfig() {
+		const response = await fetch("/auth/test-config");
+		if (!response.ok) {
+			throw new Error("테스트 설정을 불러오지 못했습니다.");
+		}
+		authTestConfig = await response.json();
+		const missing = [];
+		if (!authTestConfig.kakaoJavaScriptKey) {
+			missing.push("카카오 JavaScript 키");
+		}
+		if (!authTestConfig.naverClientId) {
+			missing.push("네이버 Client ID");
+		}
+		if (!authTestConfig.googleClientId) {
+			missing.push("구글 Client ID");
+		}
+		if (missing.length > 0) {
+			$("configStatus").textContent = `.env.test에 ${missing.join(", ")} 값을 넣고 서버를 재시작해주세요.`;
+			updateProviderConsoleGuide();
+			return;
+		}
+		$("configStatus").textContent = "소셜 로그인 키 설정 완료";
+		$("configStatus").classList.remove("warning");
+		$("configStatus").classList.add("help");
+		updateProviderConsoleGuide();
+	}
+
+	function updateProviderConsoleGuide() {
+		const origin = window.location.origin;
+		const callbackUrl = currentPageUrl();
+		$("providerConsoleGuide").textContent =
+			`제공자 콘솔 등록값: 카카오 Web 사이트 도메인 ${origin}, 카카오 Redirect URI ${callbackUrl}, ` +
+			`구글 Authorized JavaScript origins ${origin}, 네이버 Callback URL ${callbackUrl}`;
+	}
+
+	async function kakaoLogin() {
+		const jsKey = requireValue(authTestConfig.kakaoJavaScriptKey, "카카오 JavaScript 키");
+		setStatus("카카오 SDK 로딩 중");
+		await loadScript(KAKAO_SDK_URL);
+		if (!window.Kakao.isInitialized()) {
+			window.Kakao.init(jsKey);
+		}
+		if (typeof window.Kakao.Auth.login !== "function") {
+			throw new Error("카카오 SDK에서 access token 로그인 함수를 찾지 못했습니다. SDK URL을 확인해주세요.");
+		}
+		setStatus("카카오 로그인 창 여는 중");
+		window.Kakao.Auth.login({
+			success: (auth) => {
+				setProviderAccessToken("KAKAO", auth.access_token)
+					.catch((error) => {
+						setStatus("카카오 로그인 후 API 요청 실패");
+						showResponse("CLIENT_ERROR", { message: error.message });
+					});
+			},
+			fail: (error) => {
+				setStatus("카카오 로그인 실패");
+				showResponse("KAKAO_ERROR", error);
+			}
+		});
+	}
+
+	function naverLogin() {
+		const clientId = requireValue(authTestConfig.naverClientId, "네이버 Client ID");
+		const redirectUri = currentPageUrl();
+		const state = crypto.randomUUID();
+		sessionStorage.setItem(NAVER_STATE_KEY, state);
+		const authorizeUrl = new URL("https://nid.naver.com/oauth2.0/authorize");
+		authorizeUrl.searchParams.set("response_type", "token");
+		authorizeUrl.searchParams.set("client_id", clientId);
+		authorizeUrl.searchParams.set("redirect_uri", redirectUri);
+		authorizeUrl.searchParams.set("state", state);
+		window.location.href = authorizeUrl.toString();
+	}
+
+	function handleNaverCallback() {
+		if (!window.location.hash.includes("access_token=")) {
+			return;
+		}
+		const params = new URLSearchParams(window.location.hash.slice(1));
+		const accessToken = params.get("access_token");
+		const state = params.get("state");
+		const expectedState = sessionStorage.getItem(NAVER_STATE_KEY);
+		sessionStorage.removeItem(NAVER_STATE_KEY);
+		history.replaceState(null, document.title, window.location.pathname + window.location.search);
+		if (!accessToken) {
+			return;
+		}
+		if (expectedState && state !== expectedState) {
+			setStatus("네이버 state 검증 실패");
+			showResponse("NAVER_ERROR", { message: "네이버 로그인 state가 일치하지 않습니다." });
+			return;
+		}
+		setProviderAccessToken("NAVER", accessToken)
+			.catch((error) => {
+				setStatus("네이버 로그인 후 API 요청 실패");
+				showResponse("CLIENT_ERROR", { message: error.message });
+			});
+	}
+
+	async function googleLogin() {
+		const clientId = requireValue(authTestConfig.googleClientId, "구글 Client ID");
+		setStatus("구글 SDK 로딩 중");
+		await loadScript("https://accounts.google.com/gsi/client");
+		const tokenClient = window.google.accounts.oauth2.initTokenClient({
+			client_id: clientId,
+			scope: "openid email profile",
+			callback: (response) => {
+				if (response.error) {
+					setStatus("구글 로그인 실패");
+					showResponse("GOOGLE_ERROR", response);
+					return;
+				}
+				setProviderAccessToken("GOOGLE", response.access_token)
+					.catch((error) => {
+						setStatus("구글 로그인 후 API 요청 실패");
+						showResponse("CLIENT_ERROR", { message: error.message });
+					});
+			}
+		});
+		setStatus("구글 로그인 창 여는 중");
+		tokenClient.requestAccessToken({ prompt: "consent" });
+	}
+
+	$("socialLoginButton").addEventListener("click", () => {
+		postJson("/auth/social-login", {
+			socialProvider: checkedValue("socialProvider"),
+			socialAccessToken: $("socialAccessToken").value.trim()
+		}).catch((error) => {
+			setStatus("요청 실패");
+			showResponse("CLIENT_ERROR", { message: error.message });
+		});
+	});
+
+	$("kakaoLoginButton").addEventListener("click", () => {
+		kakaoLogin().catch((error) => {
+			setStatus("카카오 로그인 준비 실패");
+			showResponse("CLIENT_ERROR", { message: error.message });
+		});
+	});
+
+	$("naverLoginButton").addEventListener("click", () => {
+		try {
+			naverLogin();
+		} catch (error) {
+			setStatus("네이버 로그인 준비 실패");
+			showResponse("CLIENT_ERROR", { message: error.message });
+		}
+	});
+
+	$("googleLoginButton").addEventListener("click", () => {
+		googleLogin().catch((error) => {
+			setStatus("구글 로그인 준비 실패");
+			showResponse("CLIENT_ERROR", { message: error.message });
+		});
+	});
+
+	$("signupButton").addEventListener("click", () => {
+		const primaryType = checkedValue("primaryType");
+		const subtype = primaryType === "MOBILITY_IMPAIRED" ? checkedValue("mobilitySubtype") : null;
+		postJson("/auth/signup", {
+			signupToken: $("signupToken").value.trim(),
+			selectedPrimaryUserType: primaryType,
+			selectedMobilitySubtype: subtype,
+			requiredTermsAccepted: $("requiredTermsAccepted").checked
+		}).catch((error) => {
+			setStatus("요청 실패");
+			showResponse("CLIENT_ERROR", { message: error.message });
+		});
+	});
+
+	$("reissueButton").addEventListener("click", () => {
+		postJson("/auth/reissue", {
+			refreshToken: $("refreshToken").value.trim()
+		}).catch((error) => {
+			setStatus("요청 실패");
+			showResponse("CLIENT_ERROR", { message: error.message });
+		});
+	});
+
+	$("logoutButton").addEventListener("click", () => {
+		authorizedRequest("POST", "/auth/logout", {
+			successStatus: "로그아웃 성공",
+			failureStatus: "로그아웃 실패",
+			emptySuccessMessage: "로그아웃되었습니다. 서비스 토큰을 비웠습니다.",
+			clearTokensOnSuccess: true
+		}).catch((error) => {
+			setStatus("로그아웃 요청 실패");
+			showResponse("CLIENT_ERROR", { message: error.message });
+		});
+	});
+
+	$("withdrawButton").addEventListener("click", () => {
+		authorizedRequest("DELETE", "/users/me", {
+			successStatus: "회원탈퇴 성공",
+			failureStatus: "회원탈퇴 실패",
+			emptySuccessMessage: "회원탈퇴가 완료되었습니다. 서비스 토큰을 비웠습니다.",
+			clearTokensOnSuccess: true
+		}).catch((error) => {
+			setStatus("회원탈퇴 요청 실패");
+			showResponse("CLIENT_ERROR", { message: error.message });
+		});
+	});
+
+	document.querySelectorAll('input[name="primaryType"]').forEach((input) => {
+		input.addEventListener("change", refreshMobilityOptions);
+	});
+	refreshMobilityOptions();
+	loadAuthTestConfig()
+		.then(handleNaverCallback)
+		.catch((error) => {
+			$("configStatus").textContent = error.message;
+			setStatus("테스트 설정 로드 실패");
+		});
+</script>
+</body>
+</html>

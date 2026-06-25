@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clean UI Version</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        :root {
+            --brand-yellow: #FFD400;
+            --pure-black: #000000;
+            --dark-gray: #151515;
+            --border-line: #252525;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
+        body { background-color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+        .phone {
+            width: 375px;
+            height: 780px;
+            background: var(--pure-black);
+            border: 12px solid #1a1a1a;
+            border-radius: 44px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 화면 컨테이너 */
+        .screen { display: none; flex: 1; flex-direction: column; width: 100%; background: var(--pure-black); }
+        .screen.active { display: flex; }
+
+        /* 화면 1: 입력 중 (완전 검정 배경) */
+        .screen-input { justify-content: center; align-items: center; }
+        .mic-circle {
+            width: 140px; height: 140px; 
+            border: 5px solid var(--brand-yellow); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; 
+            color: var(--brand-yellow); margin-bottom: 25px;
+        }
+
+        /* 화면 2: 검색 결과 */
+        .header { text-align: center; color: var(--brand-yellow); padding: 15px; font-weight: bold; font-size: 1.1rem; }
+        .scroll-area { flex: 1; padding: 20px; overflow-y: auto; }
+        .result-card {
+            border: 1px solid var(--brand-yellow); border-radius: 12px; 
+            padding: 20px; margin-bottom: 15px; background: var(--pure-black);
+        }
+        .num-badge { background: var(--brand-yellow); color: black; padding: 2px 10px; border-radius: 4px; font-weight: 800; margin-right: 12px; }
+        .title-row { display: flex; align-items: flex-start; color: white; margin-bottom: 20px; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        .btn { background: var(--brand-yellow); border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+
+        /* 화면 3: 안내 중 */
+        .guide-stats { display: flex; justify-content: space-around; padding: 30px 10px; color: white; }
+        .stat-val { color: var(--brand-yellow); font-size: 2.5rem; font-weight: 900; margin-top: 5px; }
+        .yellow-card { background: var(--brand-yellow); margin: 15px 25px; border-radius: 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .stop-card { border: 1px solid #444; margin: 0 25px 25px; border-radius: 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
+
+        /* 화면 4: 완료 */
+        .save-card { background: var(--brand-yellow); margin: 25px; border-radius: 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .done-card { border: 1px solid var(--brand-yellow); margin: 0 25px 25px; border-radius: 20px; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--brand-yellow); }
+
+        /* 공통 네비게이션 */
+        .nav { height: 75px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border-line); }
+        .nav-item { color: #555; font-size: 11px; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--brand-yellow); }
+        .nav-item .material-symbols-outlined { font-size: 26px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="phone">
+        <div id="screen1" class="screen screen-input active">
+            <div class="mic-circle"><span class="material-symbols-outlined" style="font-size: 70px;">mic</span></div>
+            <h1 style="color: var(--brand-yellow); font-size: 2.8rem; font-weight: 900;">입력중</h1>
+        </div>
+
+        <div id="screen2" class="screen">
+            <div class="header">검색 결과</div>
+            <div class="scroll-area">
+                <div class="result-card">
+                    <div class="title-row">
+                        <span class="num-badge">1</span>
+                        <h2 style="font-size: 1.6rem; line-height: 1.2;">해운대역<br>공공화장실</h2>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn">북마크</button>
+                        <button class="btn">길찾기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen3" class="screen">
+            <div class="guide-stats">
+                <div><p>남은 거리</p><p class="stat-val">50M</p></div>
+                <div><p>남은 시간</p><p class="stat-val">2분</p></div>
+            </div>
+            <div class="yellow-card">
+                <span class="material-symbols-outlined" style="font-size: 60px; color:black;">location_on</span>
+                <h2 style="color:black; font-size: 1.8rem; margin-top: 10px;">현재 위치</h2>
+            </div>
+            <div class="stop-card">
+                <span class="material-symbols-outlined" style="color: #ff4d4d; font-size: 60px;">cancel</span>
+                <h2 style="font-size: 1.8rem; margin-top: 10px;">안내 종료</h2>
+            </div>
+        </div>
+
+        <div id="screen4" class="screen">
+            <div style="height: 60px;"></div>
+            <div class="save-card">
+                <span class="material-symbols-outlined" style="font-size: 70px; color:black;">bookmark</span>
+                <h2 style="color:black; font-size: 2rem; margin-top: 10px;">도착지 저장</h2>
+            </div>
+            <div class="done-card">
+                <span class="material-symbols-outlined" style="font-size: 70px;">check_circle</span>
+                <h2 style="font-size: 2.5rem; margin-top: 10px;">완료</h2>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <div class="nav-item active" onclick="showScreen(1)"><span class="material-symbols-outlined">home</span>홈</div>
+            <div class="nav-item" onclick="showScreen(2)"><span class="material-symbols-outlined">bookmark</span>북마크</div>
+            <div class="nav-item" onclick="showScreen(3)"><span class="material-symbols-outlined">grid_view</span>카테고리</div>
+            <div class="nav-item" onclick="showScreen(4)"><span class="material-symbols-outlined">person</span>마이페이지</div>
+        </nav>
+    </div>
+
+    <script>
+        function showScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + num).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach((item, idx) => {
+                item.classList.toggle('active', idx === num-1);
+            });
+        }
+    </script>
+</body>
+</html>

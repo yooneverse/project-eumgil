@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시각장애인 대화형 내비게이션 시뮬레이터</title>
+<style>
+  /* 기본 리셋 및 폰트 설정 */
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #e0e0e0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* 핸드폰 목업 디자인 */
+  .phone-mockup {
+    width: 360px;
+    height: 740px;
+    background-color: #000000; /* 저시력자를 위한 고대비 배경 (검정) */
+    border: 14px solid #333333;
+    border-radius: 40px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    position: relative;
+  }
+
+  /* 상단 상태바 */
+  .status-bar {
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    color: #FFEB3B;
+    font-weight: bold;
+  }
+
+  /* 메인 컨텐츠 영역 */
+  .content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 큰 폰트의 제목 */
+  h1 {
+    color: #FFEB3B; /* 시인성이 높은 노란색 */
+    font-size: 32px;
+    margin: 0 0 20px 0;
+    line-height: 1.3;
+    word-break: keep-all;
+    text-align: center;
+  }
+
+  /* 대화/브리핑 텍스트 영역 */
+  .info-box {
+    background-color: #1A1A1A;
+    border: 3px solid #FFEB3B;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .info-text {
+    color: #FFFFFF;
+    font-size: 22px; /* 큰 폰트 적용 */
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+    min-height: 100px;
+  }
+
+  .highlight {
+    color: #FFEB3B;
+    font-weight: bold;
+    font-size: 24px;
+  }
+
+  /* 버튼 영역 (화면 하단 고정, 최대 3개) */
+  .button-group {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* 버튼 사이 여유 공간 */
+    padding-bottom: 20px;
+  }
+
+  /* 대형 노란색 버튼 */
+  button {
+    background-color: #FFEB3B; /* 노란색 계열 배경 */
+    color: #000000; /* 검정색 텍스트로 대비 극대화 */
+    border: none;
+    border-radius: 16px;
+    min-height: 80px; /* 요구사항: 최소 60pt 이상 반영 (넉넉하게 80px) */
+    font-size: 26px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(255, 235, 59, 0.2);
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  button:active {
+    transform: scale(0.98);
+    background-color: #FBC02D;
+  }
+
+  /* 음성 버튼 스타일 */
+  #voiceBtn {
+    font-size: 30px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<main class="phone-mockup" aria-label="시각장애인 대화형 내비게이션 앱 시뮬레이션">
+  
+  <div class="status-bar" aria-hidden="true">
+    <span>9:30</span>
+    <span>100%</span>
+  </div>
+
+  <div class="content">
+    <h1 tabindex="1" id="pageTitle">대화형 목적지 검색</h1>
+
+    <div class="info-box" tabindex="2" aria-live="polite" aria-atomic="true">
+      <p class="info-text" id="infoText">
+        화면 하단의 음성 버튼을 탭하고,<br>
+        목적지를 말해주세요.
+      </p>
+    </div>
+
+    <div class="button-group" id="buttonGroup">
+      <button tabindex="3" id="voiceBtn" aria-label="목적지 말하기 시작" onclick="simulateVoiceInput()">
+        🎤 목적지 말하기
+      </button>
+    </div>
+  </div>
+</main>
+
+<script>
+  let isBriefingPlaying = false;
+  let destination = "부산역 시계탑"; // 시뮬레이션을 위한 샘플 목적지
+
+  // 각 화면 상태에 따른 UI 업데이트 함수
+  function updateUI(state) {
+    const pageTitle = document.getElementById('pageTitle');
+    const infoText = document.getElementById('infoText');
+    const buttonGroup = document.getElementById('buttonGroup');
+
+    buttonGroup.innerHTML = ''; // 버튼 영역 초기화
+
+    switch (state) {
+      case 'initial':
+        pageTitle.innerText = "대화형 목적지 검색";
+        infoText.innerHTML = "화면 하단의 음성 버튼을 탭하고,<br>목적지를 말해주세요.";
+        const voiceBtn = document.createElement('button');
+        voiceBtn.id = 'voiceBtn';
+        voiceBtn.tabIndex = 3;
+        voiceBtn.setAttribute('aria-label', '목적지 말하기 시작');
+        voiceBtn.innerHTML = '🎤 목적지 말하기';
+        voiceBtn.onclick = simulateVoiceInput;
+        buttonGroup.appendChild(voiceBtn);
+        break;
+
+      case 'confirmation':
+        pageTitle.innerText = "목적지 확인";
+        infoText.innerHTML = `'<span class="highlight">${destination}</span>'로<br>가고 싶어, 맞나요? '네' 또는 '아니요, 다시 말하기'`;
+        
+        const confirmBtn = document.createElement('button');
+        confirmBtn.tabIndex = 3;
+        confirmBtn.setAttribute('aria-label', '네, 목적지가 맞습니다');
+        confirmBtn.innerText = '네';
+        confirmBtn.onclick = confirmDestination;
+        buttonGroup.appendChild(confirmBtn);
+
+        const denyBtn = document.createElement('button');
+        denyBtn.tabIndex = 4;
+        denyBtn.setAttribute('aria-label', '아니요, 목적지를 다시 말하겠습니다');
+        denyBtn.innerText = '아니요, 다시 말하기';
+        denyBtn.onclick = denyDestination;
+        buttonGroup.appendChild(denyBtn);
+        break;
+
+      case 'briefing':
+        pageTitle.innerText = `${destination}으로 안내를 시작합니다`;
+        // 주요 랜드마크 및 상세 경로 포함된 전체 브리핑 텍스트
+        infoText.innerHTML = `
+          총 거리 <span class="highlight">800미터</span>, 예상 도보 시간 <span class="highlight">15분</span>입니다.<br><br>
+          주요 랜드마크인 <span class="highlight">중앙대로 건너편 부산역 앞 시계탑</span>을 지납니다.<br><br>
+          <span class="highlight">우회전 2회, 좌회전 1회</span>가 포함된 경로입니다.
+        `;
+
+        // 최대 3개 버튼 구성: 브리핑, 목록, 시작
+        const playToggleBtn = document.createElement('button');
+        playToggleBtn.tabIndex = 3;
+        playToggleBtn.id = 'playToggleBtn';
+        playToggleBtn.setAttribute('aria-label', '경로 브리핑 음성 재생');
+        playToggleBtn.innerText = '🔊 브리핑 듣기';
+        playToggleBtn.onclick = toggleBriefing;
+        buttonGroup.appendChild(playToggleBtn);
+
+        const listBtn = document.createElement('button');
+        listBtn.tabIndex = 4;
+        listBtn.setAttribute('aria-label', '경로 상세 목록 보기');
+        listBtn.innerText = '📋 상세 경로 목록';
+        buttonGroup.appendChild(listBtn);
+
+        const startBtn = document.createElement('button');
+        startBtn.tabIndex = 5;
+        startBtn.setAttribute('aria-label', '내비게이션 안내 즉시 시작하기');
+        startBtn.innerText = '🚶 안내 시작';
+        startBtn.onclick = startGuidance;
+        buttonGroup.appendChild(startBtn);
+        break;
+
+      case 'navigating':
+        pageTitle.innerText = `${destination} 안내 중`;
+        infoText.innerHTML = `
+          "<span class="highlight">${destination}</span>"으로의<br>
+          실시간 보행 안내가 시작되었습니다!
+        `;
+        const stopBtn = document.createElement('button');
+        stopBtn.tabIndex = 3;
+        stopBtn.setAttribute('aria-label', '내비게이션 종료');
+        stopBtn.innerText = '🛑 안내 종료';
+        stopBtn.onclick = () => updateUI('initial'); // 종료 시 초기 화면으로
+        buttonGroup.appendChild(stopBtn);
+        break;
+    }
+  }
+
+  // 각 인터랙션 시뮬레이션 함수들
+  function simulateVoiceInput() {
+    updateUI('confirmation');
+  }
+
+  function confirmDestination() {
+    updateUI('briefing');
+    // 실제 앱에서는 이 상태에서 음성 브리핑이 자동으로 재생되기 시작합니다.
+  }
+
+  function denyDestination() {
+    updateUI('initial');
+  }
+
+  function toggleBriefing() {
+    const playToggleBtn = document.getElementById('playToggleBtn');
+    isBriefingPlaying = !isBriefingPlaying;
+    
+    if (isBriefingPlaying) {
+      playToggleBtn.innerHTML = "⏸ 브리핑 일시정지";
+      playToggleBtn.setAttribute('aria-label', '경로 브리핑 음성 일시정지');
+      // 실제 환경: 음성 재생 코드
+    } else {
+      playToggleBtn.innerHTML = "🔊 브리핑 이어서 듣기";
+      playToggleBtn.setAttribute('aria-label', '경로 브리핑 음성 이어서 재생');
+      // 실제 환경: 음성 재생 일시정지 코드
+    }
+  }
+
+  function startGuidance() {
+    updateUI('navigating');
+  }
+
+  // 초기 상태 로드
+  updateUI('initial');
+</script>
+
+</body>
+</html>z

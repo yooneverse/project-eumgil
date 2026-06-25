@@ -1,0 +1,237 @@
+name: s14p31e102-prod
+
+# Production compose skeleton.
+# Only place EC2-hosted runtime services here.
+#
+# Expected candidates:
+# - backend (Spring Boot)
+# - ai (Python Flask intent service)
+# - admin (React/Vite static admin web)
+# - graphhopper-runtime (disabled by default until graph-cache artifact flow is ready)
+#
+# Do NOT place managed AWS resources here:
+# - RDS
+# - ElastiCache
+# - S3
+#
+# Do NOT place S1 operations tools here:
+# - Jenkins
+# - Grafana / Portainer / SonarQube / PLG
+#
+# Use with:
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
+#
+# GraphHopper prod runtime is intentionally profile-gated.
+# Enable it only after the PostgreSQL LineString -> graph-cache build/deploy flow is ready:
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml --profile graphhopper up -d
+
+services:
+  graphhopper-build:
+    profiles:
+      - graphhopper-build
+    image: s14p31e102-prod-graphhopper:${GRAPHHOPPER_IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: INF/graphhopper/Dockerfile
+    entrypoint: ["graphhopper-build-entrypoint.sh"]
+    environment:
+      DB_URL: ${DB_URL:?DB_URL is required}
+      DB_USERNAME: ${DB_USERNAME:?DB_USERNAME is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      DB_SSLMODE: ${DB_SSLMODE:-require}
+      GRAPHHOPPER_GRAPH_LOCATION: ${GRAPHHOPPER_GRAPH_LOCATION:-/graphhopper/blue-data}
+      GRAPHHOPPER_IMPORT_TIMEOUT_SECONDS: ${GRAPHHOPPER_IMPORT_TIMEOUT_SECONDS:-1800}
+      GRAPHHOPPER_ROAD_NODES_SQL: ${GRAPHHOPPER_ROAD_NODES_SQL:-}
+      GRAPHHOPPER_ROAD_SEGMENTS_SQL: ${GRAPHHOPPER_ROAD_SEGMENTS_SQL:-}
+    volumes:
+      - graphhopper-prod-blue-data:/graphhopper/blue-data
+      - graphhopper-prod-green-data:/graphhopper/green-data
+      - graphhopper-prod-candidate-data:/graphhopper/candidate-data
+      - graphhopper-prod-build:/graphhopper/build-cache
+      - graphhopper-prod-import:/graphhopper/import
+      - graphhopper-prod-previous:/graphhopper/previous-cache
+
+  graphhopper-blue:
+    profiles:
+      - graphhopper
+    image: s14p31e102-prod-graphhopper:${GRAPHHOPPER_IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: INF/graphhopper/Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_URL: ${DB_URL:?DB_URL is required}
+      DB_USERNAME: ${DB_USERNAME:?DB_USERNAME is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      DB_SSLMODE: ${DB_SSLMODE:-require}
+      GRAPHHOPPER_GRAPH_LOCATION: /graphhopper/data
+    volumes:
+      - graphhopper-prod-blue-data:/graphhopper/data
+    ports:
+      - "127.0.0.1:${GRAPHHOPPER_BLUE_PORT:-18989}:8989"
+      - "127.0.0.1:${GRAPHHOPPER_BLUE_ADMIN_PORT:-18990}:8990"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8990/healthcheck >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 3m
+
+  graphhopper-green:
+    profiles:
+      - graphhopper
+    image: s14p31e102-prod-graphhopper:${GRAPHHOPPER_IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: INF/graphhopper/Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_URL: ${DB_URL:?DB_URL is required}
+      DB_USERNAME: ${DB_USERNAME:?DB_USERNAME is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      DB_SSLMODE: ${DB_SSLMODE:-require}
+      GRAPHHOPPER_GRAPH_LOCATION: /graphhopper/data
+    volumes:
+      - graphhopper-prod-green-data:/graphhopper/data
+    ports:
+      - "127.0.0.1:${GRAPHHOPPER_GREEN_PORT:-18991}:8989"
+      - "127.0.0.1:${GRAPHHOPPER_GREEN_ADMIN_PORT:-18992}:8990"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8990/healthcheck >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 3m
+
+  graphhopper-candidate:
+    profiles:
+      - graphhopper-candidate
+    image: s14p31e102-prod-graphhopper:${GRAPHHOPPER_IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: INF/graphhopper/Dockerfile
+    environment:
+      DB_URL: ${DB_URL:?DB_URL is required}
+      DB_USERNAME: ${DB_USERNAME:?DB_USERNAME is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      DB_SSLMODE: ${DB_SSLMODE:-require}
+      GRAPHHOPPER_GRAPH_LOCATION: /graphhopper/data
+    volumes:
+      - graphhopper-prod-candidate-data:/graphhopper/data
+    ports:
+      - "127.0.0.1:${GRAPHHOPPER_CANDIDATE_PORT:-18993}:8989"
+      - "127.0.0.1:${GRAPHHOPPER_CANDIDATE_ADMIN_PORT:-18994}:8990"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8990/healthcheck >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 3m
+
+  ai:
+    image: s14p31e102-prod-ai:${APP_IMAGE_TAG:-latest}
+    build:
+      context: ./AI
+    restart: unless-stopped
+    environment:
+      APP_ENV: prod
+      AI_HOST: ${AI_HOST:-0.0.0.0}
+      GMS_KEY: ${GMS_KEY:?GMS_KEY is required}
+      DEFAULT_MODEL: ${DEFAULT_MODEL:-gemini}
+    ports:
+      - "127.0.0.1:${AI_PORT:-5000}:5000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import json, urllib.request; data = json.load(urllib.request.urlopen('http://localhost:5000/health', timeout=3)); assert 'POST /voice/analyze' in data.get('endpoints', []); assert isinstance(data.get('providers'), list) and data['providers']\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: s14p31e102-prod-backend:${APP_IMAGE_TAG:-latest}
+    build:
+      context: ./BE
+    restart: unless-stopped
+    depends_on:
+      ai:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      SERVER_PORT: ${SERVER_PORT:-8080}
+      MANAGEMENT_SERVER_PORT: ${MANAGEMENT_SERVER_PORT:-18080}
+      DB_URL: ${DB_URL:?DB_URL is required}
+      DB_USERNAME: ${DB_USERNAME:?DB_USERNAME is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      # 현재는 초기 환경 bootstrap 단계라 기본값을 update로 둔다.
+      # 운영 모드 전환 시 .env.prod에서 validate로 명시 전환한다.
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+      REDIS_HOST: ${REDIS_HOST:?REDIS_HOST is required}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_SSL: ${REDIS_SSL:-true}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_BUCKET: ${S3_BUCKET:?S3_BUCKET is required}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?S3_ACCESS_KEY is required}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?S3_SECRET_KEY is required}
+      S3_REGION: ${S3_REGION:-ap-northeast-2}
+      GRAPHHOPPER_BASE_URL: ${GRAPHHOPPER_BLUE_URL:-http://graphhopper-blue:8989}
+      GRAPHHOPPER_BLUE_URL: ${GRAPHHOPPER_BLUE_URL:-http://graphhopper-blue:8989}
+      GRAPHHOPPER_GREEN_URL: ${GRAPHHOPPER_GREEN_URL:-http://graphhopper-green:8989}
+      GRAPHHOPPER_HEALTH_URL: ${GRAPHHOPPER_HEALTH_URL:-http://graphhopper-blue:8990/healthcheck}
+      GRAPHHOPPER_BLUE_HEALTH_URL: ${GRAPHHOPPER_BLUE_HEALTH_URL:-http://graphhopper-blue:8990/healthcheck}
+      GRAPHHOPPER_GREEN_HEALTH_URL: ${GRAPHHOPPER_GREEN_HEALTH_URL:-http://graphhopper-green:8990/healthcheck}
+      GRAPHHOPPER_ACTIVE_SLOT_KEY: ${GRAPHHOPPER_ACTIVE_SLOT_KEY:-graphhopper:active-slot}
+      GRAPHHOPPER_PREVIOUS_SLOT_KEY: ${GRAPHHOPPER_PREVIOUS_SLOT_KEY:-graphhopper:previous-slot}
+      GRAPHHOPPER_BLUE_URL_KEY: ${GRAPHHOPPER_BLUE_URL_KEY:-graphhopper:blue:url}
+      GRAPHHOPPER_GREEN_URL_KEY: ${GRAPHHOPPER_GREEN_URL_KEY:-graphhopper:green:url}
+      AI_BASE_URL: ${AI_BASE_URL:-http://ai:5000}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?CORS_ALLOWED_ORIGINS is required}
+      KAKAO_LOCAL_BASE_URL: ${KAKAO_LOCAL_BASE_URL:-https://dapi.kakao.com}
+      KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY:?KAKAO_REST_API_KEY is required}
+      ODSAY_API_BASE_URL: ${ODSAY_API_BASE_URL:-https://api.odsay.com/v1/api}
+      ODSAY_API_KEY: ${ODSAY_API_KEY:?ODSAY_API_KEY is required}
+      ODSAY_CONNECT_TIMEOUT: ${ODSAY_CONNECT_TIMEOUT:-5s}
+      ODSAY_READ_TIMEOUT: ${ODSAY_READ_TIMEOUT:-5s}
+      BUSAN_BIMS_API_BASE_URL: ${BUSAN_BIMS_API_BASE_URL:-https://apis.data.go.kr/6260000/BusanBIMS}
+      BUSAN_BIMS_SERVICE_KEY_DECODING: ${BUSAN_BIMS_SERVICE_KEY_DECODING:?BUSAN_BIMS_SERVICE_KEY_DECODING is required}
+      BUSAN_BIMS_CONNECT_TIMEOUT: ${BUSAN_BIMS_CONNECT_TIMEOUT:-5s}
+      BUSAN_BIMS_READ_TIMEOUT: ${BUSAN_BIMS_READ_TIMEOUT:-5s}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_ISSUER: ${JWT_ISSUER:-e102}
+      JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL:-15m}
+      JWT_REFRESH_TOKEN_TTL: ${JWT_REFRESH_TOKEN_TTL:-14d}
+      JWT_SIGNUP_TOKEN_TTL: ${JWT_SIGNUP_TOKEN_TTL:-10m}
+    ports:
+      - "127.0.0.1:${SERVER_PORT:-8080}:8080"
+      - "127.0.0.1:${MANAGEMENT_SERVER_PORT:-18080}:18080"
+
+  admin:
+    image: s14p31e102-prod-admin:${APP_IMAGE_TAG:-latest}
+    build:
+      context: ./ADMIN
+      args:
+        ADMIN_BACKEND_API_URL: ${VITE_BACKEND_API_URL:-https://api.busaneumgil.com}
+        ADMIN_KAKAO_JS_PUBLIC: ${VITE_ADMIN_KAKAO_JAVASCRIPT_KEY:-}
+        ADMIN_NAVER_CLIENT_PUBLIC_ID: ${VITE_ADMIN_NAVER_CLIENT_ID:-}
+        ADMIN_GOOGLE_CLIENT_PUBLIC_ID: ${VITE_ADMIN_GOOGLE_CLIENT_ID:-}
+        ADMIN_KAKAO_MAP_PUBLIC: ${VITE_KAKAO_MAP_KEY:-}
+        ADMIN_GRAFANA_DASHBOARD_PUBLIC_URL: ${VITE_GRAFANA_DASHBOARD_URL:-}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${ADMIN_PORT:-3001}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/health >/dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  graphhopper-prod-blue-data:
+  graphhopper-prod-green-data:
+  graphhopper-prod-candidate-data:
+  graphhopper-prod-build:
+  graphhopper-prod-import:
+  graphhopper-prod-previous:

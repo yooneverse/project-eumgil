@@ -1,0 +1,11 @@
+# SenseVoice 파인튜닝 데이터 전처리 의존 라이브러리
+
+# 핵심
+soundfile>=0.12.0
+numpy>=1.24.0
+tqdm>=4.65.0
+pandas>=2.0.0
+librosa>=0.10.0
+
+# VAD (구음장애 처리 - 선택)
+# webrtcvad-wheels  # Windows에서는 webrtcvad 대신 wheels 사용

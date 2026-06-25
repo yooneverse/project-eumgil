@@ -1,0 +1,10 @@
+git
+workflow-aggregator
+credentials-binding
+docker-workflow
+ssh-agent
+pipeline-stage-view
+gitlab-plugin
+gitlab-oauth
+matrix-auth
+timestamper

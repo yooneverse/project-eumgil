@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E102 배리어프리 지도 앱 — MVP 목업</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1A73E8;
+    --primary-light: #E8F0FE;
+    --primary-dark: #1557B0;
+    --accent: #FBBC04;
+    --accent-dark: #E37400;
+    --success: #34A853;
+    --danger: #EA4335;
+    --warning: #f59e0b; /* 빠른 길 경고 색상 추가 */
+    --gray-50: #F8F9FA;
+    --gray-100: #F1F3F4;
+    --gray-200: #E8EAED;
+    --gray-300: #DADCE0;
+    --gray-400: #BDC1C6;
+    --gray-500: #9AA0A6;
+    --gray-600: #80868B;
+    --gray-700: #5F6368;
+    --gray-800: #3C4043;
+    --gray-900: #202124;
+    --white: #FFFFFF;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+  }
+
+  /* ── 외부 레이아웃 ── */
+  .studio {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  /* ── 사이드바 ── */
+  .sidebar { width: 220px; flex-shrink: 0; }
+  .sidebar-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 12px; padding-left: 4px; }
+  .screen-list { display: flex; flex-direction: column; gap: 4px; }
+  .screen-item { padding: 10px 14px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+  .screen-item:hover { background: rgba(255,255,255,0.08); }
+  .screen-item.active { background: rgba(26,115,232,0.25); border-color: rgba(26,115,232,0.5); }
+  .screen-item-id { font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 500; margin-bottom: 2px; }
+  .screen-item-name { font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.4; }
+  .screen-item.active .screen-item-name { color: #fff; }
+
+  /* ── 폰 프레임 ── */
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .phone-frame {
+    width: 375px; height: 812px; background: #111; border-radius: 50px; padding: 12px;
+    box-shadow: 0 0 0 2px #2a2a2a, 0 0 0 6px #1a1a1a, 0 40px 80px rgba(0,0,0,0.6); position: relative; flex-shrink: 0;
+  }
+  .phone-screen { width: 100%; height: 100%; background: var(--white); border-radius: 40px; overflow: hidden; position: relative; }
+
+  /* status bar */
+  .status-bar { height: 44px; background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; position: relative; z-index: 10; }
+  .status-bar.dark { background: transparent; position: absolute; top: 0; left: 0; right: 0; }
+  .status-time { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+  .status-bar.dark .status-time { color: white; }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar.dark .status-icons svg { stroke: white; fill: white; }
+
+  /* ── 화면 공통 ── */
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; background: var(--white); border-radius: 40px; overflow: hidden; }
+  .screen.active { display: flex; }
+  .screen-body { flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  .screen-body::-webkit-scrollbar { display: none; }
+
+  /* ── 공통 컴포넌트 ── */
+  .progress-bar { display: flex; gap: 6px; padding: 16px 24px 0; }
+  .progress-dot { height: 4px; flex: 1; border-radius: 99px; background: var(--gray-200); }
+  .progress-dot.done { background: var(--primary); }
+  .page-title { font-size: 24px; font-weight: 700; color: var(--gray-900); padding: 20px 24px 8px; line-height: 1.3; }
+  .page-sub { font-size: 14px; color: var(--gray-600); padding: 0 24px 24px; line-height: 1.6; }
+  
+  .btn-primary {
+    width: calc(100% - 48px); margin: 0 24px; height: 52px; border-radius: var(--radius-md); background: var(--primary);
+    color: white; font-size: 16px; font-weight: 700; font-family: 'Noto Sans KR', sans-serif; border: none; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-primary:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; transform: none; }
+  .btn-text { background: none; border: none; color: var(--gray-600); font-size: 14px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; padding: 12px 24px; width: 100%; text-align: center; }
+  .btn-text:hover { color: var(--primary); }
+  .bottom-actions { padding: 16px 0 8px; display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--gray-100); margin-top: auto; background: white; }
+
+  /* ── 선택 카드 ── */
+  .select-card { margin: 0 24px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-lg); padding: 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 16px; }
+  .select-card:hover, .select-card.selected { border-color: var(--primary); background: var(--primary-light); }
+  .select-card-icon { width: 56px; height: 56px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 28px; background: rgba(26,115,232,0.1); flex-shrink: 0; }
+  .select-card.selected .select-card-icon { background: rgba(26,115,232,0.15); }
+  .select-card-text { flex: 1; }
+  .select-card-title { font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+  .select-card-desc { font-size: 13px; color: var(--gray-600); line-height: 1.4; }
+  .select-card .check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--gray-300); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .select-card.selected .check { border-color: var(--primary); background: var(--primary); }
+
+  /* ── 라디오 리스트 & 체크박스 (생략된 기존 스타일) ── */
+  .radio-list { padding: 0 24px; display: flex; flex-direction: column; gap: 4px; }
+  .radio-item { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: var(--radius-md); cursor: pointer; border: 1.5px solid var(--gray-200); transition: all 0.15s; }
+  .radio-item:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .radio-item.selected { border-color: var(--primary); background: var(--primary-light); }
+  .radio-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--gray-300); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .radio-item.selected .radio-dot { border-color: var(--primary); }
+  .radio-dot-inner { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); display: none; }
+  .radio-item.selected .radio-dot-inner { display: block; }
+  .radio-label { font-size: 15px; color: var(--gray-800); font-weight: 500; }
+
+  .checkbox-group { padding: 0 24px; display: flex; flex-direction: column; gap: 4px; }
+  .checkbox-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--gray-100); cursor: pointer; }
+  .checkbox-item:last-child { border-bottom: none; }
+  .checkbox-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--gray-300); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .checkbox-item.checked .checkbox-box { background: var(--primary); border-color: var(--primary); }
+  .checkbox-text { flex: 1; }
+  .checkbox-label { font-size: 14px; color: var(--gray-800); font-weight: 500; }
+  .checkbox-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; margin-left: 6px; }
+  .badge-required { background: #FFEBEE; color: #C62828; }
+  .badge-optional { background: var(--gray-100); color: var(--gray-600); }
+
+  .terms-box { margin: 0 24px 16px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 16px; height: 120px; overflow-y: auto; font-size: 12px; color: var(--gray-600); line-height: 1.7; }
+
+  /* ── 지도 화면 ── */
+  .map-bg { flex: 1; position: relative; background: #e8f4ea; overflow: hidden; }
+  .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 40px 40px; }
+  .map-road-h { position: absolute; left: 0; right: 0; background: rgba(255,255,255,0.7); }
+  .map-road-v { position: absolute; top: 0; bottom: 0; background: rgba(255,255,255,0.7); }
+  
+  .map-search-bar { position: absolute; top: 12px; left: 16px; right: 16px; height: 48px; background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); display: flex; align-items: center; padding: 0 16px; gap: 10px; cursor: pointer; z-index: 10; }
+  .map-search-bar span { font-size: 14px; color: var(--gray-500); }
+  
+  .filter-chips { position: absolute; top: 72px; left: 0; right: 0; display: flex; gap: 8px; padding: 0 16px; overflow-x: auto; z-index: 10; scrollbar-width: none; }
+  .filter-chips::-webkit-scrollbar { display: none; }
+  .chip { padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; border: 1.5px solid transparent; background: white; color: var(--gray-700); box-shadow: var(--shadow-sm); }
+  .chip.active { background: var(--primary); color: white; }
+
+  .map-marker { position: absolute; cursor: pointer; transition: transform 0.15s; }
+  .map-marker:hover { transform: scale(1.2); }
+  .marker-pin { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); font-size: 14px; }
+  .marker-pin span { transform: rotate(45deg); }
+  .user-marker { width: 20px; height: 20px; border-radius: 50%; background: var(--primary); border: 3px solid white; box-shadow: 0 0 0 4px rgba(26,115,232,0.25), var(--shadow-sm); }
+
+  .map-fab-group { position: absolute; right: 16px; bottom: 80px; display: flex; flex-direction: column; gap: 10px; z-index: 10; }
+  .fab { width: 52px; height: 52px; border-radius: 50%; background: white; border: none; box-shadow: var(--shadow-md); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all 0.15s; }
+  .fab:hover { transform: scale(1.08); box-shadow: var(--shadow-lg); }
+  .fab.primary { background: var(--primary); }
+
+  /* ── 하단 탭바 ── */
+  .bottom-nav { height: 64px; background: white; border-top: 1px solid var(--gray-200); display: flex; align-items: stretch; position: relative; z-index: 20; flex-shrink: 0; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.15s; padding: 8px 0 4px; }
+  .nav-item:hover { background: var(--gray-50); }
+  .nav-icon { font-size: 22px; line-height: 1; }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--gray-500); }
+  .nav-item.active .nav-label { color: var(--primary); }
+
+  /* ── 시설 팝업 ── */
+  .bottom-sheet { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: 0 -4px 24px rgba(0,0,0,0.15); z-index: 50; padding-bottom: 20px; }
+  .sheet-handle { width: 36px; height: 4px; background: var(--gray-300); border-radius: 99px; margin: 12px auto 16px; }
+  .sheet-facility-name { font-size: 18px; font-weight: 700; color: var(--gray-900); padding: 0 20px 4px; }
+  .sheet-address { font-size: 13px; color: var(--gray-500); padding: 0 20px 16px; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 16px; }
+  .tag { display: flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+  .tag-yes { background: #E8F5E9; color: #2E7D32; }
+  .tag-no { background: #FFEBEE; color: #C62828; }
+  .sheet-actions { display: flex; gap: 12px; padding: 0 20px; }
+  .sheet-btn-bookmark { width: 52px; height: 52px; border-radius: var(--radius-md); border: 1.5px solid var(--gray-200); background: white; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .sheet-btn-route { flex: 1; height: 52px; border-radius: var(--radius-md); background: var(--primary); color: white; font-size: 15px; font-weight: 700; border: none; cursor: pointer; }
+
+  /* ── 경로 설정 UI (업데이트됨) ── */
+  .route-header { background: white; padding: 16px 20px; border-bottom: 1px solid var(--gray-100); flex-shrink: 0; }
+  .route-input-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+  .route-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .route-input { flex: 1; height: 44px; background: var(--gray-100); border-radius: var(--radius-md); border: none; padding: 0 14px; font-size: 14px; color: var(--gray-900); outline: none; }
+  
+  .segment-ctrl { display: flex; background: var(--gray-100); border-radius: var(--radius-md); padding: 4px; gap: 4px; margin-top: 12px; }
+  .seg-btn { flex: 1; height: 36px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--gray-600); }
+  
+  /* 탭 활성화 상태 색상 */
+  .seg-btn.active.safe { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
+  .seg-btn.active.fast { background: white; color: var(--warning); box-shadow: var(--shadow-sm); }
+
+  .route-card { margin: 16px 20px; border-radius: var(--radius-lg); padding: 16px; border: 2px solid transparent; background: var(--gray-50); cursor: pointer; transition: all 0.2s; display: none; }
+  .route-card.active { display: block; }
+  .route-card.highlighted-safe { border-color: var(--primary); background: var(--primary-light); }
+  .route-card.highlighted-fast { border-color: var(--warning); background: #fffbeb; }
+
+  .route-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .route-card-type { font-size: 13px; font-weight: 700; }
+  .route-card-time { font-size: 28px; font-weight: 700; color: var(--gray-900); }
+  .route-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .route-tag { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-weight: 600; }
+
+  /* ── SVG 경로 스타일 ── */
+  .route-path {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke-opacity 0.3s ease;
+  }
+  .route-path.safe { stroke: var(--primary); }
+  .route-path.fast { stroke: var(--warning); stroke-dasharray: 8 8; }
+  .route-path.inactive { stroke-opacity: 0.2; }
+
+  .mini-map { height: 140px; margin: 0 20px 16px; background: #e8f4ea; border-radius: var(--radius-md); position: relative; overflow: hidden; }
+
+  /* ── 내비게이션 진행 ── */
+  .navi-map { flex: 1; background: #ddeede; position: relative; overflow: hidden; }
+  .navi-top-card { position: absolute; top: 56px; left: 16px; right: 16px; background: var(--primary); border-radius: var(--radius-lg); padding: 16px 20px; color: white; z-index: 10; box-shadow: var(--shadow-lg); transition: background 0.3s; }
+  .navi-top-card.fast { background: var(--warning); }
+  .navi-direction { font-size: 13px; opacity: 0.8; margin-bottom: 4px; }
+  .navi-instruction { font-size: 22px; font-weight: 700; }
+  .navi-dist-next { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+  .navi-bottom-panel { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: 20px; box-shadow: 0 -4px 16px rgba(0,0,0,0.1); z-index: 10; }
+  .navi-eta-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; }
+  .navi-eta-label { font-size: 12px; color: var(--gray-500); }
+  .navi-eta-value { font-size: 28px; font-weight: 700; color: var(--gray-900); }
+  
+  .navi-controls { display: flex; gap: 10px; }
+  .navi-ctrl-btn { flex: 1; height: 48px; border-radius: var(--radius-md); border: 1.5px solid var(--gray-200); background: white; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--gray-700); }
+  .navi-ctrl-btn.danger { border-color: var(--danger); color: var(--danger); }
+
+  /* 기타 생략된 공통 스타일 (검색, 마이페이지 등) 복원용 간소화 CSS */
+  .search-header, .page-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--gray-100); flex-shrink: 0; }
+  .search-input-box { flex: 1; height: 44px; background: var(--gray-100); border-radius: var(--radius-xl); border: none; padding: 0 16px; font-size: 15px; }
+  .back-btn { width: 40px; height: 40px; background: none; border: none; cursor: pointer; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+  .header-title { font-size: 17px; font-weight: 700; color: var(--gray-900); }
+  .section-header { font-size: 12px; font-weight: 700; color: var(--gray-500); padding: 16px 20px 8px; }
+  .list-item { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--gray-100); cursor: pointer; }
+  .list-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .list-main { flex: 1; }
+  .list-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .list-sub { font-size: 12px; color: var(--gray-500); }
+  
+  /* 상단 브랜딩 */
+  .top-brand { text-align: center; margin-bottom: 32px; }
+  .brand-name { font-size: 22px; font-weight: 700; color: white; letter-spacing: -0.02em; }
+  .brand-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="top-brand">
+  <div class="brand-name">E102 배리어프리 지도</div>
+  <div class="brand-sub">MVP 화면 목업 · 애니메이션 통합 버전</div>
+</div>
+
+<div class="studio">
+  <div class="sidebar">
+    <div class="sidebar-title">화면 목록</div>
+    <div class="screen-list">
+      <div class="screen-item" onclick="goTo('s006', this)"><div class="screen-item-id">SCR-006</div><div class="screen-item-name">지도 메인</div></div>
+      <div class="screen-item" onclick="goTo('s008', this)"><div class="screen-item-id">SCR-008</div><div class="screen-item-name">검색</div></div>
+      <div class="screen-item active" onclick="goTo('s009', this)"><div class="screen-item-id">SCR-009</div><div class="screen-item-name">내비게이션 경로 설정</div></div>
+      <div class="screen-item" onclick="goTo('s010', this)"><div class="screen-item-id">SCR-010</div><div class="screen-item-name">내비게이션 진행 (애니메이션)</div></div>
+    </div>
+  </div>
+
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="phone-screen">
+
+        <div class="screen" id="s006">
+          <div class="status-bar dark"><span class="status-time" style="color:white;">9:41</span></div>
+          <div class="map-bg" style="flex:1;">
+            <div class="map-grid"></div>
+            <div class="map-search-bar" onclick="goTo('s008')"><span>🔍</span><span>장소명, 주소 검색</span></div>
+            <div class="map-marker" style="top:55%;left:42%;"><div class="user-marker"></div></div>
+            <div class="map-fab-group"><button class="fab primary" onclick="goTo('s009')" style="color:white;font-size:18px;">🗺️</button></div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item active"><div class="nav-icon">🗺️</div><div class="nav-label" style="color:var(--primary);">지도</div></div>
+          </div>
+        </div>
+
+        <div class="screen" id="s008">
+          <div class="status-bar"><span class="status-time">9:41</span></div>
+          <div class="search-header"><button class="back-btn" onclick="goTo('s006')">←</button><input class="search-input-box" placeholder="장소명, 주소 검색"></div>
+          <div class="screen-body">
+            <div class="list-item" onclick="goTo('s009')"><div class="list-icon">🍴</div><div class="list-main"><div class="list-title">카페 온도</div></div></div>
+          </div>
+        </div>
+
+        <div class="screen active" id="s009">
+          <div class="status-bar"><span class="status-time">9:41</span></div>
+
+          <div class="route-header">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <button class="back-btn" onclick="goTo('s006')" style="width:32px;height:32px;font-size:18px;">←</button>
+              <span style="font-size:16px;font-weight:700;color:var(--gray-900);">경로 설정</span>
+            </div>
+            <div class="route-input-row">
+              <div class="route-dot" style="background:var(--success);"></div>
+              <input class="route-input" value="내 현재 위치" readonly>
+            </div>
+            <div class="route-input-row">
+              <div class="route-dot" style="background:var(--danger);"></div>
+              <input class="route-input" value="카페 온도" readonly>
+            </div>
+            
+            <div class="segment-ctrl">
+              <button class="seg-btn active safe" id="btn-seg-safe" onclick="setRouteType('safe')">♿ 베리어프리 우선</button>
+              <button class="seg-btn" id="btn-seg-fast" onclick="setRouteType('fast')">⚡ 최단거리 (위험구간)</button>
+            </div>
+          </div>
+
+          <div class="screen-body">
+            <div class="route-card active highlighted-safe" id="card-safe">
+              <div class="route-card-header">
+                <span class="route-card-type" style="color:var(--primary);">♿ 완전히 안전한 길</span>
+                <span style="font-size:11px;background:var(--primary);color:white;padding:2px 8px;border-radius:99px;">추천</span>
+              </div>
+              <div class="route-card-time">14분 <span style="font-size:16px;font-weight:400;color:var(--gray-500);">· 680m</span></div>
+              <div class="route-tags">
+                <div class="route-tag" style="background:rgba(26,115,232,0.1);color:var(--primary);">♿ 휠체어/유아차 가능</div>
+                <div class="route-tag" style="background:rgba(26,115,232,0.1);color:var(--primary);">🚫 단차 없음</div>
+              </div>
+            </div>
+
+            <div class="route-card" id="card-fast">
+              <div class="route-card-header">
+                <span class="route-card-type" style="color:var(--warning);">⚡ 조금 위험하더라도 빠른 길</span>
+              </div>
+              <div class="route-card-time">9분 <span style="font-size:16px;font-weight:400;color:var(--gray-500);">· 450m</span></div>
+              <div class="route-tags">
+                <div class="route-tag" style="background:rgba(245,158,11,0.1);color:var(--warning);">⚠️ 계단 및 경사로 포함</div>
+              </div>
+            </div>
+
+            <div class="mini-map">
+              <svg id="mini-svg" class="route-svg" viewBox="0 0 300 140" style="width:100%; height:100%;">
+                <rect width="300" height="140" fill="#e8f4ea"/>
+                
+                <circle cx="160" cy="70" r="30" fill="#fee2e2" opacity="0.8" />
+                <text x="160" y="74" text-anchor="middle" fill="#ef4444" font-size="10" font-weight="bold">장애물</text>
+
+                <path id="mini-path-safe" class="route-path safe" d="M 40 70 C 80 130, 180 130, 240 30" />
+                <path id="mini-path-fast" class="route-path fast inactive" d="M 40 70 L 160 70 L 240 30" />
+                
+                <circle cx="40" cy="70" r="7" fill="var(--success)" stroke="white" stroke-width="2"/>
+                <circle cx="240" cy="30" r="7" fill="var(--danger)" stroke="white" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="bottom-actions" style="padding:16px 24px 12px;">
+            <button class="btn-primary" style="width:100%;margin:0;" onclick="startNavigation()">선택한 경로로 안내 시작</button>
+          </div>
+        </div>
+
+        <div class="screen" id="s010">
+          <div class="status-bar dark"><span class="status-time" style="color:white;">9:41</span></div>
+
+          <div class="navi-map">
+            <div class="map-grid"></div>
+            
+            <svg id="navi-svg" style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 375 480">
+              <circle cx="180" cy="220" r="45" fill="#fee2e2" opacity="0.8" />
+              <text x="180" y="225" text-anchor="middle" fill="#ef4444" font-size="13" font-weight="bold">계단 / 경사로</text>
+
+              <path id="navi-path-safe" class="route-path safe" d="M 80 380 C 20 280, 60 120, 200 80 L 310 80" />
+              <path id="navi-path-fast" class="route-path fast inactive" d="M 80 380 L 180 220 L 200 80 L 310 80" />
+
+              <circle cx="80" cy="380" r="10" fill="var(--success)" stroke="white" stroke-width="3"/>
+              <circle cx="310" cy="80" r="10" fill="var(--danger)" stroke="white" stroke-width="3"/>
+
+              <g id="moving-marker" style="display:none;">
+                <circle cx="0" cy="0" r="24" fill="rgba(26,115,232,0.2)" class="marker-shadow"/>
+                <circle cx="0" cy="0" r="12" fill="var(--primary)" stroke="white" stroke-width="3" class="marker-core"/>
+              </g>
+            </svg>
+
+            <div class="navi-top-card" id="navi-header">
+              <div class="navi-direction" id="navi-dir-text">경로 안내를 시작합니다</div>
+              <div class="navi-instruction" id="navi-inst-text">직진하세요</div>
+            </div>
+
+            <div class="navi-bottom-panel">
+              <div class="navi-eta-row">
+                <div>
+                  <div class="navi-eta-label">남은 시간</div>
+                  <div class="navi-eta-value" id="eta-time">14분</div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="navi-eta-label">남은 거리</div>
+                  <div style="font-size:16px;font-weight:600;color:var(--gray-700);" id="eta-dist">680m</div>
+                </div>
+              </div>
+              <div class="navi-controls">
+                <button class="navi-ctrl-btn" onclick="goTo('s009')">✕ 경로 취소</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div></div></div></div><script>
+  let currentRouteType = 'safe'; // 'safe' or 'fast'
+  let animationFrameId = null;
+
+  // 화면 전환 공통 함수
+  function goTo(id, sidebarEl) {
+    cancelAnimationFrame(animationFrameId); // 진행중인 애니메이션 취소
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    if (sidebarEl) {
+      document.querySelectorAll('.screen-item').forEach(s => s.classList.remove('active'));
+      sidebarEl.classList.add('active');
+    }
+  }
+
+  // SCR-009 경로 선택 (안전한길 vs 빠른길)
+  function setRouteType(type) {
+    currentRouteType = type;
+
+    // 1. 버튼 상태 변경
+    const btnSafe = document.getElementById('btn-seg-safe');
+    const btnFast = document.getElementById('btn-seg-fast');
+    if (type === 'safe') {
+      btnSafe.classList.add('active', 'safe');
+      btnFast.classList.remove('active', 'fast');
+    } else {
+      btnFast.classList.add('active', 'fast');
+      btnSafe.classList.remove('active', 'safe');
+    }
+
+    // 2. 카드 상태 변경
+    const cardSafe = document.getElementById('card-safe');
+    const cardFast = document.getElementById('card-fast');
+    if (type === 'safe') {
+      cardSafe.classList.add('active', 'highlighted-safe');
+      cardFast.classList.remove('active', 'highlighted-fast');
+    } else {
+      cardFast.classList.add('active', 'highlighted-fast');
+      cardSafe.classList.remove('active', 'highlighted-safe');
+    }
+
+    // 3. 미니맵 SVG 경로 강조 변경
+    const miniSafe = document.getElementById('mini-path-safe');
+    const miniFast = document.getElementById('mini-path-fast');
+    if (type === 'safe') {
+      miniSafe.classList.remove('inactive');
+      miniFast.classList.add('inactive');
+    } else {
+      miniFast.classList.remove('inactive');
+      miniSafe.classList.add('inactive');
+    }
+  }
+
+  // SCR-010 애니메이션 시작
+  function startNavigation() {
+    goTo('s010');
+
+    const naviSafe = document.getElementById('navi-path-safe');
+    const naviFast = document.getElementById('navi-path-fast');
+    const marker = document.getElementById('moving-marker');
+    const header = document.getElementById('navi-header');
+    
+    // UI 업데이트 (선택한 경로에 따라 색상과 텍스트 변경)
+    if (currentRouteType === 'safe') {
+      naviSafe.classList.remove('inactive');
+      naviFast.classList.add('inactive');
+      header.className = 'navi-top-card'; // 기본 Blue
+      document.getElementById('navi-inst-text').innerText = "안전한 우회로로 안내합니다";
+      document.getElementById('eta-time').innerText = "14분";
+      document.getElementById('eta-dist').innerText = "680m";
+      marker.querySelector('.marker-core').setAttribute('fill', '#1A73E8');
+      marker.querySelector('.marker-shadow').setAttribute('fill', 'rgba(26,115,232,0.2)');
+    } else {
+      naviFast.classList.remove('inactive');
+      naviSafe.classList.add('inactive');
+      header.className = 'navi-top-card fast'; // 경고 Orange
+      document.getElementById('navi-inst-text').innerText = "계단 구간에 주의하세요!";
+      document.getElementById('eta-time').innerText = "9분";
+      document.getElementById('eta-dist').innerText = "450m";
+      marker.querySelector('.marker-core').setAttribute('fill', '#f59e0b');
+      marker.querySelector('.marker-shadow').setAttribute('fill', 'rgba(245,158,11,0.2)');
+    }
+
+    // 애니메이션 로직
+    const activePath = currentRouteType === 'safe' ? naviSafe : naviFast;
+    const pathLength = activePath.getTotalLength();
+    
+    // 빠른 길은 시간이 덜 걸리게 애니메이션 속도도 빠르게 설정
+    const duration = currentRouteType === 'safe' ? 4000 : 2500; 
+    let startTime = null;
+
+    marker.style.display = 'block';
+
+    function animate(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      let percentage = progress / duration;
+
+      if (percentage > 1) percentage = 1;
+
+      // 현재 진행도에 따른 SVG 좌표 구하기
+      const point = activePath.getPointAtLength(percentage * pathLength);
+      
+      // 마커 이동
+      marker.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+
+      if (percentage < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        document.getElementById('navi-inst-text').innerText = "목적지에 도착했습니다!";
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(animate);
+  }
+
+  // 초기화
+  setRouteType('safe');
+</script>
+</body>
+</html>
